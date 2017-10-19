@@ -483,6 +483,7 @@ void main()
 	// Get the material
 	og_material material			 = og_getMaterial(materialInput);
 
+    /* TRIPPEL NAGGEL MAGIC
     if(abs(dot(normalEC, positionToEyeEC)) < 0.015f)
     {
       fragmentColor = vec4(0.0, 0.0, 0.0, 1.0);
@@ -500,8 +501,23 @@ void main()
         else
         {
             vec3 rgb_normal = (normal * 0.5f) + 0.5f;
-            fragmentColor = vec4(rgb_normal, 1.0);
+            //fragmentColor = vec4(rgb_normal, 1.0);
+			fragmentColor = vec4(material.diffuse, 1.0);
         }
+    }*/
+
+    if (u_shade)
+    {
+        fragmentColor = og_phong(
+                positionToEyeEC,
+                positionToLightEC,
+                material);
+        fragmentColor.w = 1.0;
+    }
+    else
+    {
+        vec3 rgb_normal = (normal * 0.5f) + 0.5f;
+		fragmentColor = vec4(material.diffuse, 1.0);
     }
 }
 

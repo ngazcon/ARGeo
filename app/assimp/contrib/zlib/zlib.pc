@@ -1,0 +1,13 @@
+prefix=C:/ProgramData/Microsoft/AndroidNDK/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/windows/user
+exec_prefix=C:/ProgramData/Microsoft/AndroidNDK/android-ndk-r10e/toolchains/arm-linux-androideabi-4.9/prebuilt/windows/user
+libdir=
+sharedlibdir=
+includedir=
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.8
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}

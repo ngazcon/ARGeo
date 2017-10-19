@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_terrain_view"
+            android:icon="@drawable/ic_menu_terrain"
+            android:title="Terrain View" />
+        <item
+            android:id="@+id/nav_pois"
+            android:icon="@drawable/ic_menu_pois"
+            android:title="POI's" />
+        <item
+            android:id="@+id/nav_plane"
+            android:icon="@drawable/ic_menu_plane"
+            android:title="Planes" />
+        <item
+            android:id="@+id/nav_ttarview"
+            android:icon="@drawable/ic_menu_burstmode"
+            android:title="TT AR-View" />
+    </group>
+
+    <item android:title="Configuration">
+        <menu>
+            <item
+                android:id="@+id/nav_settings"
+                android:icon="@drawable/ic_menu_settings"
+                android:title="Settings" />
+
+            <item
+                android:id="@+id/nav_screenshot_button"
+                android:icon="@drawable/ic_menu_camera"
+                android:title="Screenshot button"
+                app:actionLayout="@layout/nav_switch" />
+        </menu>
+    </item>
+
+    <item android:title="Data Base">
+        <menu>
+            <item
+                android:id="@+id/nav_db_load"
+                android:icon="@drawable/ic_menu_database"
+                android:title="Load Data Base" />
+            <item
+                android:id="@+id/nav_db_clear"
+                android:icon="@drawable/ic_menu_database_minus"
+                android:title="Clear Data Base" />
+        </menu>
+    </item>
+
+</menu>

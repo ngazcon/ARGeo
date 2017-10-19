@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="vyglab.argeo.app.MainActivity"
+    tools:showIn="@layout/app_bar_main"
+    android:id="@+id/layout_main_content">
+
+    <!-- Esto no va más aca. Lo moví al activity_main por el workaround del proyecto github.
+    <fragment
+        android:name="com.argeo.jni.ArgeoFragment"
+        android:id="@+id/argeo_fragment"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+    -->
+
+    <LinearLayout
+        android:id="@+id/right_menu"
+        android:orientation="vertical"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:gravity="top"
+        android:visibility="invisible"
+        android:background="@color/backgroundColorO60">
+
+        <include layout="@layout/right_menu_terrain" />
+
+        <!--
+        <include
+            layout="@layout/right_menu_plane"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        -->
+        <include
+            layout="@layout/right_menu_poi"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+</RelativeLayout>

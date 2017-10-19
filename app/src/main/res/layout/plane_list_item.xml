@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="?attr/listPreferredItemHeight"
+    android:orientation="vertical"
+    android:paddingBottom="5dp"
+    android:paddingLeft="2dp"
+    android:paddingRight="2dp"
+    android:paddingTop="5dp"
+    android:background="?android:attr/activatedBackgroundIndicator">
+
+    <ImageView
+        android:id="@+id/plane_image"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_menu_plane"/>
+
+    <TextView
+        android:id="@+id/textview_plane_item_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:text="Nombre"
+        android:textStyle="bold"
+        android:typeface="monospace"
+        android:textSize="15sp"
+        android:textColor="@color/colorTextPrimaryLB"/>
+        tools:text="POI name" />
+
+    <TextView
+        android:id="@+id/textview_plane_item_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/textview_plane_item_name"
+        android:layout_below="@+id/textview_plane_item_name"
+        tools:text="desc"
+        android:textSize="13sp"
+        android:textStyle="italic"
+        android:textColor="@color/colorTextSecondaryLB"/>/>
+</RelativeLayout>

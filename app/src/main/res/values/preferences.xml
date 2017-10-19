@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pref_hud_opacity_key">hud_opacity</string>
+    <integer name="pref_hud_opacity_default">60</integer>
+
+    <string name="pref_hud_width_key">hud_width</string>
+    <integer name="pref_hud_width_default">200</integer>
+</resources>

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Using Light Blue palette -->
+    <color name="colorPrimary">#03A9F4</color> <!-- 500 -->
+    <color name="colorPrimaryDark">#01579B</color> <!-- 900 -->
+    <color name="colorSecondary">#0288D1</color> <!-- 700 -->
+    <color name="colorAccent">#80D8FF</color> <!-- A100 -->
+    <color name="colorAccentTransparent080">#CC80D8FF</color>
+    <color name="backgroundColorO00">#00e1f5fe</color> <!-- 50 -->
+    <color name="backgroundColorO10">#1Ae1f5fe</color>
+    <color name="backgroundColorO20">#33e1f5fe</color>
+    <color name="backgroundColorO30">#4De1f5fe</color>
+    <color name="backgroundColorO40">#66e1f5fe</color>
+    <color name="backgroundColorO50">#80e1f5fe</color>
+    <color name="backgroundColorO60">#99e1f5fe</color>
+    <color name="backgroundColorO70">#B3e1f5fe</color>
+    <color name="backgroundColorO80">#CCe1f5fe</color>
+    <color name="backgroundColorO90">#E6e1f5fe</color>
+    <color name="backgroundColor100">#FFe1f5fe</color>
+    <color name="colorGray">#FF9E9E9E</color>
+    <color name="colorWhite">#FFFFFFFF</color>
+    <color name="colorIconDarkActive">#8A000000</color>
+    <color name="colorIconDarkInactive">#61000000</color>
+    <color name="colorTextPrimaryLB">#DE000000</color>
+    <color name="colorTextSecondaryLB">#91000000</color>
+    <color name="colorTextDisabledLB">#61000000</color>
+    <color name="colorTextHintLB">#61000000</color>
+    <color name="colorDividersLB">#1F000000</color>
+</resources>
+
+<!-- Opacity common values
+100%: FF
+ 87%: DE
+ 70%: B3
+ 54%: 8A
+ 30%: 4D
+ 26%: 42
+ 12%: 1F -->
+
+<!-- Opacity values (add two digits at the beginning to the color)
+100% — FF
+ 95% — F2
+ 90% — E6
+ 85% — D9
+ 80% — CC
+ 75% — BF
+ 70% — B3
+ 65% — A6
+ 60% — 99
+ 55% — 8C
+ 50% — 80
+ 45% — 73
+ 40% — 66
+ 35% — 59
+ 30% — 4D
+ 25% — 40
+ 20% — 33
+ 15% — 26
+ 10% — 1A
+  5% — 0D
+  0% — 00 -->

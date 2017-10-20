@@ -1,6 +1,7 @@
 package vyglab.argeo.app.view;
 
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SwitchCompat;
@@ -268,6 +269,12 @@ public class FragmentTTARViewDetails extends Fragment implements SnapshotListene
 
         if (ttarview_creation) {
             m_argeo_fragment.getViewer().getScene().removeSnapshotListener(this);
+
+            // Flip bitmaps vertically
+            //Matrix matrix = new Matrix();
+            //matrix.preScale(1.0f, -1.0f);
+            //reality_snapshot = Bitmap.createBitmap(reality_snapshot, 0, 0, ttar_snapshot.getWidth(), ttar_snapshot.getHeight(), matrix, true);
+            //ttar_snapshot = Bitmap.createBitmap(ttar_snapshot, 0, 0, ttar_snapshot.getWidth(), ttar_snapshot.getHeight(), matrix, true);
 
             if (m_camera == null) {
                 m_camera = camera;

@@ -14,7 +14,8 @@
         android:adjustViewBounds="true"
         android:contentDescription="@null"
         android:scaleType="centerCrop"
-        tools:src="@drawable/ic_menu_camera"/>
+        tools:src="@drawable/ic_menu_camera"
+        android:rotationX="180" />
 
     <TextView
         android:id="@+id/textview_ttarview_list_item_name"

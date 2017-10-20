@@ -65,7 +65,6 @@ public class DBManager {
 
     public boolean insertTTARView(TTARView ttarview){
         // TODO: Esto hacerlo asincronicamente.
-        /*
         // Gets the data repository in write mode
         SQLiteDatabase db = m_dbhelper.getWritableDatabase();
 
@@ -88,8 +87,7 @@ public class DBManager {
         db.close();
 
         return ( newRowId != -1 );
-        */
-        return true;
+        //return true;
     }
 
     public boolean deletePoi(POI poi){

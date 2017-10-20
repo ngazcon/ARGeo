@@ -163,7 +163,8 @@
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_menu_camera"
                     tools:src="@drawable/ic_menu_camera"
-                    android:layout_weight="5" />
+                    android:layout_weight="5"
+                    android:rotationX="180" />
 
             </LinearLayout>
 
@@ -200,7 +201,8 @@
                     android:scaleType="fitXY"
                     android:src="@drawable/ic_menu_camera"
                     tools:src="@drawable/ic_menu_camera"
-                    android:layout_weight="5" />
+                    android:layout_weight="5"
+                    android:rotationX="180" />
 
             </LinearLayout>
 

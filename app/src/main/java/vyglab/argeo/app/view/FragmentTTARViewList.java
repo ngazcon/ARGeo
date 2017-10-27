@@ -24,6 +24,7 @@ public class FragmentTTARViewList extends ListFragment implements TTARViewReposi
 
     private static final String ARG_SECTION_NUMBER = "section_number";
     private int m_selected;
+    private boolean m_item_selection_enabled;
     private TTARViewListAdapter m_ttarview_adapter;
     private List<FragmentTTARViewListItemStateChangedListener> m_list_item_state_listeners = new ArrayList<FragmentTTARViewListItemStateChangedListener>();
 
@@ -52,6 +53,7 @@ public class FragmentTTARViewList extends ListFragment implements TTARViewReposi
         View root = inflater.inflate(R.layout.fragment_ttarview_list, container, false);
 
         m_selected = -1;
+        m_item_selection_enabled = true;
         // Obtain the ListView
         //ListView list = (ListView) root.findViewById(R.id.);
 
@@ -113,12 +115,14 @@ public class FragmentTTARViewList extends ListFragment implements TTARViewReposi
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-                if ( m_selected == -1 ) { // There is no item selected
-                    m_selected = position;
-                    getListView().invalidateViews(); // Para que se dibuje nuevamente
-                    notifyTTARViewListItemSelected((TTARView) getListView().getAdapter().getItem(position));
+                if (m_item_selection_enabled) {
+                    if ( m_selected == -1 ) { // There is no item selected
+                        m_selected = position;
+                        getListView().invalidateViews(); // Para que se dibuje nuevamente
+                        notifyTTARViewListItemSelected((TTARView) getListView().getAdapter().getItem(position));
 
-                    return true;
+                        return true;
+                    }
                 }
 
                 return false;
@@ -134,10 +138,12 @@ public class FragmentTTARViewList extends ListFragment implements TTARViewReposi
     public void onListItemClick(ListView l, View view, int position, long id) {
         //super.onListItemClick(l, view, position, id);
 
-        if ((m_selected != -1) && (m_selected == position)){
-            m_selected = -1;
-            getListView().invalidateViews();
-            notifyTTARViewListItemUnselected();
+        if (m_item_selection_enabled) {
+            if ((m_selected != -1) && (m_selected == position)){
+                m_selected = -1;
+                getListView().invalidateViews();
+                notifyTTARViewListItemUnselected();
+            }
         }
     }
 
@@ -158,6 +164,14 @@ public class FragmentTTARViewList extends ListFragment implements TTARViewReposi
 
     public int getSelected() {
         return  m_selected;
+    }
+
+    public void enableListInteraction() {
+        m_item_selection_enabled = true;
+    }
+
+    public void disableListInteraction() {
+        m_item_selection_enabled = false;
     }
 
     public void resetSelected(){

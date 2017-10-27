@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class DBManager {
     private DBHelper m_dbhelper;
-    // Only for teh camera creation (TTARViewBuilder)
+    // Only for the camera creation (TTARViewBuilder)
     private ArgeoFragment m_argeofragment;
 
     public DBManager(Context context, ArgeoFragment fragment){

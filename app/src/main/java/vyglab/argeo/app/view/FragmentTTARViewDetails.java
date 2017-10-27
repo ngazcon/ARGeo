@@ -196,13 +196,16 @@ public class FragmentTTARViewDetails extends Fragment implements SnapshotListene
 
         ttarview.setCamera(m_camera);
         ttarview.setInitialCameraFrame(m_reality_snapshot);
-        ttarview.setInitialaView(m_reality_snapshot);
+        ttarview.setInitialaView(m_updated_snapshot);
         ttarview.setUpdatedView(m_updated_snapshot);
 
         return ttarview;
     }
 
-    public void setForCreation(){
+    public void setForCreation(int ttarview_snapshot_w, int ttarview_snapshot_h){
+        m_ttarview_w = ttarview_snapshot_w;
+        m_ttarview_h = ttarview_snapshot_h;
+
         EditText edittext = (EditText) getView().findViewById(R.id.editText_ttarview_name);
         edittext.setEnabled(true);
 

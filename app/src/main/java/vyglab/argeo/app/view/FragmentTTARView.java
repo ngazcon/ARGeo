@@ -10,6 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import vyglab.argeo.app.MainActivityFacade;
+import vyglab.argeo.app.controller.UserInterfaceState.UIContext;
+import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
+import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.app.MainActivityState;
 import vyglab.argeo.R;
@@ -29,10 +33,10 @@ public class FragmentTTARView extends Fragment
     private FragmentTTARViewList m_fragment_ttarview_list;
     private FragmentTTARViewDetails m_fragment_ttarview_details;
     private ViewPager m_viewpager_ttarview;
-    private int m_ttarview_w;
-    private int m_ttarview_h;
 
     private MainActivityState m_main_activity_state;
+
+    private boolean m_list_interaction_enabled;
 
     public FragmentTTARView() {
         // Nothing to do here
@@ -42,6 +46,7 @@ public class FragmentTTARView extends Fragment
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        m_list_interaction_enabled = true;
     }
 
     @Override
@@ -66,7 +71,7 @@ public class FragmentTTARView extends Fragment
         m_fragment_ttarview_details = FragmentTTARViewDetails.newInstance(2);
         m_tabs_adapter_ttarview.addFragment(m_fragment_ttarview_details, "PROP");
         m_fragment_ttarview_details.setArgeoFragment(m_argeo_fragment);
-        m_fragment_ttarview_details.setTTARViewWandH(m_ttarview_w, m_ttarview_h);
+        //m_fragment_ttarview_details.setTTARViewWandH(m_ttarview_w, m_ttarview_h);
 
         // 3-- Set the adapter to the viewpager
         m_viewpager_ttarview =  (ViewPager) view.findViewById(R.id.ttarview_pager);
@@ -118,8 +123,7 @@ public class FragmentTTARView extends Fragment
     }
 
     public void setTTARViewWidthAndHeight(int w, int h) {
-        m_ttarview_w = w;
-        m_ttarview_h = h;
+        m_fragment_ttarview_details.setTTARViewWandH(w,h);
     }
 
     public TTARView getCurrentTTARView() {
@@ -138,17 +142,29 @@ public class FragmentTTARView extends Fragment
         ft.commit();
     }
 
-    public void setForCreation(){
+    public void setForCreation(int ttarview_snapshot_w, int ttarview_snapshot_h){
+        //Unable select/Unselect from TTARViewList
+        m_list_interaction_enabled = false;
+        m_fragment_ttarview_list.disableListInteraction();
+
         m_viewpager_ttarview.setCurrentItem(1);
-        m_fragment_ttarview_details.setForCreation();
+        m_fragment_ttarview_details.setForCreation(ttarview_snapshot_w, ttarview_snapshot_h);
     }
 
     public void cancelCreation() {
+        //Enable select/Unselect from TTARViewList
+        m_list_interaction_enabled = true;
+        m_fragment_ttarview_list.enableListInteraction();
+
         m_viewpager_ttarview.setCurrentItem(0);
         m_fragment_ttarview_details.cleanView();
     }
 
     public TTARView acceptCreation() {
+        //Enable select/Unselect from TTARViewList
+        m_list_interaction_enabled = true;
+        m_fragment_ttarview_list.enableListInteraction();
+
         m_viewpager_ttarview.setCurrentItem(0);
         TTARView ttarview = m_fragment_ttarview_details.getTTARViewFromView();
         m_fragment_ttarview_details.cleanView();
@@ -158,20 +174,29 @@ public class FragmentTTARView extends Fragment
 
     public void prepareForPictureInPictureARView() {
         m_fragment_ttarview_details.prepareForPictureInPictureARView();
+        MainActivityFacade.getInstance().showTTARView(m_fragment_ttarview_details.getCurrentTTARView());
     }
 
     @Override
     public void onTTARViewListItemSelected(TTARView item) {
-        m_fragment_ttarview_details.loadTTARView(item);
-        m_viewpager_ttarview.setCurrentItem(1);
-        m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
-        m_main_activity_state.getSecondaryFabContext().getState().handle();
+        if (m_list_interaction_enabled) {
+            m_fragment_ttarview_details.loadTTARView(item);
+            m_viewpager_ttarview.setCurrentItem(1);
+            //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
+            //m_main_activity_state.getSecondaryFabContext().getState().handle();
+            UIContextManager.getInstance().next(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.EXTRA_INTERACTION_1);
+            UIContextManager.getInstance().request(MainActivityState.ApplicationMode.TTARVIEW);
+        }
     }
 
     @Override
     public void onTTARViewListItemUnselected() {
-        m_fragment_ttarview_details.cleanView();
-        m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
-        m_main_activity_state.getSecondaryFabContext().getState().handle();
+        if (m_list_interaction_enabled) {
+            m_fragment_ttarview_details.cleanView();
+            //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
+            //m_main_activity_state.getSecondaryFabContext().getState().handle();
+            UIContextManager.getInstance().next(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.EXTRA_INTERACTION_2);
+            UIContextManager.getInstance().request(MainActivityState.ApplicationMode.TTARVIEW);
+        }
     }
 }

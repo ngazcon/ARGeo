@@ -41,14 +41,24 @@ import org.opencv.android.OpenCVLoader;
 import java.util.ArrayList;
 
 import vyglab.argeo.R;
+import vyglab.argeo.app.controller.UserInterfaceState.ListenerForUITransition;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerTTARViewSketch;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerTTARViewTouchSketch;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerTTARViewTouchNormal;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.TTARViewStates.StateTTARViewSketch;
+import vyglab.argeo.app.controller.UserInterfaceState.UIContext;
+import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
+import vyglab.argeo.app.controller.UserInterfaceState.UIFacade;
+import vyglab.argeo.app.controller.UserInterfaceState.UIState;
+import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewBase;
+import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewCreation;
+import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewSelected;
 import vyglab.argeo.app.model.POI;
 import vyglab.argeo.app.model.POIRepository;
 import vyglab.argeo.app.model.SketchFilter;
 import vyglab.argeo.app.model.TTARViewRepository;
+import vyglab.argeo.app.utils.Storage;
+import vyglab.argeo.app.view.DialogChangeTTARVIEWResolution;
 import vyglab.argeo.app.view.FragmentTerrain;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.jni.Camera;
@@ -102,6 +112,7 @@ import vyglab.argeo.app.view.FragmentTTARView;
 import vyglab.argeo.app.view.TabFragmentPOI;
 import vyglab.argeo.app.utils.HandyPOI;
 import vyglab.argeo.app.controller.TouchModeStateChangedListener;
+import vyglab.argeo.app.view.DialogChangeTTARVIEWResolution.DialogChangeTTARVIEWResolutionListener;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -110,7 +121,8 @@ public class MainActivity extends AppCompatActivity
         FragmentTerrain.OnWireframeToggleChangedListener,
         SnapshotListener,
         PositionPoiChanged,
-        HandyPlane.PlaneChanged {
+        HandyPlane.PlaneChanged,
+        DialogChangeTTARVIEWResolutionListener {
 
 
     private ViewPager m_ViewPager;
@@ -137,11 +149,13 @@ public class MainActivity extends AppCompatActivity
     private SketchFilter m_sketch_filter;
     private int m_screen_w;
     private int m_screen_h;
-    private float m_aspect_ratio;
-    private int m_ttarview_snapshot_w;
-    private int m_ttarview_snapshot_h;
+    //private float m_aspect_ratio;
+    //private int m_ttarview_snapshot_w;
+    //private int m_ttarview_snapshot_h;
 
     private PowerManager.WakeLock mWakeLock;
+
+    private DialogChangeTTARVIEWResolution m_dialog_ttarview_resolution;
 
     //Volarlo cdo lo arregle
     private float mLastTouchX;
@@ -173,10 +187,6 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        // *****************************************************
-        // Lo anterior es código autogenerado por la application inicial
-        // A partir de acá va el código nuestro ----------------
-        // *****************************************************
         // Escondo la ActionBar y pongo en modo fullscreen
         getSupportActionBar().hide();
         hideStatusAndNavigationBars();
@@ -190,6 +200,7 @@ public class MainActivity extends AppCompatActivity
 
         m_DBmanager = new DBManager(getApplicationContext(), mArgeoFragment);
         Toast.makeText(getApplicationContext(), m_DBmanager.listPois().toString(), Toast.LENGTH_SHORT).show();
+        Storage.getInstance().init(m_DBmanager);
 
         ActivityCompat.requestPermissions(
                 this,
@@ -212,14 +223,19 @@ public class MainActivity extends AppCompatActivity
         ImageView picture = (ImageView) findViewById(R.id.imageview_ttarview_picture_in_picture);
         picture.setOnTouchListener(m_ttarview_touch_listener_normal);
         //picture.setOnTouchListener(m_ttarview_touch_listener_sketch);
+        m_dialog_ttarview_resolution = null;
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        // Watch out! landscap
         m_screen_h = displayMetrics.heightPixels;
         m_screen_w = displayMetrics.widthPixels;
-        m_aspect_ratio = (float) m_screen_w / (float) m_screen_h;
-        m_ttarview_snapshot_w = 1024;
-        m_ttarview_snapshot_h = (int) ((float) 1024 / m_aspect_ratio);
+        float aspect_ratio = (float) m_screen_w / (float) m_screen_h;
+        int ttarview_snapshot_w = 1024;
+        int ttarview_snapshot_h = (int) ((float) 1024 / aspect_ratio);
+        MainActivityFacade.getInstance().init(this);
+        MainActivityFacade.getInstance().setTTARViewAspectRatio(aspect_ratio);
+        MainActivityFacade.getInstance().setTTARViewWidthHeight(ttarview_snapshot_w, ttarview_snapshot_h);
 
         // Set viewpager adapter
         m_ViewPager = (ViewPager) findViewById(R.id.pager);
@@ -273,6 +289,9 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
         navigationView.getMenu().getItem(0).setChecked(true);
+
+        // Set Properties that it is needed a "living view"
+        m_fragment_ttarview.setTTARViewWidthAndHeight(MainActivityFacade.getInstance().getTTARViewWidth(), MainActivityFacade.getInstance().getTTARViewHeight());
 
         // Load Preferences
         // -- Preferences for Fragment Terrain
@@ -462,12 +481,20 @@ public class MainActivity extends AppCompatActivity
             m_activity_state.setAppMode(MainActivityState.AppMode.PLANE);
             //fab.setImageResource(R.drawable.ic_menu_plane);
         } else if (id == R.id.nav_ttarview) {
-            m_activity_state.setAppMode(MainActivityState.AppMode.TTARVIEW);
+            m_activity_state.setAppMode(MainActivityState.AppMode.TTARVIEW);// aca esto hace algo para aparecer el panel derecho que no lo encuentro
+            m_activity_state.setApplicationMode(MainActivityState.ApplicationMode.TTARVIEW);
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_screenshot_button) {
             SwitchCompat screenshot_switch = (SwitchCompat) findViewById(R.id.screenshot_switch);
             screenshot_switch.toggle();
+        } else if (id == R.id.nav_ttarview_resolution) {
+            if (m_dialog_ttarview_resolution == null) {
+                m_dialog_ttarview_resolution = new DialogChangeTTARVIEWResolution();
+            }
+
+            m_dialog_ttarview_resolution.setWAndRatio(MainActivityFacade.getInstance().getTTARViewWidth(), MainActivityFacade.getInstance().getTTARViewAspectRatio());
+            m_dialog_ttarview_resolution.show(getSupportFragmentManager(), "TTARVIEW_DIALOG_RESOLUTION");
         } else if (id == R.id.nav_db_load) {
             ArrayList<POI> poi_list = m_DBmanager.obtainBillboardList();
             for (POI poi : poi_list) {
@@ -539,9 +566,9 @@ public class MainActivity extends AppCompatActivity
         ListenerAcceptNewPlane listener_accept_newplane = new ListenerAcceptNewPlane(this, m_activity_state, mArgeoFragment, m_DBmanager);
         ListenerCancelNewPlane listener_cancel_newplane = new ListenerCancelNewPlane(this, m_activity_state);
 
-        ListenerNewTTARView listener_newttarview = new ListenerNewTTARView(this, m_activity_state, m_fragment_ttarview, m_fab_listener);
-        ListenerAcceptNewTTARView listener_accept_newttarview = new ListenerAcceptNewTTARView(this, m_activity_state, mArgeoFragment, m_fragment_ttarview, m_DBmanager);
-        ListenerCancelNewTTARView listener_cancel_newttarview = new ListenerCancelNewTTARView(this, m_activity_state, m_fragment_ttarview);
+        ListenerNewTTARView listener_newttarview = new ListenerNewTTARView(m_fab_listener);
+        //ListenerAcceptNewTTARView listener_accept_newttarview = new ListenerAcceptNewTTARView();
+        //ListenerCancelNewTTARView listener_cancel_newttarview = new ListenerCancelNewTTARView();
         ListenerOpenPictureInPictureTTARView listener_open_main_ttarview = new ListenerOpenPictureInPictureTTARView(this, m_activity_state, m_fragment_ttarview, m_fab_listener);
         ListenerTTARViewSketch listener_ttarview_sketch = new ListenerTTARViewSketch(this, m_activity_state, m_fragment_ttarview, m_fab_listener);
 
@@ -551,18 +578,18 @@ public class MainActivity extends AppCompatActivity
         StateAcceptCancelRotateCamera state_acceptcancel_rotate = new StateAcceptCancelRotateCamera(fab_1, fab_2, listener_accept_rotate_camera, listener_cancel_rotate_camera);
         StateAcceptCancelNewPoi state_acceptcancel_newpoi = new StateAcceptCancelNewPoi(fab_1, fab_2, listener_accept_newpoi, listener_cancel_newpoi);
         StateAcceptCancelNewPlane state_acceptcancel_newplane = new StateAcceptCancelNewPlane(fab_1, fab_2, listener_accept_newplane, listener_cancel_newplane);
-        StateAcceptCancelNewTTARView state_acceptcancel_newttarview = new StateAcceptCancelNewTTARView(fab_1, fab_2, listener_accept_newttarview, listener_cancel_newttarview);
+        //StateAcceptCancelNewTTARView state_acceptcancel_newttarview = new StateAcceptCancelNewTTARView(fab_1, fab_2, listener_accept_newttarview, listener_cancel_newttarview);
         StatePoiNew state_poinew = new StatePoiNew(fab_1, fab_2, listener_newpoi, null);
         StatePoiEdit state_poiedit = new StatePoiEdit(fab_1, fab_2, null, null);
         StatePlane state_plane = new StatePlane(fab_1, fab_2, listener_newplane, null);
-        StateTTARViewBase state_ttarview = new StateTTARViewBase(fab_1, fab_2, listener_newttarview, null);
-        m_secondary_fab_context.registerState("TTARVIEW_BASE", state_ttarview);
-        StateTTARViewSelection state_ttarview_selection = new StateTTARViewSelection(fab_1, fab_2);
-        m_secondary_fab_context.registerState("TTARVIEW_SELECTION", state_ttarview_selection);
-        StateTTARViewPictureInPicture state_ttarview_picture_in_picture = new StateTTARViewPictureInPicture(fab_1, fab_2);
-        m_secondary_fab_context.registerState("TTARVIEW_PICTURE_IN_PICTURE", state_ttarview_picture_in_picture);
-        StateTTARViewSketch state_ttarview_sketch = new StateTTARViewSketch(fab_1, fab_2);
-        m_secondary_fab_context.registerState("TTARVIEW_SKETCH", state_ttarview_sketch);
+        //StateTTARViewBase state_ttarview = new StateTTARViewBase(fab_1, fab_2, listener_newttarview, null);
+        //m_secondary_fab_context.registerState("TTARVIEW_BASE", state_ttarview);
+        //StateTTARViewSelection state_ttarview_selection = new StateTTARViewSelection(fab_1, fab_2);
+        //m_secondary_fab_context.registerState("TTARVIEW_SELECTION", state_ttarview_selection);
+        //StateTTARViewPictureInPicture state_ttarview_picture_in_picture = new StateTTARViewPictureInPicture(fab_1, fab_2);
+        //m_secondary_fab_context.registerState("TTARVIEW_PICTURE_IN_PICTURE", state_ttarview_picture_in_picture);
+        //StateTTARViewSketch state_ttarview_sketch = new StateTTARViewSketch(fab_1, fab_2);
+        //m_secondary_fab_context.registerState("TTARVIEW_SKETCH", state_ttarview_sketch);
 
         // Set State transitions
         // -- Transitions - Terrain
@@ -588,21 +615,53 @@ public class MainActivity extends AppCompatActivity
         state_acceptcancel_newplane.setTransitionSecond(state_plane);
 
         // -- Transitions - TTARView
-        state_ttarview.setTransitionFrist(state_acceptcancel_newttarview);
-        state_ttarview.addTransition(SecondaryFabState.Transitions.EXTRA_INTERACTION_1, state_ttarview_selection, null);
+        //state_ttarview.setTransitionFrist(state_acceptcancel_newttarview);
+        //state_ttarview.addTransition(SecondaryFabState.Transitions.EXTRA_INTERACTION_1, state_ttarview_selection, null);
 
-        state_acceptcancel_newttarview.setTransitionFrist(state_ttarview);
-        state_acceptcancel_newttarview.setTransitionSecond(state_ttarview);
+        //state_acceptcancel_newttarview.setTransitionFrist(state_ttarview);
+        //state_acceptcancel_newttarview.setTransitionSecond(state_ttarview);
 
-        state_ttarview_selection.addTransition(SecondaryFabState.Transitions.SECONDARY_FAB_1, state_ttarview_picture_in_picture, listener_open_main_ttarview);
-        state_ttarview_selection.addTransition(SecondaryFabState.Transitions.EXTRA_INTERACTION_1, state_ttarview, null);
+        //state_ttarview_selection.addTransition(SecondaryFabState.Transitions.SECONDARY_FAB_1, state_ttarview_picture_in_picture, listener_open_main_ttarview);
+        //state_ttarview_selection.addTransition(SecondaryFabState.Transitions.EXTRA_INTERACTION_1, state_ttarview, null);
 
-        state_ttarview_picture_in_picture.addTransition(SecondaryFabState.Transitions.SECONDARY_FAB_1, state_ttarview_sketch, listener_ttarview_sketch); // TODO agregar listener para el close
+        //state_ttarview_picture_in_picture.addTransition(SecondaryFabState.Transitions.SECONDARY_FAB_1, state_ttarview_sketch, listener_ttarview_sketch); // TODO agregar listener para el close
 
         // Final settings
-        m_secondary_fab_context.setMainStates(state_terrain, state_poinew, state_plane, state_ttarview);
+        m_secondary_fab_context.setMainStates(state_terrain, state_poinew, state_plane, null);//state_ttarview);
         m_activity_state.setSecondaryFabContext(m_secondary_fab_context);
         m_activity_state.addAppModeListener(m_secondary_fab_context);
+
+
+        // NEW WORLD ORDER //***************************************************************************
+        UIFacade.getInstance().init(fab, fab_1, fab_2, getSupportFragmentManager());
+        m_activity_state.addApplicationModeChanged(UIContextManager.getInstance());
+
+        UIContext context = new UIContext();
+        UIContextManager.getInstance().registerContext(MainActivityState.ApplicationMode.TTARVIEW, context);
+
+        UIState state_ttarview_base = new UIStateTTARViewBase();
+        UIState state_ttarview_creation = new UIStateTTARViewCreation();
+        UIState state_ttarview_selected = new UIStateTTARViewSelected();
+
+        state_ttarview_base.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_creation);
+        state_ttarview_base.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
+        state_ttarview_base.addTransition(UIState.Interactions.EXTRA_INTERACTION_1, state_ttarview_selected);
+        state_ttarview_base.addInteraction(UIState.Interactions.EXTRA_INTERACTION_1, new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_1));
+
+        state_ttarview_creation.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_base);
+        state_ttarview_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
+        state_ttarview_creation.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_ttarview_base);
+        state_ttarview_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_2));
+
+        state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_selected);
+        state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
+        state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_2, null); // Edition state
+        state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_2, null); // Edition listener
+        state_ttarview_selected.addTransition(UIState.Interactions.EXTRA_INTERACTION_2, state_ttarview_base);
+        state_ttarview_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_2, new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_2));
+
+        context.setState(state_ttarview_base);
+        //**********************************************************************************************
     }
 
     private void setupViewPager(ViewPager viewPager){
@@ -636,7 +695,7 @@ public class MainActivity extends AppCompatActivity
         m_fragment_ttarview = new FragmentTTARView();
         m_fragment_ttarview.setMainActivityState(m_activity_state);
         m_fragment_ttarview.setArgeoFragment(mArgeoFragment);
-        m_fragment_ttarview.setTTARViewWidthAndHeight(m_ttarview_snapshot_w, m_ttarview_snapshot_h);
+        //m_fragment_ttarview.setTTARViewWidthAndHeight(m_ttarview_snapshot_w, m_ttarview_snapshot_h);
         fragment_transaction = getSupportFragmentManager().beginTransaction();
         // Replace the contents of the container with the new fragment
         fragment_transaction.add(R.id.right_menu, m_fragment_ttarview, "TAG_TTARVIEW");
@@ -1047,8 +1106,8 @@ public class MainActivity extends AppCompatActivity
                                     m_current_ttarview.getInitialCameraFrame(),
                                     m_current_ttarview.getUpdatedView(),
                                     m_current_ttarview.getCamera(),
-                                    m_ttarview_snapshot_w,
-                                    m_ttarview_snapshot_h);
+                                    MainActivityFacade.getInstance().getTTARViewWidth(),
+                                    MainActivityFacade.getInstance().getTTARViewHeight());
                         }
                     });
         }
@@ -1120,5 +1179,19 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+    //region DialogChangeTTARVIEWResolution
+    @Override
+    public void onDialogPositiveClick(DialogChangeTTARVIEWResolution dialog){
+        int ttarview_snapshot_w = dialog.getW();
+        int ttarview_snapshot_h = (int) ((float) ttarview_snapshot_w / MainActivityFacade.getInstance().getTTARViewAspectRatio());
+        MainActivityFacade.getInstance().setTTARViewWidthHeight(ttarview_snapshot_w, ttarview_snapshot_h);
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogChangeTTARVIEWResolution dialog){
+        //Nothing to do yet
+    }
+    //endregion
 
 }

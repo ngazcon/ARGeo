@@ -54,12 +54,16 @@ public class SecondaryFabContext implements MainActivityState.AppModeStateChange
                 this.getState().handle();
                 break;
 
-            case TTARVIEW :
+            /*case TTARVIEW :
                 m_current_state = m_mainstate_ttarview;
                 this.setState(m_current_state);
                 this.getState().handle();
-                break;
+                break;*/
         }
+    }
+
+    @Override
+    public void onApplicationModeChanged(int mode){
     }
 
     public void setMainStates(SecondaryFabState state_terrain, SecondaryFabState state_poi, SecondaryFabState state_plane, SecondaryFabState state_ttarview){

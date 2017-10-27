@@ -128,6 +128,20 @@ public class FabOnClickListener
         requestOpen();
     }
 
+    @Override
+    public void onApplicationModeChanged(int mode) {
+        m_current_right_menu = null; // para el caso fragmentacion maxima
+        m_fragment_ttarview = (FragmentTTARView) m_activity.getSupportFragmentManager().findFragmentByTag("TAG_TTARVIEW");
+        m_current_mode = MainActivityState.AppMode.TTARVIEW;
+        setIcon(m_current_mode);
+        if (m_fab_open){
+            // Close the menu and update
+            this.onClick(m_fab);
+        }
+        // Solución de compromiso para que no rebiente cdo. de una intento crear un nuevo POI sin haber abierto el tab por primera vez
+        requestOpen();
+    }
+
     private void setIcon(MainActivityState.AppMode mode){
         switch (mode){
             case TERRAIN:

@@ -14,17 +14,23 @@ public class MainActivityState {
         NONE, TERRAIN, POI, PLANE, TTARVIEW
     }
 
+    public static class ApplicationMode {
+        public static final int TTARVIEW = 1;
+    }
+
     public enum TouchMode{
         DEFAULT, POI_CREATION, PLANE_CREATION, CAMERA_TRANSLATION, CAMERA_ROTATION
     }
 
     public interface AppModeStateChangedListener{
         void onAppModeStateChanged(AppMode app_mode);
+        void onApplicationModeChanged(int mode);
     }
 
     private AppMode m_app_mode;
     private TouchMode m_touch_mode;
     private List<AppModeStateChangedListener> m_app_mode_listeners = new ArrayList<AppModeStateChangedListener>();
+    private List<AppModeStateChangedListener> m_application_mode_listeners = new ArrayList<AppModeStateChangedListener>();
     private List<TouchModeStateChangedListener> m_touch_listeners = new ArrayList<TouchModeStateChangedListener>();
 
     private boolean m_right_menu_terrain_visible;
@@ -32,6 +38,8 @@ public class MainActivityState {
     private boolean m_right_menu_plane_visible;
 
     private SecondaryFabContext m_secondary_fab_context;
+
+
 
     public MainActivityState( ){
         m_app_mode = AppMode.NONE;
@@ -72,6 +80,10 @@ public class MainActivityState {
         }
     }
 
+    public void setApplicationMode(int mode) {
+        notifyApplicationModeChanged(mode);
+    }
+
     public void setTouchMode(TouchMode mode){
         m_touch_mode = mode;
         notifyTouchModeStateChanged(m_touch_mode);
@@ -109,6 +121,16 @@ public class MainActivityState {
     void notifyAppModeStateChanged(AppMode new_mode){
         for(AppModeStateChangedListener listener : m_app_mode_listeners){
             listener.onAppModeStateChanged(new_mode);
+        }
+    }
+
+    public void addApplicationModeChanged(AppModeStateChangedListener listener) {
+        m_application_mode_listeners.add(listener);
+    }
+
+    void notifyApplicationModeChanged(int new_mode){
+        for(AppModeStateChangedListener listener : m_application_mode_listeners){
+            listener.onApplicationModeChanged(new_mode);
         }
     }
 

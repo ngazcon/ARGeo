@@ -5,6 +5,9 @@ import android.view.View;
 import vyglab.argeo.app.MainActivity;
 import vyglab.argeo.app.MainActivityState;
 import vyglab.argeo.app.controller.FabOnClickListener;
+import vyglab.argeo.app.controller.UserInterfaceState.UIContext;
+import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
+import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.app.view.FragmentTTARView;
 
 /**
@@ -12,15 +15,9 @@ import vyglab.argeo.app.view.FragmentTTARView;
  */
 
 public class ListenerNewTTARView implements View.OnClickListener {
-    private MainActivity m_activity;
-    private MainActivityState m_main_activity_state;
-    private FragmentTTARView m_fragment_ttarview;
     private FabOnClickListener m_fab_listener;
 
-    public ListenerNewTTARView(MainActivity activity, MainActivityState activity_state, FragmentTTARView fragment_ttarview, FabOnClickListener fab_listener){
-        m_activity = activity;
-        m_main_activity_state = activity_state;
-        m_fragment_ttarview = fragment_ttarview;
+    public ListenerNewTTARView(FabOnClickListener fab_listener){
         m_fab_listener = fab_listener;
     }
 
@@ -29,12 +26,8 @@ public class ListenerNewTTARView implements View.OnClickListener {
         // Check if right menu is open
         m_fab_listener.requestOpen();
 
-        // Prepare fragment
-        m_fragment_ttarview.setForCreation();
-
-        // Go to next State
-        m_main_activity_state.getSecondaryFabContext().goNextState(this);
-        m_main_activity_state.getSecondaryFabContext().getState().handle();
+        UIContextManager.getInstance().next(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_1);
+        UIContextManager.getInstance().request(MainActivityState.ApplicationMode.TTARVIEW);
     }
 }
 

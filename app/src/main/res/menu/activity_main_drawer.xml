@@ -33,6 +33,11 @@
                 android:icon="@drawable/ic_menu_camera"
                 android:title="Screenshot button"
                 app:actionLayout="@layout/nav_switch" />
+
+            <item
+                android:id="@+id/nav_ttarview_resolution"
+                android:icon="@drawable/ic_image_aspect_ratio"
+                android:title="Field Snapshot Resolution" />
         </menu>
     </item>
 

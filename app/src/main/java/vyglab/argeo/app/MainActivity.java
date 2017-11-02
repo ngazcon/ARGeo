@@ -52,6 +52,7 @@ import vyglab.argeo.app.controller.UserInterfaceState.UIFacade;
 import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewBase;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewCreation;
+import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewEdition;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewSelected;
 import vyglab.argeo.app.model.POI;
 import vyglab.argeo.app.model.POIRepository;
@@ -642,11 +643,12 @@ public class MainActivity extends AppCompatActivity
         UIState state_ttarview_base = new UIStateTTARViewBase();
         UIState state_ttarview_creation = new UIStateTTARViewCreation();
         UIState state_ttarview_selected = new UIStateTTARViewSelected();
+        UIState state_ttarview_edition = new UIStateTTARViewEdition();
 
         state_ttarview_base.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_creation);
         state_ttarview_base.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
         state_ttarview_base.addTransition(UIState.Interactions.EXTRA_INTERACTION_1, state_ttarview_selected);
-        state_ttarview_base.addInteraction(UIState.Interactions.EXTRA_INTERACTION_1, new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_1));
+        state_ttarview_base.addInteraction(UIState.Interactions.EXTRA_INTERACTION_1, null);//new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_1));
 
         state_ttarview_creation.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_base);
         state_ttarview_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
@@ -655,10 +657,19 @@ public class MainActivity extends AppCompatActivity
 
         state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_selected);
         state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
-        state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_2, null); // Edition state
-        state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_2, null); // Edition listener
+        state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_ttarview_edition); // Edition state
+        state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_2)); // Edition listener
         state_ttarview_selected.addTransition(UIState.Interactions.EXTRA_INTERACTION_2, state_ttarview_base);
-        state_ttarview_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_2, new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_2));
+        state_ttarview_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_2, null);//new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_2));
+        state_ttarview_selected.addTransition(UIState.Interactions.EXTRA_INTERACTION_3, state_ttarview_base);
+        state_ttarview_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_3, null);//new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_3));
+
+        state_ttarview_edition.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_selected);
+        state_ttarview_edition.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
+        state_ttarview_edition.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_ttarview_selected);
+        state_ttarview_edition.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_2));
+        state_ttarview_edition.addTransition(UIState.Interactions.EXTRA_INTERACTION_2, state_ttarview_base);
+        state_ttarview_edition.addTransition(UIState.Interactions.EXTRA_INTERACTION_3, state_ttarview_base);
 
         context.setState(state_ttarview_base);
         //**********************************************************************************************

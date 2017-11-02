@@ -14,6 +14,7 @@ import vyglab.argeo.app.MainActivityFacade;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContext;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
 import vyglab.argeo.app.controller.UserInterfaceState.UIState;
+import vyglab.argeo.app.model.TTARViewRepository;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.app.MainActivityState;
 import vyglab.argeo.R;
@@ -167,6 +168,31 @@ public class FragmentTTARView extends Fragment
 
         m_viewpager_ttarview.setCurrentItem(0);
         TTARView ttarview = m_fragment_ttarview_details.getTTARViewFromView();
+        m_fragment_ttarview_details.cleanView();
+
+        return ttarview;
+    }
+
+    public void setForEdition() {
+        m_fragment_ttarview_details.setForEdition();
+    }
+
+    public void cancelEdition() {
+        m_fragment_ttarview_details.loadTTARView(m_fragment_ttarview_details.getCurrentTTARView());
+    }
+
+    public TTARView acceptEdition() {
+        m_fragment_ttarview_details.loadTTARView(m_fragment_ttarview_details.updateTTARViewFromView());
+        m_fragment_ttarview_list.updateSelected();
+
+        return m_fragment_ttarview_details.getCurrentTTARView();
+    }
+
+    public TTARView deleteCurrentTTARView() {
+        TTARView ttarview = m_fragment_ttarview_details.getCurrentTTARView();
+        TTARViewRepository.getInstance().removeTTARView(ttarview);
+        m_viewpager_ttarview.setCurrentItem(0);
+        m_fragment_ttarview_list.resetSelected();
         m_fragment_ttarview_details.cleanView();
 
         return ttarview;

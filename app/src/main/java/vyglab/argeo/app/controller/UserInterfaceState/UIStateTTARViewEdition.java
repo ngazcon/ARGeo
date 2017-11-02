@@ -8,12 +8,12 @@ import vyglab.argeo.app.utils.Storage;
 import vyglab.argeo.app.view.FragmentTTARView;
 
 /**
- * Created by ngazcon on 27/10/2017.
+ * Created by ngazcon on 02/11/2017.
  */
 
-public class UIStateTTARViewSelected extends UIState {
+public class UIStateTTARViewEdition extends UIState {
 
-    public UIStateTTARViewSelected() {
+    public UIStateTTARViewEdition() {
         super();
     }
 
@@ -24,10 +24,12 @@ public class UIStateTTARViewSelected extends UIState {
 
         // 2-- Update Secondary Fabs
         UIFacade.getInstance().setSecondaryFabListeners(m_listeners.get(Interactions.SECONDARY_FAB_1), m_listeners.get(Interactions.SECONDARY_FAB_2));
-        UIFacade.getInstance().setSecondaryFabImages(R.drawable.ic_menu_photo_size_select_large, R.drawable.ic_menu_pencil);
+        UIFacade.getInstance().setSecondaryFabImages(R.drawable.ic_menu_accept, R.drawable.ic_menu_cancel);
         UIFacade.getInstance().setSecondaryFabVisibilities(View.VISIBLE, View.VISIBLE);
 
         // 3-- Update Fragment
+        FragmentTTARView fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
+        fragment.setForEdition();
     }
 
     @Override
@@ -44,18 +46,26 @@ public class UIStateTTARViewSelected extends UIState {
     @Override
     public void exitAction(int interaction) {
         FragmentTTARView fragment;
+        TTARView ttarview;
 
         switch(interaction) {
             case Interactions.SECONDARY_FAB_1 :
-                // Creation was accepted
+                // Edition was accepted
                 fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
-                fragment.prepareForPictureInPictureARView();
+                ttarview = fragment.acceptEdition();
+                Storage.getInstance().update(ttarview);
+                break;
+
+            case Interactions.SECONDARY_FAB_2 :
+                // Edition was canceled
+                fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
+                fragment.cancelEdition();
                 break;
 
             case Interactions.EXTRA_INTERACTION_3 :
                 // Delete TTARView
                 fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
-                TTARView ttarview = fragment.deleteCurrentTTARView();
+                ttarview = fragment.deleteCurrentTTARView();
                 Storage.getInstance().delete(ttarview);
                 //todo DELETE TTARVIEW
                 break;

@@ -33,11 +33,11 @@ public class Storage {
     }
 
     public void delete(TTARView ttarview) {
-
+        m_database.deleteTTARView(ttarview);
     }
 
     public void update(TTARView ttarview) {
-
+        m_database.updateTTARView(ttarview);
     }
     //endregion
 }

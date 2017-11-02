@@ -195,9 +195,18 @@ public class FragmentTTARViewList extends ListFragment implements TTARViewReposi
         }
     }
 
+    public void updateSelected() {
+       getListView().invalidateViews();
+    }
+
     @Override
     public void onTTARViewAdded(TTARView ttarview) {
         m_ttarview_adapter.add(ttarview);
+    }
+
+    @Override
+    public void onTTARViewRemoved(TTARView ttarview) {
+        m_ttarview_adapter.remove(ttarview);
     }
 
     // Methods for update location listeners

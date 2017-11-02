@@ -16,6 +16,7 @@ public class TTARViewRepository {
 
     public interface TTARViewRepositoryChanged {
         void onTTARViewAdded(TTARView ttarview);
+        void onTTARViewRemoved(TTARView ttarView);
     }
 
     protected TTARViewRepository(){
@@ -45,9 +46,16 @@ public class TTARViewRepository {
                 ttarview.setId(key);
                 m_repo.put(key, ttarview);
                 inserted = true;
-                notifyPoiAdded(ttarview);
+                notifyTTARViewAdded(ttarview);
             }
         }
+    }
+
+    public void removeTTARView( TTARView ttarview ){
+        String key = ttarview.getId();
+
+        m_repo.remove(key);
+        notifyTTARViewRemoved(ttarview);
     }
 
     public String listRepoDescription(){
@@ -76,9 +84,15 @@ public class TTARViewRepository {
         m_repo_listeners.add(listener);
     }
 
-    void notifyPoiAdded(TTARView ttarview){
+    void notifyTTARViewAdded(TTARView ttarview){
         for(TTARViewRepositoryChanged listener : m_repo_listeners){
             listener.onTTARViewAdded(ttarview);
+        }
+    }
+
+    void notifyTTARViewRemoved(TTARView ttarview){
+        for(TTARViewRepositoryChanged listener : m_repo_listeners){
+            listener.onTTARViewRemoved(ttarview);
         }
     }
 }

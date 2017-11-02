@@ -90,6 +90,40 @@ public class DBManager {
         //return true;
     }
 
+    public boolean deleteTTARView(TTARView ttarview){
+        // TODO: Esto hacerlo asincronicamente.
+        // Gets the data repository in write mode
+        SQLiteDatabase db = m_dbhelper.getWritableDatabase();
+
+        long newRowId = db.delete(DatabaseContract.TTARViewTable.TABLE_NAME, DatabaseContract.TTARViewTable.COLUMN_NAME_ID.concat("= ?"), new String[]{ ttarview.getId()});
+        db.close();
+
+        return ( newRowId != 0 );
+    }
+
+    public boolean updateTTARView(TTARView ttarview) {
+        // Gets the data repository in write mode
+        SQLiteDatabase db = m_dbhelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues ttarview_values = new ContentValues();
+        ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_ID, ttarview.getId());
+        ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_NAME, ttarview.getName());
+        ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_DESCRIPTION, ttarview.getDescription());
+        //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_LONG, ttarview.getPosition().getLong());
+        //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_LAT, ttarview.getPosition().getLat());
+        //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_HEIGHT, ttarview.getPosition().getHeight());
+        //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_CAMERA_YAW, ttarview.getCamera().getYaw());
+        //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_CAMERA_ROLL, ttarview.getCamera().getRoll());
+        //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_BITMAP_FRAME, ttarview.getStoreableBitmap(ttarview.getInitialCameraFrame()));
+        //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_BITMAP_VIEW, ttarview.getStoreableBitmap(ttarview.getInitialaView()));
+
+        long newRowId = db.update(DatabaseContract.TTARViewTable.TABLE_NAME, ttarview_values, DatabaseContract.TTARViewTable.COLUMN_NAME_ID.concat("= ?"), new String[]{ ttarview.getId()});
+        db.close();
+
+        return ( newRowId != 0 );
+    }
+
     public boolean deletePoi(POI poi){
         return true;
     }

@@ -26,7 +26,7 @@ public class UIStateTTARViewBase extends UIState {
 
         // 3-- Update Fragment
         // Something to do?
-        //FragmentTTARView fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragmente("TAG_TTARVIEW");
+        //FragmentTTARView fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
         //fragment.setForCreation(1024, 768);
     }
 

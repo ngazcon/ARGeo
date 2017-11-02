@@ -50,7 +50,7 @@ public class UIFacade {
         m_secondary_fab_2.setImageResource(res_sf_2);
     }
 
-    public Fragment getCurrentFragmente(String tag) {
+    public Fragment getCurrentFragment(String tag) {
         return m_fragment_manager.findFragmentByTag(tag);
     }
 

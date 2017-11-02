@@ -206,32 +206,6 @@
 
             </LinearLayout>
 
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:paddingStart="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Sketch"
-                    android:layout_weight="1"/>
-
-                <View style="@style/VerticalDivider"/>
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/switch_sketch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp" />
-
-            </LinearLayout>
-
             <View
                 android:layout_width="wrap_content"
                 android:layout_height="1dp"

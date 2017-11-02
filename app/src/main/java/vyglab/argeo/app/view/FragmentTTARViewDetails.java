@@ -15,6 +15,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
+import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.jni.Camera;
 import vyglab.argeo.jni.RenderLoopRunnable;
@@ -81,6 +83,15 @@ public class FragmentTTARViewDetails extends Fragment implements SnapshotListene
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         cleanView();
+
+        Button button = (Button) getView().findViewById(R.id.button_ttarview_delete);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UIContextManager.getInstance().next(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.EXTRA_INTERACTION_3);
+                UIContextManager.getInstance().request(MainActivityState.ApplicationMode.TTARVIEW);
+            }
+        });
     }
 
     public void setMainActivityState(MainActivityState state){
@@ -140,10 +151,6 @@ public class FragmentTTARViewDetails extends Fragment implements SnapshotListene
 
         imageview = (ImageView) getView().findViewById(R.id.imageview_ttarview_details_updated_image);
         imageview.setImageResource(R.drawable.ic_menu_camera);
-
-        SwitchCompat switch_sketch = (SwitchCompat) getView().findViewById(R.id.switch_sketch);
-        switch_sketch.setChecked(false);
-        switch_sketch.setEnabled(false);
     }
 
     public void loadTTARView(TTARView item) {
@@ -158,9 +165,11 @@ public class FragmentTTARViewDetails extends Fragment implements SnapshotListene
 
         EditText edittext = (EditText) getView().findViewById(R.id.editText_ttarview_name);
         edittext.setText(item.getName());
+        edittext.setEnabled(false);
 
         edittext = (EditText) getView().findViewById(R.id.editText_ttarview_description);
         edittext.setText(item.getDescription());
+        edittext.setEnabled(false);
 
         ImageButton imagebutton = (ImageButton) getView().findViewById(R.id.imagebutton_open_initial_ttarview);
         imagebutton.setEnabled(true);
@@ -173,9 +182,6 @@ public class FragmentTTARViewDetails extends Fragment implements SnapshotListene
 
         Button button = (Button) getView().findViewById(R.id.button_ttarview_delete);
         button.setEnabled(true);
-
-        SwitchCompat switch_sketch = (SwitchCompat) getView().findViewById(R.id.switch_sketch);
-        switch_sketch.setEnabled(true);
 
         m_current_ttarview_item  = item;
     }
@@ -200,6 +206,18 @@ public class FragmentTTARViewDetails extends Fragment implements SnapshotListene
         ttarview.setUpdatedView(m_updated_snapshot);
 
         return ttarview;
+    }
+
+    public TTARView updateTTARViewFromView() {
+        EditText edittext = (EditText) getView().findViewById(R.id.editText_ttarview_name);
+        m_current_ttarview_item.setName(edittext.getText().toString());
+        edittext.setEnabled(false);
+
+        edittext = (EditText) getView().findViewById(R.id.editText_ttarview_description);
+        m_current_ttarview_item.setDescription(edittext.getText().toString());
+        edittext.setEnabled(false);
+
+        return m_current_ttarview_item;
     }
 
     public void setForCreation(int ttarview_snapshot_w, int ttarview_snapshot_h){
@@ -233,6 +251,14 @@ public class FragmentTTARViewDetails extends Fragment implements SnapshotListene
                     }
 
                 });
+    }
+
+    public void setForEdition() {
+        EditText edittext = (EditText) getView().findViewById(R.id.editText_ttarview_name);
+        edittext.setEnabled(true);
+
+        edittext = (EditText) getView().findViewById(R.id.editText_ttarview_description);
+        edittext.setEnabled(true);
     }
 
     public void prepareForPictureInPictureARView() {

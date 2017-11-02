@@ -1,7 +1,5 @@
 package vyglab.argeo.app.controller.UserInterfaceState;
 
-import android.view.View;
-
 /**
  * Created by ngazcon on 25/10/2017.
  */

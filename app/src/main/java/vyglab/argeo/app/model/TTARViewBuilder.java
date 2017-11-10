@@ -57,7 +57,7 @@ public class TTARViewBuilder {
         m_ttarview.setPosition( new Geodetic3D(m_lat, m_long, m_height) );
 
         //todo ver por que revienta con el new camera
-        Camera camera = m_scene.getCamera();//new Camera(m_scene);
+        Camera camera = new Camera(m_scene); //m_scene.getCamera();
         camera.setView(EllipsoidTransformations.geocentric3DFromGeodetic3D(new vyglab.argeo.jni.Geodetic3D(m_long, m_lat, m_height)), m_yaw, m_pitch, m_roll);
         m_ttarview.setCamera(camera);
 

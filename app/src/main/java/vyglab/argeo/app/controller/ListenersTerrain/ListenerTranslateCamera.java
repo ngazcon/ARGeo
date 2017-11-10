@@ -29,6 +29,7 @@ public class ListenerTranslateCamera implements View.OnClickListener {
 
         // Disable location provider during calibration to avoid camera "jumps"
         m_argeoFragment.getViewer().getDevicePoseCameraController().disableLocationUpdates();
+        m_argeoFragment.getViewer().getDevicePoseCameraController().disableOrientationUpdates();
 
         // Save camera state
         m_argeoFragment.getViewer().getScene().saveCameraState();

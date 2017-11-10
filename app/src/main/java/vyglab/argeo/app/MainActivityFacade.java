@@ -54,4 +54,10 @@ public class MainActivityFacade {
     public void showTTARView(TTARView ttarview) {
         m_activity.openPictureInPicture(ttarview);
     }
+
+    public void closeTTARViewOnDeletion(TTARView ttarview) {
+        if ( ttarview.equals(m_activity.getCurrentPicturInPictureTTARView()) ) {
+            m_activity.closePictureInPicture();
+        }
+    }
 }

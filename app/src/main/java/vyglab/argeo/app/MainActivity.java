@@ -1083,6 +1083,10 @@ public class MainActivity extends AppCompatActivity
         m_sketch_filter.setNewBitmap(current_ttarview.getInitialaView());
     }
 
+    public TTARView getCurrentPicturInPictureTTARView() {
+        return  m_current_ttarview;
+    }
+
     public void updatePictureInPicture(Bitmap image) {
         ImageView image_view = (ImageView) findViewById(R.id.imageview_ttarview_picture_in_picture);
         image_view.setImageBitmap(image);

@@ -29,6 +29,7 @@ public class ListenerCancelRotateCamera implements View.OnClickListener {
 
         // Enable location provider
         m_argeoFragment.getViewer().getDevicePoseCameraController().enableLocationUpdates();
+        m_argeoFragment.getViewer().getDevicePoseCameraController().enableOrientationUpdates();
 
         // Restore camera state
         m_argeoFragment.getViewer().getScene().restoreCameraState();

@@ -29,6 +29,7 @@ public class ListenerAcceptTranslateCamera implements View.OnClickListener {
 
         // Enable location provider
         m_argeoFragment.getViewer().getDevicePoseCameraController().enableLocationUpdates();
+        m_argeoFragment.getViewer().getDevicePoseCameraController().enableOrientationUpdates();
 
         // State transition
         m_main_activity_state.setTouchMode(MainActivityState.TouchMode.DEFAULT);

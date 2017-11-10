@@ -308,7 +308,7 @@ namespace argeo
 		jobject java_scene)
 	{
 		JNICamera* object = gClasses.newInstance<JNICamera>(env, java_this);
-		JNIScene*  scene  = gClasses.newInstance<JNIScene>(env, java_scene);
+		JNIScene*  scene  = gClasses.getNativeInstance<JNIScene>(env, java_scene);
 
 		object->setNativeObject(new Camera(scene->getNativeObject()));
 		object->persist(env, java_this);

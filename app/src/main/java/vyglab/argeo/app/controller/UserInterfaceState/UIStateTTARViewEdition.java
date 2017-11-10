@@ -3,6 +3,7 @@ package vyglab.argeo.app.controller.UserInterfaceState;
 import android.view.View;
 
 import vyglab.argeo.R;
+import vyglab.argeo.app.MainActivityFacade;
 import vyglab.argeo.app.model.TTARView;
 import vyglab.argeo.app.utils.Storage;
 import vyglab.argeo.app.view.FragmentTTARView;
@@ -66,6 +67,7 @@ public class UIStateTTARViewEdition extends UIState {
                 // Delete TTARView
                 fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
                 ttarview = fragment.deleteCurrentTTARView();
+                MainActivityFacade.getInstance().closeTTARViewOnDeletion(ttarview);
                 Storage.getInstance().delete(ttarview);
                 //todo DELETE TTARVIEW
                 break;

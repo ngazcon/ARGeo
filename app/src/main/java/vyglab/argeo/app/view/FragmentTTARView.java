@@ -10,15 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import vyglab.argeo.app.MainActivityFacade;
-import vyglab.argeo.app.controller.UserInterfaceState.UIContext;
+import vyglab.argeo.app.MediatorTTARView;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
 import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.app.model.TTARViewRepository;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.app.MainActivityState;
 import vyglab.argeo.R;
-import vyglab.argeo.app.controller.SecondaryFabStateMachine.SecondaryFabState;
 import vyglab.argeo.app.controller.TabSectionsPagerAdapter;
 import vyglab.argeo.app.model.TTARView;
 
@@ -200,7 +198,7 @@ public class FragmentTTARView extends Fragment
 
     public void prepareForPictureInPictureARView() {
         m_fragment_ttarview_details.prepareForPictureInPictureARView();
-        MainActivityFacade.getInstance().showTTARView(m_fragment_ttarview_details.getCurrentTTARView());
+        MediatorTTARView.getInstance().showTTARView(m_fragment_ttarview_details.getCurrentTTARView());
     }
 
     @Override

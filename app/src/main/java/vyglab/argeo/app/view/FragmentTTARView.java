@@ -63,7 +63,8 @@ public class FragmentTTARView extends Fragment
 
         // 1-- Create, initialize and add the fragment for TTARView list
         m_fragment_ttarview_list = FragmentTTARViewList.newInstance(1);
-        m_tabs_adapter_ttarview.addFragment(m_fragment_ttarview_list, "TT AR VIEWS");
+        //m_tabs_adapter_ttarview.addFragment(m_fragment_ttarview_list, "TT AR VIEWS");
+        m_tabs_adapter_ttarview.addFragment(m_fragment_ttarview_list, "VF SNAPSHOT");
         //m_fragment_ttarview_list.setMainActivityState(m_main_activity_state);
 
         // 2-- Create, initialize and add the fragment for TTARView creation/edition

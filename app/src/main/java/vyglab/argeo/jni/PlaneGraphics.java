@@ -16,4 +16,7 @@ public class PlaneGraphics extends IGraphics
 
     public native void setWidth(double width);
     public native double getWidth();
+
+    public native void setHeight(double width);
+    public native double getHeight();
 }

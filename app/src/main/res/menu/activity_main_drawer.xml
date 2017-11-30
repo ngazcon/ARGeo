@@ -10,15 +10,15 @@
         <item
             android:id="@+id/nav_pois"
             android:icon="@drawable/ic_menu_pois"
-            android:title="POI's" />
+            android:title="POI" />
         <item
             android:id="@+id/nav_plane"
             android:icon="@drawable/ic_menu_plane"
-            android:title="Planes" />
+            android:title="Virtual Plane" />
         <item
             android:id="@+id/nav_ttarview"
             android:icon="@drawable/ic_menu_burstmode"
-            android:title="TT AR-View" />
+            android:title="Virtual Field Snapshot" />
     </group>
 
     <item android:title="Configuration">
@@ -37,7 +37,7 @@
             <item
                 android:id="@+id/nav_ttarview_resolution"
                 android:icon="@drawable/ic_image_aspect_ratio"
-                android:title="Field Snapshot Resolution" />
+                android:title="Snaphot Resolution" />
         </menu>
     </item>
 

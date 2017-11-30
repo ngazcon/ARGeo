@@ -19,6 +19,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="No TT AR View available. Create a new TT AR View using the new TT AR View button."/>
+        android:text="No Virtual Field Snapshot available. Create a new Virtual Field Snapshot using the secondary button."/>
 
 </LinearLayout>

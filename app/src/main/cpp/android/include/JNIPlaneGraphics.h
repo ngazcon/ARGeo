@@ -36,5 +36,14 @@ namespace argeo
 		static jdouble get_width(
 			JNIEnv* jni,
 			jobject java_this);
+
+		static void set_height(
+				JNIEnv* jni,
+				jobject java_this,
+				jdouble height);
+
+		static jdouble get_height(
+				JNIEnv* jni,
+				jobject java_this);
 	};
 }

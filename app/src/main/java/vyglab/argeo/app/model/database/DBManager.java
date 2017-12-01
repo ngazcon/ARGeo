@@ -12,7 +12,6 @@ import vyglab.argeo.jni.BillboardGraphics;
 import vyglab.argeo.app.model.POI;
 import vyglab.argeo.app.model.PoiBillboardBuilder;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 /**
@@ -79,7 +78,7 @@ public class DBManager {
         ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_CAMERA_YAW, ttarview.getCamera().getYaw());
         ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_CAMERA_ROLL, ttarview.getCamera().getRoll());
         ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_BITMAP_FRAME, ttarview.getStoreableBitmap(ttarview.getInitialCameraFrame()));
-        ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_BITMAP_VIEW, ttarview.getStoreableBitmap(ttarview.getInitialaView()));
+        ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_BITMAP_VIEW, ttarview.getStoreableBitmap(ttarview.getInitialView()));
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(DatabaseContract.TTARViewTable.TABLE_NAME, null, ttarview_values);
@@ -116,7 +115,7 @@ public class DBManager {
         //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_CAMERA_YAW, ttarview.getCamera().getYaw());
         //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_CAMERA_ROLL, ttarview.getCamera().getRoll());
         //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_BITMAP_FRAME, ttarview.getStoreableBitmap(ttarview.getInitialCameraFrame()));
-        //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_BITMAP_VIEW, ttarview.getStoreableBitmap(ttarview.getInitialaView()));
+        //ttarview_values.put(DatabaseContract.TTARViewTable.COLUMN_NAME_BITMAP_VIEW, ttarview.getStoreableBitmap(ttarview.getInitialView()));
 
         long newRowId = db.update(DatabaseContract.TTARViewTable.TABLE_NAME, ttarview_values, DatabaseContract.TTARViewTable.COLUMN_NAME_ID.concat("= ?"), new String[]{ ttarview.getId()});
         db.close();

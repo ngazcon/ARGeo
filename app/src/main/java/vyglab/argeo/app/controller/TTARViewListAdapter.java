@@ -50,7 +50,7 @@ public class TTARViewListAdapter extends ArrayAdapter<TTARView> {
 
             // Setup UI components
             //image.setImageResource(R.drawable.ic_menu_argeo_logo);
-            image.setImageBitmap(t.getInitialaView());
+            image.setImageBitmap(t.getInitialView());
             name.setText(t.getName());
 
             if (m_fragment.getSelected() == position) {

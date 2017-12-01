@@ -3,7 +3,6 @@ package vyglab.argeo.app;
 import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -35,8 +34,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
-import org.opencv.android.OpenCVLoader;
 
 import java.util.ArrayList;
 
@@ -1076,14 +1073,14 @@ public class MainActivity extends AppCompatActivity
         ImageView picture = (ImageView) findViewById(R.id.imageview_ttarview_picture_in_picture);
         //picture.setImageBitmap(current_ttarview.getUpdatedView());
         //todo corregir ttarview por opacity
-        picture.setImageBitmap(current_ttarview.getInitialaView());
+        picture.setImageBitmap(current_ttarview.getInitialView());
 
         FrameLayout frame_layout = (FrameLayout) findViewById(R.id.framelayout_ttarview_picture_in_picture);
         frame_layout.setVisibility(View.VISIBLE);
 
         //m_sketch_filter.setNewBitmap(current_ttarview.getUpdatedView());
         //todo corregir ttarview por opacity
-        //m_sketch_filter.setNewBitmap(current_ttarview.getInitialaView());
+        //m_sketch_filter.setNewBitmap(current_ttarview.getInitialView());
     }
 
     public TTARView getCurrentPicturInPictureTTARView() {

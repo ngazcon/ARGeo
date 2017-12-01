@@ -62,7 +62,7 @@ public class TTARView extends Object {
     public void setInitialaView(Bitmap initial_view){
         m_initial_view = initial_view;
     }
-    public Bitmap getInitialaView() { return m_initial_view; }
+    public Bitmap getInitialView() { return m_initial_view; }
 
     public void setInitialCameraFrame(Bitmap initial_camera_frame){
         m_initial_camera_frame = initial_camera_frame;

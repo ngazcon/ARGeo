@@ -7,6 +7,8 @@
 #include "ShaderProgram.h"
 #include "EllipsoidTangentPlane.h"
 #include "Quaternion.h"
+#include "HeightClamping.h"
+#include "OrientationClamping.h"
 
 #include "IPrimitive.h"
 #include "PickId.h"
@@ -15,11 +17,13 @@
 
 namespace argeo
 {
+    class Scene;
 	class PlanePrimitive : 
 		public IPrimitive
 	{
 	public:
 		PlanePrimitive(
+            Scene* scene,
 			vec3d origin = vec3d::zero(),
 			vec3d x_axis = vec3d::unit_x(),
 			vec3d y_axis = vec3d::unit_y(),
@@ -27,6 +31,7 @@ namespace argeo
 			const bool& flag = false);
 
 		PlanePrimitive(
+            Scene* scene,
 			EllipsoidTangentPlane tangent_plane,
 			const bool& flag = false);
 
@@ -45,6 +50,9 @@ namespace argeo
 
 		void   set_width(double value);
 		double get_width() const;
+
+        void   set_height(double value);
+        double get_height() const;
 
 		bool get_depth_test_enabled();
 		void set_depth_test_enabled(bool value);
@@ -90,31 +98,45 @@ namespace argeo
 		vec3d      get_scale() const;
 
 	private:
-		mat4d get_translated_model_matrix();
+        void update_clamping();
 
 	private:
 		
 		Color  m_color;
 
 		vec3d  m_origin;
+        vec3d  m_clamped_origin;
 		vec3d  m_x_axis;
 		vec3d  m_y_axis;
 		vec3d  m_normal;
-		
+
+        Scene* m_scene;
+
 		bool   m_show;
+
+		double m_height;
 		double m_width;
 
 		bool m_allow_picking;
 		bool m_has_outline;
+        bool m_height_changed;
 
 		vec3d m_translation;
 		vec3d m_scale;
-		quaternion m_rotation;
+        quaternion m_rotation;
+		quaternion m_orientation;
 
-		bool  m_translated_model_matrix_changed;
+        SceneMode m_mode;
+        HeightClamping m_height_clamping;
+        OrientationClamping m_orientation_clamping;
+
+        std::function<void()> m_remove_update_height_callback;
+        std::function<void(vec3d&)> m_update_height_function;
+
 		bool  m_model_matrix_changed;
 		mat4d m_model_matrix;
-		mat4d m_translated_model_matrix;
+		mat4d m_clamped_model_matrix;
+        mat4d m_computed_model_matrix;
 
 		double m_outline_stroke;
 
@@ -124,6 +146,7 @@ namespace argeo
 		std::unique_ptr<DrawCommand> m_pick_command;
 		std::unique_ptr<DrawCommand> m_outline_command;
 
+        std::unique_ptr<BoundingSphere> m_base_bounding_sphere;
 		static const ShaderVertexAttributeLocations attribute_locations;
 
 		struct RenderResources

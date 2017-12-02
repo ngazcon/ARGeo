@@ -3,7 +3,6 @@ package vyglab.argeo.app;
 import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -36,8 +35,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import org.opencv.android.OpenCVLoader;
-
 import java.util.ArrayList;
 
 import vyglab.argeo.R;
@@ -45,7 +42,6 @@ import vyglab.argeo.app.controller.UserInterfaceState.ListenerForUITransition;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerTTARViewSketch;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerTTARViewTouchSketch;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerTTARViewTouchNormal;
-import vyglab.argeo.app.controller.SecondaryFabStateMachine.TTARViewStates.StateTTARViewSketch;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContext;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
 import vyglab.argeo.app.controller.UserInterfaceState.UIFacade;
@@ -78,8 +74,6 @@ import vyglab.argeo.app.controller.ListenersPlane.ListenerNewPlane;
 import vyglab.argeo.app.controller.ListenersPoi.ListenerAcceptNewPoi;
 import vyglab.argeo.app.controller.ListenersPoi.ListenerCancelNewPoi;
 import vyglab.argeo.app.controller.ListenersPoi.ListenerNewPoi;
-import vyglab.argeo.app.controller.ListenersTTARView.ListenerAcceptNewTTARView;
-import vyglab.argeo.app.controller.ListenersTTARView.ListenerCancelNewTTARView;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerNewTTARView;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerOpenPictureInPictureTTARView;
 import vyglab.argeo.app.controller.ListenersTerrain.ListenerAcceptRotateCamera;
@@ -90,19 +84,14 @@ import vyglab.argeo.app.controller.ListenersTerrain.ListenerRotateCamera;
 import vyglab.argeo.app.controller.ListenersTerrain.ListenerTranslateCamera;
 import vyglab.argeo.app.controller.PositionPoiChanged;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.SecondaryFabContext;
-import vyglab.argeo.app.controller.SecondaryFabStateMachine.SecondaryFabState;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.StateAcceptCancelNewPlane;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.StateAcceptCancelNewPoi;
-import vyglab.argeo.app.controller.SecondaryFabStateMachine.StateAcceptCancelNewTTARView;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.StateAcceptCancelRotateCamera;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.StateAcceptCancelTranslateCamera;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.StatePlane;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.StatePoiEdit;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.StatePoiNew;
-import vyglab.argeo.app.controller.SecondaryFabStateMachine.TTARViewStates.StateTTARViewBase;
 import vyglab.argeo.app.controller.SecondaryFabStateMachine.StateTerrain;
-import vyglab.argeo.app.controller.SecondaryFabStateMachine.TTARViewStates.StateTTARViewPictureInPicture;
-import vyglab.argeo.app.controller.SecondaryFabStateMachine.TTARViewStates.StateTTARViewSelection;
 import vyglab.argeo.app.controller.TabSectionsPagerAdapter;
 import vyglab.argeo.app.model.TTARView;
 import vyglab.argeo.app.model.database.DBManager;
@@ -140,7 +129,8 @@ public class MainActivity extends AppCompatActivity
     private DBManager m_DBmanager;
     private StorageManager m_external_storage;
 
-    private SharedPreferences m_preferences;
+    //private SharedPreferences m_preferences;
+    private PreferencesManager m_preferences;
 
     private ArgeoFragment mArgeoFragment;
     private FragmentPlane m_fragment_plane;
@@ -148,11 +138,18 @@ public class MainActivity extends AppCompatActivity
     private ListenerTTARViewTouchNormal m_ttarview_touch_listener_normal;
     private ListenerTTARViewTouchSketch m_ttarview_touch_listener_sketch;
     private SketchFilter m_sketch_filter;
+    private float m_screen_density;
     private int m_screen_w;
     private int m_screen_h;
-    //private float m_aspect_ratio;
-    //private int m_ttarview_snapshot_w;
-    //private int m_ttarview_snapshot_h;
+    private float m_screen_aspect_ratio;
+    private int m_ttarview_snapshot_w;
+    private int m_ttarview_snapshot_h;
+    private int m_ttarview_picture_in_picture_w;
+    private int m_ttarview_picture_in_picture_h;
+    private int m_ttarview_picture_in_picture_w_MIN;
+    private int m_ttarview_picture_in_picture_h_MIN;
+    private int m_ttarview_picture_in_picture_w_MAX;
+    private int m_ttarview_picture_in_picture_h_MAX;
 
     private PowerManager.WakeLock mWakeLock;
 
@@ -229,14 +226,21 @@ public class MainActivity extends AppCompatActivity
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         // Watch out! landscap
-        m_screen_h = displayMetrics.heightPixels;
+        // When float is converted to int is truncated, so I add 0.5f for round error
+        // (Android blog https://developer.android.com/guide/practices/screens_support.html)
+        m_screen_density = displayMetrics.density;
         m_screen_w = displayMetrics.widthPixels;
-        float aspect_ratio = (float) m_screen_w / (float) m_screen_h;
-        int ttarview_snapshot_w = 1024;
-        int ttarview_snapshot_h = (int) ((float) 1024 / aspect_ratio);
-        MainActivityFacade.getInstance().init(this);
-        MainActivityFacade.getInstance().setTTARViewAspectRatio(aspect_ratio);
-        MainActivityFacade.getInstance().setTTARViewWidthHeight(ttarview_snapshot_w, ttarview_snapshot_h);
+        m_screen_h = displayMetrics.heightPixels;
+        m_screen_aspect_ratio = (float) m_screen_w / (float) m_screen_h;
+        m_ttarview_snapshot_w = 1024;
+        m_ttarview_snapshot_h = (int) ((float) m_ttarview_snapshot_w / m_screen_aspect_ratio + 0.5f);
+        m_ttarview_picture_in_picture_w = (int) ((float) m_screen_w * 0.3f + 0.5f); // 30% of screen
+        m_ttarview_picture_in_picture_h = (int) ((float) m_ttarview_picture_in_picture_w / m_screen_aspect_ratio + 0.5f);
+        m_ttarview_picture_in_picture_w_MIN = m_ttarview_picture_in_picture_w;
+        m_ttarview_picture_in_picture_h_MIN = m_ttarview_picture_in_picture_h;
+        m_ttarview_picture_in_picture_w_MAX = (int) ((float) m_screen_w * 0.8f + 0.5f);
+        m_ttarview_picture_in_picture_h_MAX = (int) ((float) m_screen_h * 0.8f + 0.5f);
+        MediatorTTARView.getInstance().init(this);
 
         // Set viewpager adapter
         m_ViewPager = (ViewPager) findViewById(R.id.pager);
@@ -257,7 +261,7 @@ public class MainActivity extends AppCompatActivity
                 });
 
         // Loading preferences
-        m_preferences = getSharedPreferences("ArgeoPreferences", Context.MODE_PRIVATE);
+        //m_preferences = getSharedPreferences("ArgeoPreferences", Context.MODE_PRIVATE);
 
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         mWakeLock       = pm.newWakeLock(PowerManager.SCREEN_BRIGHT_WAKE_LOCK, "WakeLock");
@@ -270,11 +274,11 @@ public class MainActivity extends AppCompatActivity
         fab_screenshot.setOnClickListener(new ListenerScreenShot(this, mArgeoFragment));
 
         // OpenCV init
-        if (!OpenCVLoader.initDebug()) {
+        /*if (!OpenCVLoader.initDebug()) {
             Log.e(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), not working.");
         } else {
             Log.d(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), working.");
-        }
+        }*/
     }
 
     @Override
@@ -292,20 +296,24 @@ public class MainActivity extends AppCompatActivity
         navigationView.getMenu().getItem(0).setChecked(true);
 
         // Set Properties that it is needed a "living view"
-        m_fragment_ttarview.setTTARViewWidthAndHeight(MainActivityFacade.getInstance().getTTARViewWidth(), MainActivityFacade.getInstance().getTTARViewHeight());
+        m_fragment_ttarview.setTTARViewWidthAndHeight(MediatorTTARView.getInstance().getTTARViewWidth(), MediatorTTARView.getInstance().getTTARViewHeight());
 
         // Load Preferences
+        m_preferences = new PreferencesManager(this);
         // -- Preferences for Fragment Terrain
         FragmentTerrain fragment_terrain = (FragmentTerrain) getSupportFragmentManager().findFragmentById(R.id.right_menu_fragment_terrain);
-        int int_value = m_preferences.getInt(getString(R.string.pref_hud_width_key), getResources().getInteger(R.integer.pref_hud_width_default));
+        int int_value = m_preferences.getInt(R.string.pref_hud_width_key, R.integer.pref_hud_width_default);
         fragment_terrain.setHudWidth(int_value);
 
-        int_value = m_preferences.getInt(getString(R.string.pref_hud_opacity_key), getResources().getInteger(R.integer.pref_hud_opacity_default));
+        int_value = m_preferences.getInt(R.string.pref_hud_opacity_key, R.integer.pref_hud_opacity_default);
         fragment_terrain.setHudOpacity(int_value);
 
-        //boolean redeable = StorageManager.getInstance(this.getApplicationContext()).isExternalStorageReadable();
-        //boolean writable = StorageManager.getInstance(this.getApplicationContext()).isExternalStorageWritable();
-        //String path = StorageManager.getInstance(this.getApplicationContext()).getAppPathOnExternalStorage();
+        // -- Preferences TTARView Picture in Picture window
+        FrameLayout frame_layout = (FrameLayout) findViewById(R.id.framelayout_ttarview_picture_in_picture);
+        int_value = m_preferences.getIntProvidingDefault(R.string.pref_ttarview_pip_width_key, m_ttarview_picture_in_picture_w);
+        frame_layout.getLayoutParams().width = int_value;
+        int_value = m_preferences.getIntProvidingDefault(R.string.pref_ttarview_pip_height_key, m_ttarview_picture_in_picture_h);
+        frame_layout.getLayoutParams().height = int_value;
     }
 
     @Override
@@ -494,7 +502,7 @@ public class MainActivity extends AppCompatActivity
                 m_dialog_ttarview_resolution = new DialogChangeTTARVIEWResolution();
             }
 
-            m_dialog_ttarview_resolution.setWAndRatio(MainActivityFacade.getInstance().getTTARViewWidth(), MainActivityFacade.getInstance().getTTARViewAspectRatio());
+            m_dialog_ttarview_resolution.setWAndRatio(MediatorTTARView.getInstance().getTTARViewWidth(), MediatorTTARView.getInstance().getTTARViewAspectRatio());
             m_dialog_ttarview_resolution.show(getSupportFragmentManager(), "TTARVIEW_DIALOG_RESOLUTION");
         } else if (id == R.id.nav_db_load) {
             ArrayList<POI> poi_list = m_DBmanager.obtainBillboardList();
@@ -950,8 +958,6 @@ public class MainActivity extends AppCompatActivity
     double zoom;
     double maxZoom;
 
-
-
     @Override
     public double onCameraHeightChanged(double value){
         // TODO: Cuando la camara cambia la ubicacion se reinicia el zoom!!
@@ -1035,10 +1041,7 @@ public class MainActivity extends AppCompatActivity
 
         right_menu.setBackgroundColor(ResourcesCompat.getColor(getResources(), id, null));
 
-        // Save the preferences
-        SharedPreferences.Editor edit = m_preferences.edit();
-        edit.putInt(getString(R.string.pref_hud_opacity_key), value);
-        edit.commit();
+        m_preferences.putInt(R.string.pref_hud_opacity_key, value);
     }
 
     @Override
@@ -1049,10 +1052,7 @@ public class MainActivity extends AppCompatActivity
         right_menu.setLayoutParams(params);
         m_fab_listener.updatePositioning(value);
 
-        // Save the preferences
-        SharedPreferences.Editor edit = m_preferences.edit();
-        edit.putInt(getString(R.string.pref_hud_width_key), value);
-        edit.commit();
+        m_preferences.putInt(R.string.pref_hud_width_key, value);
     }
 
     @Override
@@ -1073,14 +1073,14 @@ public class MainActivity extends AppCompatActivity
         ImageView picture = (ImageView) findViewById(R.id.imageview_ttarview_picture_in_picture);
         //picture.setImageBitmap(current_ttarview.getUpdatedView());
         //todo corregir ttarview por opacity
-        picture.setImageBitmap(current_ttarview.getInitialaView());
+        picture.setImageBitmap(current_ttarview.getInitialView());
 
         FrameLayout frame_layout = (FrameLayout) findViewById(R.id.framelayout_ttarview_picture_in_picture);
         frame_layout.setVisibility(View.VISIBLE);
 
         //m_sketch_filter.setNewBitmap(current_ttarview.getUpdatedView());
         //todo corregir ttarview por opacity
-        m_sketch_filter.setNewBitmap(current_ttarview.getInitialaView());
+        //m_sketch_filter.setNewBitmap(current_ttarview.getInitialView());
     }
 
     public TTARView getCurrentPicturInPictureTTARView() {
@@ -1121,8 +1121,8 @@ public class MainActivity extends AppCompatActivity
                                     m_current_ttarview.getInitialCameraFrame(),
                                     m_current_ttarview.getUpdatedView(),
                                     m_current_ttarview.getCamera(),
-                                    MainActivityFacade.getInstance().getTTARViewWidth(),
-                                    MainActivityFacade.getInstance().getTTARViewHeight());
+                                    MediatorTTARView.getInstance().getTTARViewWidth(),
+                                    MediatorTTARView.getInstance().getTTARViewHeight());
                         }
                     });
         }
@@ -1195,12 +1195,90 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
+    //region TTARView related class members
+    public float getScreenDensity() {
+        return m_screen_density;
+    }
+
+    public int getScreenWidth() {
+        return m_screen_w;
+    }
+
+    public int getScreenHeight() {
+        return  m_screen_h;
+    }
+
+    public float getScreenAspectRatio() {
+        return m_screen_aspect_ratio;
+    }
+
+    public int getTTARViewSnapshotWidth() {
+        return m_ttarview_snapshot_w;
+    }
+
+    public void setTTARViewSnapshotWidth(int width) {
+        m_ttarview_snapshot_w = width;
+    }
+
+    public int getTTARViewSnapshotHeight() {
+        return m_ttarview_snapshot_h;
+    }
+
+    public void settTTARViewSnapshotHeight(int height) {
+        m_ttarview_snapshot_h = height;
+    }
+
+    public int getTTARViewPictureInPuctureWidth() {
+        return m_ttarview_picture_in_picture_w;
+    }
+
+    public void setTTARViewPictureInPuctureWidth(int width) {
+        m_ttarview_picture_in_picture_w = width;
+    }
+
+    public int getTTARViewPictureInPuctureHeight() {
+        return m_ttarview_picture_in_picture_h;
+    }
+
+    public void setTTARViewPictureInPuctureHeight(int height) {
+        m_ttarview_picture_in_picture_h = height;
+    }
+
+    public void updateTTARViewPictureInPictrueSize(int width, int height) {
+        int w = Math.max(m_ttarview_picture_in_picture_w_MIN, Math.min(width, m_ttarview_picture_in_picture_w_MAX));
+        int h = Math.max(m_ttarview_picture_in_picture_h_MIN, Math.min(height, m_ttarview_picture_in_picture_h_MAX));
+
+        FrameLayout frame_layout = (FrameLayout) findViewById(R.id.framelayout_ttarview_picture_in_picture);
+        frame_layout.getLayoutParams().height = h;
+        frame_layout.getLayoutParams().width = w;
+        frame_layout.requestLayout();
+
+        m_ttarview_picture_in_picture_w = w;
+        m_ttarview_picture_in_picture_h = h;
+
+        m_preferences.putInt(R.string.pref_ttarview_pip_width_key, m_ttarview_picture_in_picture_w);
+        m_preferences.putInt(R.string.pref_ttarview_pip_height_key, m_ttarview_picture_in_picture_h);
+    }
+
+    public void resetTTARViewPictureInPictrueSize() {
+        FrameLayout frame_layout = (FrameLayout) findViewById(R.id.framelayout_ttarview_picture_in_picture);
+        frame_layout.getLayoutParams().width = m_ttarview_picture_in_picture_w_MIN;
+        frame_layout.getLayoutParams().height = m_ttarview_picture_in_picture_h_MIN;
+        frame_layout.requestLayout();
+
+        m_ttarview_picture_in_picture_w = m_ttarview_picture_in_picture_w_MIN;
+        m_ttarview_picture_in_picture_h = m_ttarview_picture_in_picture_h_MIN;
+
+        m_preferences.putInt(R.string.pref_ttarview_pip_width_key, m_ttarview_picture_in_picture_w);
+        m_preferences.putInt(R.string.pref_ttarview_pip_height_key, m_ttarview_picture_in_picture_h);
+    }
+    //endregion
+
     //region DialogChangeTTARVIEWResolution
     @Override
     public void onDialogPositiveClick(DialogChangeTTARVIEWResolution dialog){
-        int ttarview_snapshot_w = dialog.getW();
-        int ttarview_snapshot_h = (int) ((float) ttarview_snapshot_w / MainActivityFacade.getInstance().getTTARViewAspectRatio());
-        MainActivityFacade.getInstance().setTTARViewWidthHeight(ttarview_snapshot_w, ttarview_snapshot_h);
+        m_ttarview_snapshot_w = dialog.getW();
+        m_ttarview_snapshot_h = (int) ((float) m_ttarview_snapshot_w / m_screen_aspect_ratio);
     }
 
     @Override

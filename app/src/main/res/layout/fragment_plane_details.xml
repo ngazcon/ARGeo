@@ -128,7 +128,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Orientation" />
+                    android:text="Values" />
 
             </LinearLayout>
 
@@ -141,15 +141,15 @@
                 android:paddingLeft="8dp">
 
                 <TextView
-                    android:layout_width="50dp"
+                    android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Strike" />
+                    android:text="Virtual Orientation" />
 
                 <SeekBar
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/seekbar_fragment_plane_details_strike"
+                    android:id="@+id/seekbar_fragment_plane_details_virtual"
                     android:layout_weight="1"
                     android:max="360"
                     android:progress="0" />
@@ -159,7 +159,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="0"
-                    android:id="@+id/textview_fragment_plane_details_strike"
+                    android:id="@+id/textview_fragment_plane_details_virtual"
                     android:paddingLeft="4dp"
                     android:layout_marginRight="25dp"/>
             </LinearLayout>
@@ -173,7 +173,7 @@
                 android:paddingLeft="8dp">
 
                 <TextView
-                    android:layout_width="50dp"
+                    android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="Dip" />
@@ -192,6 +192,38 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="0"
                     android:id="@+id/textview_fragment_plane_details_dip"
+                    android:paddingLeft="4dp"
+                    android:layout_marginRight="25dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:paddingLeft="8dp">
+
+                <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Strike" />
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/seekbar_fragment_plane_details_strike"
+                    android:layout_weight="1"
+                    android:max="360"
+                    android:progress="0" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="0"
+                    android:id="@+id/textview_fragment_plane_details_strike"
                     android:paddingLeft="4dp"
                     android:layout_marginRight="25dp"/>
             </LinearLayout>
@@ -227,7 +259,7 @@
                 android:paddingLeft="8dp">
 
                 <TextView
-                    android:layout_width="50dp"
+                    android:layout_width="70dp"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text="Size" />
@@ -237,7 +269,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/seekbar_fragment_plane_details_size"
                     android:layout_weight="1"
-                    android:max="29"
+                    android:max="49"
                     android:progress="0" />
 
                 <TextView
@@ -259,10 +291,42 @@
                 android:paddingLeft="8dp">
 
                 <TextView
+                    android:layout_width="70dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Thickness" />
+
+                <SeekBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/seekbar_fragment_plane_details_thickness"
+                    android:layout_weight="1"
+                    android:max="49"
+                    android:progress="0" />
+
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Strike Plane"
+                    android:text="1"
+                    android:id="@+id/textview_fragment_plane_details_thickness"
+                    android:paddingLeft="4dp"
+                    android:layout_marginRight="25dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:paddingLeft="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Tangent Plane"
                     android:layout_weight="1"/>
 
                 <View style="@style/VerticalDivider"/>

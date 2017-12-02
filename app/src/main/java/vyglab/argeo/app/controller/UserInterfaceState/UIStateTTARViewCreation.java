@@ -3,7 +3,7 @@ package vyglab.argeo.app.controller.UserInterfaceState;
 import android.view.View;
 
 import vyglab.argeo.R;
-import vyglab.argeo.app.MainActivityFacade;
+import vyglab.argeo.app.MediatorTTARView;
 import vyglab.argeo.app.model.TTARView;
 import vyglab.argeo.app.model.TTARViewRepository;
 import vyglab.argeo.app.utils.Storage;
@@ -31,7 +31,7 @@ public class UIStateTTARViewCreation extends UIState {
 
         // 3-- Update Fragment
         FragmentTTARView fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
-        fragment.setForCreation(MainActivityFacade.getInstance().getTTARViewWidth(), MainActivityFacade.getInstance().getTTARViewHeight());
+        fragment.setForCreation(MediatorTTARView.getInstance().getTTARViewWidth(), MediatorTTARView.getInstance().getTTARViewHeight());
     }
 
     @Override

@@ -10,15 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import vyglab.argeo.app.MainActivityFacade;
-import vyglab.argeo.app.controller.UserInterfaceState.UIContext;
+import vyglab.argeo.app.MediatorTTARView;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
 import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.app.model.TTARViewRepository;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.app.MainActivityState;
 import vyglab.argeo.R;
-import vyglab.argeo.app.controller.SecondaryFabStateMachine.SecondaryFabState;
 import vyglab.argeo.app.controller.TabSectionsPagerAdapter;
 import vyglab.argeo.app.model.TTARView;
 
@@ -65,7 +63,8 @@ public class FragmentTTARView extends Fragment
 
         // 1-- Create, initialize and add the fragment for TTARView list
         m_fragment_ttarview_list = FragmentTTARViewList.newInstance(1);
-        m_tabs_adapter_ttarview.addFragment(m_fragment_ttarview_list, "TT AR VIEWS");
+        //m_tabs_adapter_ttarview.addFragment(m_fragment_ttarview_list, "TT AR VIEWS");
+        m_tabs_adapter_ttarview.addFragment(m_fragment_ttarview_list, "VF SNAPSHOT");
         //m_fragment_ttarview_list.setMainActivityState(m_main_activity_state);
 
         // 2-- Create, initialize and add the fragment for TTARView creation/edition
@@ -200,7 +199,7 @@ public class FragmentTTARView extends Fragment
 
     public void prepareForPictureInPictureARView() {
         m_fragment_ttarview_details.prepareForPictureInPictureARView();
-        MainActivityFacade.getInstance().showTTARView(m_fragment_ttarview_details.getCurrentTTARView());
+        MediatorTTARView.getInstance().showTTARView(m_fragment_ttarview_details.getCurrentTTARView());
     }
 
     @Override

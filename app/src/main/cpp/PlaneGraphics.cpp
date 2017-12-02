@@ -17,6 +17,7 @@ namespace argeo
 		, m_outline_stroke(1.1)
 		, m_show(true)
 		, m_width(1.0)
+	    , m_height(1.0)
 		, m_flag(flag)
 	{  }
 
@@ -105,6 +106,24 @@ namespace argeo
 	{
 		return m_width;
 	}
+
+
+    void PlaneGraphics::set_height(const double& value)
+    {
+        if (m_height != value)
+        {
+            raise_on_property_changed(
+                    "height",
+                    &m_height,
+                    &value);
+            m_height = value;
+        }
+    }
+
+    double PlaneGraphics::get_height() const
+    {
+        return m_height;
+    }
 
 	bool PlaneGraphics::get_depth_test_enabled()
 	{

@@ -5,4 +5,7 @@
 
     <string name="pref_hud_width_key">hud_width</string>
     <integer name="pref_hud_width_default">200</integer>
+
+    <string name="pref_ttarview_pip_width_key">pip_width</string>
+    <string name="pref_ttarview_pip_height_key">pip_height</string>
 </resources>

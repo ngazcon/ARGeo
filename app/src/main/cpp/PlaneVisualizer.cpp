@@ -29,6 +29,7 @@ namespace argeo
 				PlaneGraphics* graphics = static_cast<PlaneGraphics*>(entity->get_graphics());
 
 				PlanePrimitive* item = new PlanePrimitive(
+						m_scene,
 					graphics->get_origin(),
 					graphics->get_x_axis(),
 					graphics->get_y_axis(),
@@ -39,6 +40,7 @@ namespace argeo
 				item->set_rotation(entity->get_orientation());
 				item->set_width(graphics->get_width());
 				item->set_show(graphics->get_show());
+                item->set_height(graphics->get_height());
 
 				m_items.emplace(
 					id,
@@ -83,6 +85,7 @@ namespace argeo
 				item->set_rotation(entity->get_orientation());
 				item->set_width(graphics->get_width());
 				item->set_show(graphics->get_show());
+                item->set_height(graphics->get_height());
 			}
 		}
 		m_entities_changed.clear();

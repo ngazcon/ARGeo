@@ -161,8 +161,8 @@
                     android:adjustViewBounds="true"
                     android:contentDescription="@null"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_menu_camera"
-                    tools:src="@drawable/ic_menu_camera"
+                    android:src="@drawable/ic_menu_image"
+                    tools:src="@drawable/ic_menu_image"
                     android:layout_weight="5"
                     android:rotationX="180" />
 

@@ -197,7 +197,7 @@ public class FragmentPlaneDetails extends Fragment {
         imagebutton.setEnabled(true);
 
         ImageView imageview = (ImageView) this.getView().findViewById(R.id.imageview_ttarview_details_initial_image);
-        imageview.setImageBitmap(item.getInitialaView());
+        imageview.setImageBitmap(item.getInitialView());
 
         imageview = (ImageView) this.getView().findViewById(R.id.imageview_ttarview_details_updated_image);
         imageview.setImageBitmap(item.getUpdatedView());

@@ -53,6 +53,11 @@ namespace argeo
 
 		bool get_flag() const;
 
+
+
+		void   set_height(const double& value);
+		double get_height() const;
+
 	private:
 		bool  m_flag;
 
@@ -63,6 +68,7 @@ namespace argeo
 
 		bool   m_show;
 		double m_width;
+		double m_height;
 
 		bool m_depth_write;
 		bool m_depth_test;

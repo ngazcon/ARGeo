@@ -8,14 +8,21 @@ import vyglab.argeo.jni.PlaneGraphics;
  */
 
 public class Plane extends Object {
+    private String m_name;
+    private String m_description;
+
     private Geodetic3D m_position;
-    private Orientation m_orientation;
+    private int m_dip; // -90..90 degrees
+    private int m_vorientation; // 0..360 degress
+    private int m_strike; // 0..360 degrees
+
     private Entity m_strike_plane_graphic;
     private Entity m_dipping_plane_graphic;
     private PlaneGraphics m_strike_plane;
     private PlaneGraphics m_dipping_plane;
-    private String m_name;
-    private String m_description;
+    private int m_size;
+    private int m_thickness;
+
     private boolean m_visible;
     private boolean m_clamped;
 
@@ -29,11 +36,39 @@ public class Plane extends Object {
         m_description = description;
     }
 
+    public void setName(String name){
+        m_name = name;
+    }
+    public String getName() { return m_name; }
+
+    public void setDescription(String description){
+        m_description = description;
+    }
+    public String getDescription() { return m_description; }
+
     public void setPosition( Geodetic3D position) { m_position = position; }
     public Geodetic3D getPosition() {  return m_position; }
 
-    public void setOrientation( Orientation orientation) { m_orientation = orientation; }
-    public Orientation getOrientation(){ return m_orientation; }
+    public void setDip(int dip) {
+        m_dip = dip;
+    }
+    public int getDip() {
+        return m_dip;
+    }
+
+    public void setVOrientation(int vorientation) {
+        m_vorientation = vorientation;
+    }
+    public int getVOrientation() {
+        return m_vorientation;
+    }
+
+    public void setStrike(int strike) {
+        m_strike = strike;
+    }
+    public int getStrike() {
+        return m_strike;
+    }
 
     public void setStrikePlaneGraphic( Entity entity ){ m_strike_plane_graphic = entity; }
     public Entity getStrikePlaneGraphic(){ return m_strike_plane_graphic; }
@@ -47,15 +82,19 @@ public class Plane extends Object {
     public void setDippingPlane( PlaneGraphics plane ){ m_dipping_plane = plane; }
     public PlaneGraphics getDippingPlane(){ return m_dipping_plane; }
 
-    public void setName(String name){
-        m_name = name;
+    public void setSize(int size){
+        m_size = size;
     }
-    public String getName() { return m_name; }
+    public int getSize() {
+        return m_size;
+    }
 
-    public void setDescription(String description){
-        m_description = description;
+    public void setThickness(int thickness) {
+        m_thickness = thickness;
     }
-    public String getDescription() { return m_description; }
+    public int getThickness() {
+        return m_thickness;
+    }
 
     public void setVisible(boolean visible){
         m_visible = visible;

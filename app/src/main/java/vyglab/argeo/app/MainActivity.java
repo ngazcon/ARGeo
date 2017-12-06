@@ -5,6 +5,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.PowerManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
@@ -33,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -154,6 +156,9 @@ public class MainActivity extends AppCompatActivity
     private PowerManager.WakeLock mWakeLock;
 
     private DialogChangeTTARVIEWResolution m_dialog_ttarview_resolution;
+
+    private Handler m_meminfo_handler;
+    private Runnable m_meminfo_runnable;
 
     //Volarlo cdo lo arregle
     private float mLastTouchX;
@@ -288,6 +293,38 @@ public class MainActivity extends AppCompatActivity
         //FragmentTerrain fragment_terrain = (FragmentTerrain) getSupportFragmentManager().findFragmentById(R.id.right_menu_fragment_terrain);
         //fragment_terrain.setOpacity(mArgeoFragment.getViewer().getScene().getTerrainOpacity());
         //fragment_terrain.setExaggeration(mArgeoFragment.getViewer().getScene().getTerrain().getHeightExaggeration());
+
+        m_meminfo_handler = new Handler();
+        m_meminfo_runnable = new Runnable() {
+            @Override
+            public void run() {
+                ActivityManager.MemoryInfo memoryInfo = getAvailableMemory();
+
+                TextView text = (TextView) findViewById(R.id.textview_meminfo_total);
+                text.setText((new String("Total Memory: ")).concat(String.valueOf(memoryInfo.totalMem / 1024)));
+
+                text = (TextView) findViewById(R.id.textview_meminfo_threshold);
+                text.setText((new String("Threshold Memory: ")).concat(String.valueOf(memoryInfo.threshold / 1024)));
+
+                text = (TextView) findViewById(R.id.textview_meminfo_aviable);
+                text.setText((new String("Aviable Memory: ")).concat(String.valueOf(memoryInfo.availMem / 1024)));
+
+                Log.d("memoria total", memoryInfo.totalMem + "mB");
+                Log.d("memoria limite", memoryInfo.threshold + "mB");
+                Log.d("memoria disponible", memoryInfo.availMem + "mB");
+
+                final Runtime runtime = Runtime.getRuntime();
+                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+                final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
+                Log.d("RUNTIME - used memory", String.valueOf(usedMemInMB));
+                Log.d("RUNTIME - max heap", String.valueOf(maxHeapSizeInMB));
+                Log.d("RUNTIME - heap aviable", String.valueOf(availHeapSizeInMB));
+
+                m_meminfo_handler.postDelayed(this, 500);
+            }
+        };
+        m_meminfo_handler.postDelayed(m_meminfo_runnable, 500);
 
 
         // Seteo por defecto mode "TERRAIN"

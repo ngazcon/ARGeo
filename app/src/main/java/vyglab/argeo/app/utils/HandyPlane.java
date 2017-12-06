@@ -291,25 +291,25 @@ public class HandyPlane {
         m_plane_listeners.remove(listener);
     }
 
-    void notifyPlanePositionChanged() {
+    private void notifyPlanePositionChanged() {
         for (PlaneChanged listener : m_plane_listeners) {
             listener.onPlanePositionChanged();
         }
     }
 
-    void notifyPlaneStrikenChanged() {
+    private void notifyPlaneStrikenChanged() {
         for (PlaneChanged listener : m_plane_listeners) {
             listener.onPlaneStrikeChanged();
         }
     }
 
-    void notifyPlaneDipChanged() {
+    private void notifyPlaneDipChanged() {
         for (PlaneChanged listener : m_plane_listeners) {
             listener.onPlaneDipChanged();
         }
     }
 
-    void notifyPlaneSizeChanged() {
+    private void notifyPlaneSizeChanged() {
         for (PlaneChanged listener : m_plane_listeners) {
             listener.onPlaneSizeChanged();
         }

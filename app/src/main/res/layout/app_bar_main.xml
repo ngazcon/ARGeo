@@ -37,6 +37,41 @@
         app:pressedTranslationZ="0dp"
         android:visibility="gone"/>
 
+    <LinearLayout
+        android:id="@+id/framelayout_debug_info"
+        android:orientation="vertical"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:layout_gravity="top|left"
+        android:layout_margin="@dimen/fab_margin"
+        android:padding="2dp">
+
+        <TextView
+            android:id="@+id/textview_meminfo_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/white"
+            android:text="Total Memory" />
+
+        <TextView
+            android:id="@+id/textview_meminfo_threshold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/white"
+            android:text="Threshold Memory" />
+
+        <TextView
+            android:id="@+id/textview_meminfo_aviable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/white"
+            android:text="Aviable Memory" />
+
+    </LinearLayout>
+
     <FrameLayout
         android:id="@+id/framelayout_ttarview_picture_in_picture"
         android:layout_width="300dp"
@@ -52,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            android:rotationX="180"/>
+            />
 
         <ImageButton
             android:id="@+id/imagebutton_ttarview_picture_in_picture_close"

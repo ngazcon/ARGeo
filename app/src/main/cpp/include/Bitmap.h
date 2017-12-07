@@ -52,7 +52,9 @@ namespace argeo
 		/// Get the pixels of this bitmap.
 		/// @return {unsigned char*} The pixels of this bitmap.
 		///
-		void get_pixels(unsigned char* pixels) const;
+		void get_pixels(
+				unsigned char* pixels,
+				const bool& flip = false) const;
 
 		///
 		/// Set the pixels of this bitmap.

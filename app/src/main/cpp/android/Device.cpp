@@ -340,13 +340,15 @@ namespace argeo
 		Bitmap* bitmap,
 		TextureFormat format,
 		bool generate_mipmaps,
-		TextureSampler* sampler)
+		TextureSampler* sampler,
+		const bool& flip)
 	{
 		return create_texture2D_from_bitmap(
 			bitmap,
 			format,
 			generate_mipmaps,
-			TextureTarget::Texture2D);
+			TextureTarget::Texture2D,
+		flip);
 	}
 
 
@@ -354,13 +356,14 @@ namespace argeo
 		Bitmap* bitmap,
 		TextureFormat format,
 		bool generate_mipmaps,
-		TextureTarget texture_target)
+		TextureTarget texture_target,
+		const bool& flip)
 	{
 		std::unique_ptr<WritePixelBuffer> pixel_buffer = create_write_pixel_buffer(
 			PixelBufferHint::Stream,
 			bitmap->get_size_in_bytes());
 
-		pixel_buffer->copy_from_bitmap(bitmap);
+		pixel_buffer->copy_from_bitmap(bitmap, flip);
 		
 		TextureDescription description(
 			bitmap->get_width(),

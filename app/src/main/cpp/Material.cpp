@@ -78,8 +78,11 @@ namespace argeo
 		for (LoadedImage loaded_image : m_loaded_images)
 		{
 			m_textures[loaded_image.id] = Device::create_texture2D(
-				loaded_image.image,
-				TextureHelper::imaging_pixel_format_to_texture_format(loaded_image.image->get_pixel_format())).release();
+					loaded_image.image,
+					TextureHelper::imaging_pixel_format_to_texture_format(loaded_image.image->get_pixel_format()),
+					false,
+					nullptr,
+					true).release();
 		}
 		m_loaded_images.clear();
 

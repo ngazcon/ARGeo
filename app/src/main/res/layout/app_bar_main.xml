@@ -87,7 +87,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
-            />
+            android:rotationX="180" />
 
         <ImageButton
             android:id="@+id/imagebutton_ttarview_picture_in_picture_close"

@@ -117,7 +117,8 @@ namespace argeo
 			Bitmap* bitmap,
 			TextureFormat format,
 			bool generate_mipmaps   = false,
-			TextureSampler* sampler = nullptr);
+			TextureSampler* sampler = nullptr,
+            const bool& flip = false);
 
 		static std::unique_ptr<Texture2D> create_texture2D_rectangle(
 			Bitmap* bitmap,
@@ -218,7 +219,8 @@ namespace argeo
 			Bitmap* bitmap,
 			TextureFormat format,
 			bool generate_mipmaps,
-			TextureTarget texture_target);
+			TextureTarget texture_target,
+			const bool& flip = false);
 
 
 		std::unique_ptr<TextureUnits> g_texture_units;

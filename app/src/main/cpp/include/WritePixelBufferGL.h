@@ -51,7 +51,9 @@ namespace argeo
 
 		unsigned int get_handle() const;
 
-		void copy_from_bitmap(Bitmap* bitmap);
+		void copy_from_bitmap(
+				Bitmap* bitmap,
+				const bool& flip = false);
 
 		std::unique_ptr<Bitmap> copy_to_bitmap(
 			const unsigned int& width,

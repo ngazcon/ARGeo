@@ -83,7 +83,9 @@ namespace argeo
 		///
 		/// @copydoc PixelBuffer::copy_from_bitmap(Bitmap*).
 		///
-		void copy_from_bitmap(Bitmap* bitmap);
+		void copy_from_bitmap(
+				Bitmap* bitmap,
+				const bool& flip = false);
 
 		///
 		/// @copydoc PixelBuffer::copy_to_bitmap(const unsigned int&, const unsigned int&, const PixelFormat&).

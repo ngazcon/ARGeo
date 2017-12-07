@@ -1846,24 +1846,20 @@ namespace argeo
         update_environment_state();
 
 
-        if (reality_snapshot != nullptr)
-        {
-            ColorAttachments* attachments = m_ar_buffer->get_reality_frame_buffer()->get_color_attachments();
-            const Texture2D* attachment   = static_cast<const Texture2D*>(attachments->get_attachment(0));
+		if (reality_snapshot != nullptr)
+		{
+			ColorAttachments* attachments = m_ar_buffer->get_reality_frame_buffer()->get_color_attachments();
+			const Texture2D* attachment   = static_cast<const Texture2D*>(attachments->get_attachment(0));
 
-
-
-            std::unique_ptr<WritePixelBuffer> write_buffer = Device::create_write_pixel_buffer(
-                PixelBufferHint::Static,
-                reality_snapshot->get_size_in_bytes());
-
-
-            write_buffer->copy_from_bitmap(reality_snapshot);
-            attachment->copy_from_buffer(
-                write_buffer.get(),
-                ImageFormat::RedGreenBlueAlpha,
-                ImageDataType::UnsignedByte);
-        }
+			std::unique_ptr<WritePixelBuffer> write_buffer = Device::create_write_pixel_buffer(
+					PixelBufferHint::Static,
+					reality_snapshot->get_size_in_bytes());
+			write_buffer->copy_from_bitmap(reality_snapshot, false);
+			attachment->copy_from_buffer(
+					write_buffer.get(),
+					ImageFormat::RedGreenBlueAlpha,
+					ImageDataType::UnsignedByte);
+		}
 
 
         update_and_execute_commands(

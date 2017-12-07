@@ -529,7 +529,9 @@ namespace argeo
 		return std::unique_ptr<Bitmap>(bitmap);
 	}
 
-	void Bitmap::get_pixels(unsigned char* pixels) const
+	void Bitmap::get_pixels(
+			unsigned char* pixels,
+			const bool& flip) const
 	{
 		int width  = get_width();
 		int height = get_height();
@@ -562,7 +564,7 @@ namespace argeo
 				pixels,
 				width,
 				height,
-				true);
+				flip);
 			break;
 		case argeo::PixelFormat::Format32bppArgb:
 			BitmapAlgorithms::rgba_int32_to_rgba_ubyte(
@@ -570,7 +572,7 @@ namespace argeo
 				pixels,
 				width,
 				height,
-				true);
+				flip);
 			break;
 		}
 

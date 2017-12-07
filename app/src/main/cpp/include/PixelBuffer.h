@@ -121,7 +121,9 @@ namespace argeo
 		/// Copies the pixels stored in the given bitmap to device's buffer.
 		/// @param {Bitmap*} bitmap The bitmap to copy.
 		///
-		virtual void copy_from_bitmap(Bitmap* bitmap) = 0;
+		virtual void copy_from_bitmap(
+				Bitmap* bitmap,
+				const bool& flip = false) = 0;
 
 
 		///

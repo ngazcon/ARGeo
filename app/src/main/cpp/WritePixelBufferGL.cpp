@@ -75,9 +75,13 @@ namespace argeo
 		return m_buffer_object->get_handle();
 	}
 
-	void WritePixelBufferGL::copy_from_bitmap(Bitmap* bitmap)
+	void WritePixelBufferGL::copy_from_bitmap(
+			Bitmap* bitmap,
+			const bool& flip)
 	{
-		m_buffer_object->copy_from_bitmap(bitmap);
+		m_buffer_object->copy_from_bitmap(
+				bitmap,
+				flip);
 	}
 
 	std::unique_ptr<Bitmap> WritePixelBufferGL::copy_to_bitmap(

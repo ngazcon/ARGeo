@@ -125,7 +125,9 @@ namespace argeo
 		PixelBufferGL::unbind();
 	}
 
-	void PixelBufferGL::copy_from_bitmap(Bitmap* bitmap)
+	void PixelBufferGL::copy_from_bitmap(
+			Bitmap* bitmap,
+			const bool& flip)
 	{
 		unsigned int size_in_bytes = bitmap->get_size_in_bytes();
 
@@ -145,7 +147,7 @@ namespace argeo
 			size_in_bytes,
 			GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 
-		bitmap->get_pixels(static_cast<unsigned char*>(ptr));
+        bitmap->get_pixels(static_cast<unsigned char *>(ptr), flip);
 
 		glUnmapBuffer(target_buffer);
 

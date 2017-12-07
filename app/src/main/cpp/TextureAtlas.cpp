@@ -293,7 +293,7 @@ namespace argeo
 				PixelBufferHint::Static,
 				image->get_size_in_bytes());
 
-			write_buffer->copy_from_bitmap(image);
+			write_buffer->copy_from_bitmap(image, true);
 
 			m_texture->copy_from_buffer(
 				write_buffer.get(),

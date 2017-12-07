@@ -66,7 +66,9 @@ namespace argeo
 			const unsigned int& stride_in_bytes,
 			const std::size_t& size_in_bytes) = 0;
 
-		virtual void copy_from_bitmap(Bitmap* bitmap) = 0;
+		virtual void copy_from_bitmap(
+				Bitmap* bitmap,
+				const bool& flip = false) = 0;
 		
 		virtual std::unique_ptr<Bitmap> copy_to_bitmap(
 			const unsigned int& width,

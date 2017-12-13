@@ -19,7 +19,7 @@ public abstract class UIState {
         public static final int SECONDARY_FAB_2 = 3;
         public static final int EXTRA_INTERACTION_1 = 4;
         public static final int EXTRA_INTERACTION_2 = 5;
-        public static final int  EXTRA_INTERACTION_3 = 6;
+        public static final int EXTRA_INTERACTION_3 = 6;
         public static final int EXTRA_INTERACTION_4 = 7;
     }
 

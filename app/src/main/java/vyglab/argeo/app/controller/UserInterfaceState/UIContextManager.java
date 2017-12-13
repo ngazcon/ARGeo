@@ -45,10 +45,11 @@ public class UIContextManager implements MainActivityState.AppModeStateChangedLi
     @Override
     public void onApplicationModeChanged(int mode){
 
-        switch (mode){
+        /*switch (mode){
             case MainActivityState.ApplicationMode.TTARVIEW :
                 m_contexts.get(mode).getState().handle();
                 break;
-        }
+        }*/
+        m_contexts.get(mode).getState().handle();
     }
 }

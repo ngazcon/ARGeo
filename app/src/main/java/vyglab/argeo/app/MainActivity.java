@@ -48,6 +48,8 @@ import vyglab.argeo.app.controller.UserInterfaceState.UIContext;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
 import vyglab.argeo.app.controller.UserInterfaceState.UIFacade;
 import vyglab.argeo.app.controller.UserInterfaceState.UIState;
+import vyglab.argeo.app.controller.UserInterfaceState.UIStatePlaneBase;
+import vyglab.argeo.app.controller.UserInterfaceState.UIStatePlaneCreation;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewBase;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewCreation;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewEdition;
@@ -56,6 +58,7 @@ import vyglab.argeo.app.model.POI;
 import vyglab.argeo.app.model.POIRepository;
 import vyglab.argeo.app.model.SketchFilter;
 import vyglab.argeo.app.model.TTARViewRepository;
+import vyglab.argeo.app.utils.PreferencesManager;
 import vyglab.argeo.app.utils.Storage;
 import vyglab.argeo.app.view.DialogChangeTTARVIEWResolution;
 import vyglab.argeo.app.view.FragmentTerrain;
@@ -157,10 +160,12 @@ public class MainActivity extends AppCompatActivity
 
     private DialogChangeTTARVIEWResolution m_dialog_ttarview_resolution;
 
+    // DEBUG
     private Handler m_meminfo_handler;
     private Runnable m_meminfo_runnable;
+    private boolean m_show_debug_info = false;
 
-    //Volarlo cdo lo arregle
+    //TODO Volarlo cdo lo arregle
     private float mLastTouchX;
     private float mLastTouchY;
     private int mActivePointerId;
@@ -284,6 +289,43 @@ public class MainActivity extends AppCompatActivity
         } else {
             Log.d(this.getClass().getSimpleName(), "  OpenCVLoader.initDebug(), working.");
         }*/
+
+        // Debug info
+        m_meminfo_handler = new Handler();
+        m_meminfo_runnable = new Runnable() {
+            @Override
+            public void run() {
+                ActivityManager.MemoryInfo memoryInfo = getAvailableMemory();
+
+                TextView text = (TextView) findViewById(R.id.textview_debug_info_1);
+                text.setText((new String("Total Physical Memory: ")).concat(String.valueOf(memoryInfo.totalMem / 1048576L)).concat("MB"));
+
+                text = (TextView) findViewById(R.id.textview_debug_info_2);
+                text.setText((new String("Physical Memory Threshold: ")).concat(String.valueOf(memoryInfo.threshold / 1048576L)).concat("MB"));
+
+                text = (TextView) findViewById(R.id.textview_debug_info_3);
+                text.setText((new String("Aviable Physical Memory: ")).concat(String.valueOf(memoryInfo.availMem / 1048576L)).concat("MB"));
+
+                final Runtime runtime = Runtime.getRuntime();
+                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
+                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
+                final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
+                text = (TextView) findViewById(R.id.textview_debug_info_4);
+                text.setText((new String("Used Heap Memory: ")).concat(String.valueOf(usedMemInMB)).concat("MB"));
+
+                text = (TextView) findViewById(R.id.textview_debug_info_5);
+                text.setText((new String("Max Heap Memory: ")).concat(String.valueOf(maxHeapSizeInMB)).concat("MB"));
+
+                text = (TextView) findViewById(R.id.textview_debug_info_6);
+                text.setText((new String("Available Heap Memory: ")).concat(String.valueOf(availHeapSizeInMB)).concat("MB"));
+
+                Log.d("MEMORY", "free mem " + runtime.freeMemory() / 1048576L);
+
+                if (m_show_debug_info) {
+                    m_meminfo_handler.postDelayed(this, 500);
+                }
+            }
+        };
     }
 
     @Override
@@ -294,45 +336,40 @@ public class MainActivity extends AppCompatActivity
         //fragment_terrain.setOpacity(mArgeoFragment.getViewer().getScene().getTerrainOpacity());
         //fragment_terrain.setExaggeration(mArgeoFragment.getViewer().getScene().getTerrain().getHeightExaggeration());
 
-        m_meminfo_handler = new Handler();
-        m_meminfo_runnable = new Runnable() {
-            @Override
-            public void run() {
-                ActivityManager.MemoryInfo memoryInfo = getAvailableMemory();
-
-                TextView text = (TextView) findViewById(R.id.textview_meminfo_total);
-                text.setText((new String("Total Memory: ")).concat(String.valueOf(memoryInfo.totalMem / 1024)));
-
-                text = (TextView) findViewById(R.id.textview_meminfo_threshold);
-                text.setText((new String("Threshold Memory: ")).concat(String.valueOf(memoryInfo.threshold / 1024)));
-
-                text = (TextView) findViewById(R.id.textview_meminfo_aviable);
-                text.setText((new String("Aviable Memory: ")).concat(String.valueOf(memoryInfo.availMem / 1024)));
-
-                Log.d("memoria total", memoryInfo.totalMem + "mB");
-                Log.d("memoria limite", memoryInfo.threshold + "mB");
-                Log.d("memoria disponible", memoryInfo.availMem + "mB");
-
-                final Runtime runtime = Runtime.getRuntime();
-                final long usedMemInMB = (runtime.totalMemory() - runtime.freeMemory()) / 1048576L;
-                final long maxHeapSizeInMB = runtime.maxMemory() / 1048576L;
-                final long availHeapSizeInMB = maxHeapSizeInMB - usedMemInMB;
-                Log.d("RUNTIME - used memory", String.valueOf(usedMemInMB));
-                Log.d("RUNTIME - max heap", String.valueOf(maxHeapSizeInMB));
-                Log.d("RUNTIME - heap aviable", String.valueOf(availHeapSizeInMB));
-
-                m_meminfo_handler.postDelayed(this, 500);
-            }
-        };
-        m_meminfo_handler.postDelayed(m_meminfo_runnable, 500);
-
-
-        // Seteo por defecto mode "TERRAIN"
+        // Default "TERRAIN MODE"
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         onNavigationItemSelected(navigationView.getMenu().getItem(0));
         navigationView.getMenu().getItem(0).setChecked(true);
 
-        // Set Properties that it is needed a "living view"
+        //Menu Screenshot button switch
+        SwitchCompat screenshot_switch = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_screenshot_button).getActionView().findViewById(R.id.menu_switch);
+        screenshot_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                FloatingActionButton fab_screenshot = (FloatingActionButton) findViewById(R.id.fab_screenshot);
+
+                if (b){
+                    fab_screenshot.setVisibility(View.VISIBLE);
+                } else {
+                    fab_screenshot.setVisibility(View.GONE);
+                }
+            }
+        });
+
+        // Menu Debug info switch
+        SwitchCompat debug_switch = (SwitchCompat) navigationView.getMenu().findItem(R.id.nav_debug_info).getActionView().findViewById(R.id.menu_switch);
+        debug_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (m_show_debug_info) {
+                    hideDebugInfo();
+                } else {
+                    showDebugInfo();
+                }
+            }
+        });
+
+        // Set Properties that need a "living view"
         m_fragment_ttarview.setTTARViewWidthAndHeight(MediatorTTARView.getInstance().getTTARViewWidth(), MediatorTTARView.getInstance().getTTARViewHeight());
 
         // Load Preferences
@@ -442,24 +479,6 @@ public class MainActivity extends AppCompatActivity
             mWakeLock.acquire();
         }
         hideStatusAndNavigationBars();
-
-        //TODO Ver si esto lo puedo poner mas adentro en el life cycle
-        NavigationView n = (NavigationView) findViewById(R.id.nav_view);
-        LinearLayout l = (LinearLayout) n.getMenu().findItem(R.id.nav_screenshot_button).getActionView();
-        SwitchCompat screenshot_switch = (SwitchCompat) l.getChildAt(0);
-
-        screenshot_switch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                FloatingActionButton fab_screenshot = (FloatingActionButton) findViewById(R.id.fab_screenshot);
-
-                if (b){
-                    fab_screenshot.setVisibility(View.VISIBLE);
-                } else {
-                    fab_screenshot.setVisibility(View.GONE);
-                }
-            }
-        });
     }
 
     @Override
@@ -521,18 +540,15 @@ public class MainActivity extends AppCompatActivity
             m_activity_state.setAppMode(MainActivityState.AppMode.POI);
             //fab.setImageResource(R.drawable.ic_menu_pois);
         } else if (id == R.id.nav_plane) {
-            //if (m_activity_state.getFabModeOpen()){
-            //    m_fab_listener.onClick(fab);
-            //}
             m_activity_state.setAppMode(MainActivityState.AppMode.PLANE);
-            //fab.setImageResource(R.drawable.ic_menu_plane);
+            m_activity_state.setApplicationMode(MainActivityState.ApplicationMode.PLANE);
         } else if (id == R.id.nav_ttarview) {
             m_activity_state.setAppMode(MainActivityState.AppMode.TTARVIEW);// aca esto hace algo para aparecer el panel derecho que no lo encuentro
             m_activity_state.setApplicationMode(MainActivityState.ApplicationMode.TTARVIEW);
         } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_screenshot_button) {
-            SwitchCompat screenshot_switch = (SwitchCompat) findViewById(R.id.screenshot_switch);
+            SwitchCompat screenshot_switch = (SwitchCompat) findViewById(R.id.menu_switch);
             screenshot_switch.toggle();
         } else if (id == R.id.nav_ttarview_resolution) {
             if (m_dialog_ttarview_resolution == null) {
@@ -541,6 +557,9 @@ public class MainActivity extends AppCompatActivity
 
             m_dialog_ttarview_resolution.setWAndRatio(MediatorTTARView.getInstance().getTTARViewWidth(), MediatorTTARView.getInstance().getTTARViewAspectRatio());
             m_dialog_ttarview_resolution.show(getSupportFragmentManager(), "TTARVIEW_DIALOG_RESOLUTION");
+        } else if (id == R.id.nav_debug_info) {
+            SwitchCompat screenshot_switch = (SwitchCompat) item.getActionView().findViewById(R.id.menu_switch);
+            screenshot_switch.toggle();
         } else if (id == R.id.nav_db_load) {
             ArrayList<POI> poi_list = m_DBmanager.obtainBillboardList();
             for (POI poi : poi_list) {
@@ -623,11 +642,11 @@ public class MainActivity extends AppCompatActivity
         StateAcceptCancelTranslateCamera state_acceptcancel_transalte = new StateAcceptCancelTranslateCamera(fab_1, fab_2, listener_accept_translate_camera, listener_cancel_translate_camera);
         StateAcceptCancelRotateCamera state_acceptcancel_rotate = new StateAcceptCancelRotateCamera(fab_1, fab_2, listener_accept_rotate_camera, listener_cancel_rotate_camera);
         StateAcceptCancelNewPoi state_acceptcancel_newpoi = new StateAcceptCancelNewPoi(fab_1, fab_2, listener_accept_newpoi, listener_cancel_newpoi);
-        StateAcceptCancelNewPlane state_acceptcancel_newplane = new StateAcceptCancelNewPlane(fab_1, fab_2, listener_accept_newplane, listener_cancel_newplane);
+        //StateAcceptCancelNewPlane state_acceptcancel_newplane = new StateAcceptCancelNewPlane(fab_1, fab_2, listener_accept_newplane, listener_cancel_newplane);
         //StateAcceptCancelNewTTARView state_acceptcancel_newttarview = new StateAcceptCancelNewTTARView(fab_1, fab_2, listener_accept_newttarview, listener_cancel_newttarview);
         StatePoiNew state_poinew = new StatePoiNew(fab_1, fab_2, listener_newpoi, null);
         StatePoiEdit state_poiedit = new StatePoiEdit(fab_1, fab_2, null, null);
-        StatePlane state_plane = new StatePlane(fab_1, fab_2, listener_newplane, null);
+        //StatePlane state_plane = new StatePlane(fab_1, fab_2, listener_newplane, null);
         //StateTTARViewBase state_ttarview = new StateTTARViewBase(fab_1, fab_2, listener_newttarview, null);
         //m_secondary_fab_context.registerState("TTARVIEW_BASE", state_ttarview);
         //StateTTARViewSelection state_ttarview_selection = new StateTTARViewSelection(fab_1, fab_2);
@@ -655,10 +674,10 @@ public class MainActivity extends AppCompatActivity
         state_acceptcancel_newpoi.setTransitionSecond(state_poinew);
 
         // -- Transitions - PLANE
-        state_plane.setTransitionFrist(state_acceptcancel_newplane);
+        //state_plane.setTransitionFrist(state_acceptcancel_newplane);
 
-        state_acceptcancel_newplane.setTransitionFrist(state_plane);
-        state_acceptcancel_newplane.setTransitionSecond(state_plane);
+        //state_acceptcancel_newplane.setTransitionFrist(state_plane);
+        //state_acceptcancel_newplane.setTransitionSecond(state_plane);
 
         // -- Transitions - TTARView
         //state_ttarview.setTransitionFrist(state_acceptcancel_newttarview);
@@ -673,50 +692,87 @@ public class MainActivity extends AppCompatActivity
         //state_ttarview_picture_in_picture.addTransition(SecondaryFabState.Transitions.SECONDARY_FAB_1, state_ttarview_sketch, listener_ttarview_sketch); // TODO agregar listener para el close
 
         // Final settings
-        m_secondary_fab_context.setMainStates(state_terrain, state_poinew, state_plane, null);//state_ttarview);
+        m_secondary_fab_context.setMainStates(state_terrain, state_poinew, null, null);//state_plane, null);//state_ttarview);
         m_activity_state.setSecondaryFabContext(m_secondary_fab_context);
         m_activity_state.addAppModeListener(m_secondary_fab_context);
 
 
-        // NEW WORLD ORDER //***************************************************************************
+        //***************************************************************************
+        //region UI States creation // NEW WORLD ORDER
         UIFacade.getInstance().init(fab, fab_1, fab_2, getSupportFragmentManager());
         m_activity_state.addApplicationModeChanged(UIContextManager.getInstance());
 
+        //region TTARVIEW States
+        // Context and state creation for TTARVIEW
+        // 1-- Create the context and register it to the Context Manager
         UIContext context = new UIContext();
         UIContextManager.getInstance().registerContext(MainActivityState.ApplicationMode.TTARVIEW, context);
 
+        // 2-- Create each state
         UIState state_ttarview_base = new UIStateTTARViewBase();
         UIState state_ttarview_creation = new UIStateTTARViewCreation();
         UIState state_ttarview_selected = new UIStateTTARViewSelected();
         UIState state_ttarview_edition = new UIStateTTARViewEdition();
 
+        // 3-- Populate each created state
         state_ttarview_base.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_creation);
-        state_ttarview_base.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
+        state_ttarview_base.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_1));
         state_ttarview_base.addTransition(UIState.Interactions.EXTRA_INTERACTION_1, state_ttarview_selected);
         state_ttarview_base.addInteraction(UIState.Interactions.EXTRA_INTERACTION_1, null);//new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_1));
 
         state_ttarview_creation.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_base);
-        state_ttarview_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
+        state_ttarview_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_1));
         state_ttarview_creation.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_ttarview_base);
-        state_ttarview_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_2));
+        state_ttarview_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_2));
 
         state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_selected);
-        state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
+        state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_1));
         state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_ttarview_edition); // Edition state
-        state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_2)); // Edition listener
+        state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_2)); // Edition listener
         state_ttarview_selected.addTransition(UIState.Interactions.EXTRA_INTERACTION_2, state_ttarview_base);
         state_ttarview_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_2, null);//new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_2));
         state_ttarview_selected.addTransition(UIState.Interactions.EXTRA_INTERACTION_3, state_ttarview_base);
         state_ttarview_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_3, null);//new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_3));
 
         state_ttarview_edition.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_selected);
-        state_ttarview_edition.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_1));
+        state_ttarview_edition.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_1));
         state_ttarview_edition.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_ttarview_selected);
-        state_ttarview_edition.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(UIState.Interactions.SECONDARY_FAB_2));
+        state_ttarview_edition.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_2));
         state_ttarview_edition.addTransition(UIState.Interactions.EXTRA_INTERACTION_2, state_ttarview_base);
         state_ttarview_edition.addTransition(UIState.Interactions.EXTRA_INTERACTION_3, state_ttarview_base);
 
+        // 4-- Finally set the initial state to the context
         context.setState(state_ttarview_base);
+        //endregion
+
+        //region PLANE States
+        // Context and state creation for PLANE
+        // 1-- Create the context and register it to the Context Manager
+        context = new UIContext();
+        UIContextManager.getInstance().registerContext(MainActivityState.ApplicationMode.PLANE, context);
+
+        // 2-- Create each state
+        UIState state_plane_base = new UIStatePlaneBase();
+        UIState state_plane_creation = new UIStatePlaneCreation();
+        //UIState state_plane_selected = new UIStateTTARViewSelected();
+        //UIState state_plane_edition = new UIStateTTARViewEdition();
+
+        // 3-- Populate each created state
+        state_plane_base.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_plane_creation);
+        state_plane_base.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_1));
+        //state_plane_base.addTransition(UIState.Interactions.EXTRA_INTERACTION_1, state_ttarview_selected);
+        //state_plane_base.addInteraction(UIState.Interactions.EXTRA_INTERACTION_1, null);//new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_1));
+
+        state_plane_creation.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_plane_base);
+        state_plane_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_1));
+        state_plane_creation.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_plane_base);
+        state_plane_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_2));
+
+        // 4-- Finally set the initial state to the context
+        context.setState(state_plane_base);
+        //endregion
+
+        //endregion
         //**********************************************************************************************
     }
 
@@ -944,6 +1000,8 @@ public class MainActivity extends AppCompatActivity
                 break;
         }
     }
+
+
 
     @Override
     public void onHideTerrainToggled(boolean value){
@@ -1231,6 +1289,53 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+    //region DEBUG
+    protected void showDebugInfo() {
+        TextView text = (TextView) findViewById(R.id.textview_debug_info_1);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_2);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_3);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_4);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_5);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_6);
+        text.setVisibility(View.VISIBLE);
+
+        m_show_debug_info = true;
+        m_meminfo_handler.postDelayed(m_meminfo_runnable, 500);
+    }
+
+    protected void hideDebugInfo() {
+        m_show_debug_info = false;
+
+        TextView text = (TextView) findViewById(R.id.textview_debug_info_1);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_2);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_3);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_4);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_5);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_6);
+        text.setVisibility(View.GONE);
+    }
+    //endregion
 
     //region TTARView related class members
     public float getScreenDensity() {

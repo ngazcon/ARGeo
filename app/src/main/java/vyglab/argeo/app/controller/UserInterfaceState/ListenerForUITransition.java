@@ -9,15 +9,17 @@ import vyglab.argeo.app.MainActivityState;
  */
 
 public class ListenerForUITransition implements View.OnClickListener {
+    private int m_context;
     private int m_interaction;
 
-    public ListenerForUITransition(int interaction){
+    public ListenerForUITransition(int context, int interaction){
+        m_context = context;
         m_interaction = interaction;
     }
 
     @Override
     public void onClick(View v){
-        UIContextManager.getInstance().next(MainActivityState.ApplicationMode.TTARVIEW, m_interaction);
-        UIContextManager.getInstance().request(MainActivityState.ApplicationMode.TTARVIEW);
+        UIContextManager.getInstance().next(m_context, m_interaction);
+        UIContextManager.getInstance().request(m_context);
     }
 }

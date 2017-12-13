@@ -24,6 +24,7 @@ public class FragmentPlaneList extends ListFragment implements PlaneRepository.P
 
     private static final String ARG_SECTION_NUMBER = "section_number";
     private int m_selected;
+    private boolean m_item_selection_enabled;
     private PlaneListAdapter m_plane_adapter;
     private List<FragmentPlaneListItemStateChangedListener> m_list_item_state_listeners = new ArrayList<FragmentPlaneListItemStateChangedListener>();
 
@@ -50,6 +51,7 @@ public class FragmentPlaneList extends ListFragment implements PlaneRepository.P
         View root = inflater.inflate(R.layout.fragment_plane_list, container, false);
 
         m_selected = -1;
+        m_item_selection_enabled = true;
 
         /*
         List<Plane> objects = new ArrayList<Plane>();
@@ -118,10 +120,6 @@ public class FragmentPlaneList extends ListFragment implements PlaneRepository.P
         });
     }
 
-    /*public void setMainActivityState(MainActivityState state){
-        m_main_activity_state = state;
-    }*/
-
     @Override
     public void onListItemClick(ListView l, View view, int position, long id) {
         //super.onListItemClick(l, view, position, id);
@@ -150,6 +148,18 @@ public class FragmentPlaneList extends ListFragment implements PlaneRepository.P
 
     public int getSelected() {
         return  m_selected;
+    }
+
+    public void enableListInteraction() {
+        m_item_selection_enabled = true;
+    }
+
+    public void disableListInteraction() {
+        m_item_selection_enabled = false;
+    }
+
+    public boolean isListInteractionEnabled() {
+        return m_item_selection_enabled;
     }
 
 

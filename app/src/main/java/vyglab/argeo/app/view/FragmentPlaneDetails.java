@@ -24,7 +24,6 @@ import vyglab.argeo.app.utils.HandyPlane;
 public class FragmentPlaneDetails extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
-    private MainActivityState m_main_activity_state;
     private ArgeoFragment m_argeo_fragment;
 
     private String m_name;
@@ -32,9 +31,12 @@ public class FragmentPlaneDetails extends Fragment {
     private double m_latitude;
     private double m_longitude;
     private double m_height;
-    private int m_seekbar_strike;
+    private int m_seekbar_virtual_orientation;
     private int m_seekbar_dip;
+    private int m_seekbar_strike;
     private int m_seekbar_size;
+    private int m_seekbar_thickness;
+    private boolean m_show_orientation_plane;
     private Plane m_current_plane_item;
 
     public static FragmentPlaneDetails newInstance(int sectionNumber){
@@ -120,7 +122,7 @@ public class FragmentPlaneDetails extends Fragment {
             }
         });
 
-        SwitchCompat switch_button = (SwitchCompat) getView().findViewById(R.id.switchcompat_fragment_plane_details_strike_plane);
+        SwitchCompat switch_button = (SwitchCompat) getView().findViewById(R.id.switchcompat_fragment_plane_virtual_orientation_plane);
         switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -128,11 +130,7 @@ public class FragmentPlaneDetails extends Fragment {
             }
         });
 
-        cleanView();
-    }
-
-    public void setMainActivityState(MainActivityState state){
-        m_main_activity_state = state;
+        cleanView(false);
     }
 
     public void setArgeoFragment(ArgeoFragment fragment){
@@ -143,20 +141,24 @@ public class FragmentPlaneDetails extends Fragment {
         return m_current_plane_item;
     }
 
-    public void cleanView(){
+    public void cleanView(boolean enable_value){
         m_name = "";
         m_description = "";
         m_latitude = 0.0;
         m_longitude = 0.0;
         m_height = 0.0;
-        m_seekbar_strike = 0;
+        m_seekbar_virtual_orientation = 0;
         m_seekbar_dip = 0;
+        m_seekbar_strike = 0;
+        m_seekbar_size = 1;
+        m_seekbar_thickness = 1;
+        m_show_orientation_plane = true;
 
         EditText edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_name);
-        edittext.setEnabled(true);
+        edittext.setEnabled(enable_value);
 
         edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_description);
-        edittext.setEnabled(true);
+        edittext.setEnabled(enable_value);
 
         TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_lat);
         textview.setText("---");
@@ -167,13 +169,29 @@ public class FragmentPlaneDetails extends Fragment {
         textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_height);
         textview.setText("---");
 
-        SeekBar seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_strike);
+        SeekBar seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_virtual_orientation);
         seekbar.setProgress(0);
-        seekbar.setEnabled(false);
+        seekbar.setEnabled(enable_value);
 
         seekbar = (SeekBar) getView().findViewById(R.id.seekBar_fragment_plane_details_dip);
         seekbar.setProgress(0);
-        seekbar.setEnabled(false);
+        seekbar.setEnabled(enable_value);
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_strike);
+        seekbar.setProgress(0);
+        seekbar.setEnabled(enable_value);
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_size);
+        seekbar.setProgress(0);
+        seekbar.setEnabled(enable_value);
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_thickness);
+        seekbar.setProgress(0);
+        seekbar.setEnabled(enable_value);
+
+        SwitchCompat switch_virtual_orientation_plane = (SwitchCompat) getView().findViewById(R.id.switchcompat_fragment_plane_virtual_orientation_plane);
+        switch_virtual_orientation_plane.setChecked(true);
+        switch_virtual_orientation_plane.setEnabled(enable_value);
     }
 
     public void loadPlane(Plane item) {
@@ -233,16 +251,6 @@ public class FragmentPlaneDetails extends Fragment {
     }
 
     public void setForCreation(){
-        EditText edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_name);
-        edittext.setEnabled(true);
-
-        edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_description);
-        edittext.setEnabled(true);
-
-        SeekBar seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_strike);
-        seekbar.setEnabled(true);
-
-        seekbar = (SeekBar) getView().findViewById(R.id.seekBar_fragment_plane_details_dip);
-        seekbar.setEnabled(true);
+        cleanView(true);
     }
 }

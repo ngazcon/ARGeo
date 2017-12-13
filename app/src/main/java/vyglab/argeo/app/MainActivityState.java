@@ -16,6 +16,7 @@ public class MainActivityState {
 
     public static class ApplicationMode {
         public static final int TTARVIEW = 1;
+        public static final int PLANE = 2;
     }
 
     public enum TouchMode{

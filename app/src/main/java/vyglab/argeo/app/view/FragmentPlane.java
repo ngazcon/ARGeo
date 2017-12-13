@@ -37,7 +37,6 @@ public class FragmentPlane extends Fragment implements FragmentPlaneList.Fragmen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -128,35 +127,45 @@ public class FragmentPlane extends Fragment implements FragmentPlaneList.Fragmen
     }
 
     public void setForCreation(){
+        m_fragment_plane_list.disableListInteraction();
+
         m_viewpager_plane.setCurrentItem(1);
         m_fragment_plane_details.setForCreation();
     }
 
     public void cancelCreation() {
+        m_fragment_plane_list.enableListInteraction();
+
         m_viewpager_plane.setCurrentItem(0);
-        m_fragment_plane_details.cleanView();
+        m_fragment_plane_details.cleanView(false);
     }
 
     public Plane acceptCreation() {
+        m_fragment_plane_list.enableListInteraction();
+
         m_viewpager_plane.setCurrentItem(0);
         Plane plane = m_fragment_plane_details.getPlaneFromView();
-        m_fragment_plane_details.cleanView();
+        m_fragment_plane_details.cleanView(false);
 
         return plane;
     }
 
     @Override
     public void onPlaneListItemSelected(Plane item) {
-        //m_fragment_plane_details.loadTTARView(item);
-        m_viewpager_plane.setCurrentItem(1);
-        //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
-        //m_main_activity_state.getSecondaryFabContext().getState().handle();
+        if (m_fragment_plane_list.isListInteractionEnabled()) {
+            //m_fragment_plane_details.loadTTARView(item);
+            m_viewpager_plane.setCurrentItem(1);
+            //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
+            //m_main_activity_state.getSecondaryFabContext().getState().handle();
+        }
     }
 
     @Override
     public void onPlaneListItemUnselected() {
-        //m_fragment_ttarview_details.cleanView();
-        //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
-        //m_main_activity_state.getSecondaryFabContext().getState().handle();
+        if (m_fragment_plane_list.isListInteractionEnabled()) {
+            //m_fragment_ttarview_details.cleanView();
+            //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
+            //m_main_activity_state.getSecondaryFabContext().getState().handle();
+        }
     }
 }

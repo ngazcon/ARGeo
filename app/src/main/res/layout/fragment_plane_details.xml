@@ -149,7 +149,7 @@
                 <SeekBar
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/seekbar_fragment_plane_details_virtual"
+                    android:id="@+id/seekbar_fragment_plane_details_virtual_orientation"
                     android:layout_weight="1"
                     android:max="360"
                     android:progress="0" />
@@ -183,8 +183,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/seekBar_fragment_plane_details_dip"
                     android:layout_weight="1"
-                    android:max="90"
-                    android:progress="0" />
+                    android:max="181"
+                    android:progress="90" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -301,7 +301,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/seekbar_fragment_plane_details_thickness"
                     android:layout_weight="1"
-                    android:max="49"
+                    android:max="19"
                     android:progress="0" />
 
                 <TextView
@@ -326,13 +326,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:text="Tangent Plane"
+                    android:text="Virtual Orientation Plane"
                     android:layout_weight="1"/>
 
                 <View style="@style/VerticalDivider"/>
 
                 <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/switchcompat_fragment_plane_details_strike_plane"
+                    android:id="@+id/switchcompat_fragment_plane_virtual_orientation_plane"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingStart="4dp"

@@ -1,7 +1,9 @@
-package vyglab.argeo.app;
+package vyglab.argeo.app.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+
+import vyglab.argeo.app.MainActivity;
 
 /**
  * Created by ngazcon on 21/11/2017.

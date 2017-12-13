@@ -26,7 +26,12 @@
             <item
                 android:id="@+id/nav_settings"
                 android:icon="@drawable/ic_menu_settings"
-                android:title="Settings" />
+                android:title="Sensor Settings" />
+
+            <item
+                android:id="@+id/nav_ttarview_resolution"
+                android:icon="@drawable/ic_image_aspect_ratio"
+                android:title="Snaphot Resolution" />
 
             <item
                 android:id="@+id/nav_screenshot_button"
@@ -35,9 +40,10 @@
                 app:actionLayout="@layout/nav_switch" />
 
             <item
-                android:id="@+id/nav_ttarview_resolution"
-                android:icon="@drawable/ic_image_aspect_ratio"
-                android:title="Snaphot Resolution" />
+                android:id="@+id/nav_debug_info"
+                android:icon="@drawable/ic_menu_memory"
+                android:title="Memory Usage"
+                app:actionLayout="@layout/nav_switch" />
         </menu>
     </item>
 

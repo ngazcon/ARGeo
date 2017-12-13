@@ -49,7 +49,7 @@ public class DialogChangeTTARVIEWResolution extends DialogFragment{
             items[i] = String.valueOf(w).concat("x").concat(String.valueOf(h));
         }
 
-        builder.setTitle("Change Field Snapshot resolution")
+        builder.setTitle("Field Snapshot resolution")
                 .setSingleChoiceItems(items, m_selected_index, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {

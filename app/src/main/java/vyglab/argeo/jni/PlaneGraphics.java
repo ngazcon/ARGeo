@@ -5,6 +5,7 @@ public class PlaneGraphics extends IGraphics
     private PlaneGraphics()
     { }
 
+    // Flag is used for the plane color: red or blue
     public PlaneGraphics(
             EllipsoidTangentPlane ellipsoidTangentPlane,
             boolean flag) {

@@ -252,6 +252,8 @@ public class MainActivity extends AppCompatActivity
         m_ttarview_picture_in_picture_h_MAX = (int) ((float) m_screen_h * 0.8f + 0.5f);
         MediatorTTARView.getInstance().init(this);
 
+        MediatorTouch.getInstance().init(m_activity_state);
+
         // Set viewpager adapter
         m_ViewPager = (ViewPager) findViewById(R.id.pager);
         setupViewPager(m_ViewPager);
@@ -438,7 +440,6 @@ public class MainActivity extends AppCompatActivity
                         Geocentric3D geocentric = mArgeoFragment.getViewer().pickPosition(
                                 windowX_plane,
                                 windowY_plane);
-                        //HandyPOI.getInstance().updateLocationPlane(geocentric);
                         HandyPlane.getInstance().updatePlaneLocation(geocentric);
                     }
                 });
@@ -1250,7 +1251,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPlaneStrikeChanged() {
+    public void onPlaneVirtualOrientationChanged() {
         requestTTARSnapshot();
     }
 
@@ -1261,6 +1262,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPlaneSizeChanged() {
+        requestTTARSnapshot();
+    }
+
+    @Override
+    public void onPlaneThicknessChanged(){
         requestTTARSnapshot();
     }
 

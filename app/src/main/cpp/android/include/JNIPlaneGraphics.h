@@ -6,13 +6,13 @@
 namespace argeo
 {
 	class JNIPlaneGraphics
-		: public JNIIGraphics
+			: public JNIIGraphics
 	{
 	public:
 		JNIPlaneGraphics();
 		JNIPlaneGraphics(
-			JNIEnv* jni,
-			PlaneGraphics* graphics = nullptr);
+				JNIEnv* jni,
+				PlaneGraphics* graphics = nullptr);
 
 		const char* getCanonicalName() const
 		{
@@ -23,19 +23,19 @@ namespace argeo
 		void mapFields();
 
 		static void java_initialize(
-			JNIEnv* jni,
-			jobject java_this,
-			jobject java_ellipsoid_tangent_plane,
-			jboolean flag);
+				JNIEnv* jni,
+				jobject java_this,
+				jobject java_ellipsoid_tangent_plane,
+				jboolean flag);
 
 		static void set_width(
-			JNIEnv* jni,
-			jobject java_this, 
-			jdouble width);
+				JNIEnv* jni,
+				jobject java_this,
+				jdouble width);
 
 		static jdouble get_width(
-			JNIEnv* jni,
-			jobject java_this);
+				JNIEnv* jni,
+				jobject java_this);
 
 		static void set_height(
 				JNIEnv* jni,

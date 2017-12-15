@@ -7,22 +7,22 @@
 namespace argeo
 {
 	JNIPlaneGraphics::JNIPlaneGraphics()
-		: JNIIGraphics()
+			: JNIIGraphics()
 	{ }
 
 	JNIPlaneGraphics::JNIPlaneGraphics(
-		JNIEnv *env,
-		PlaneGraphics* graphics)
-		: JNIIGraphics(env, graphics)
+			JNIEnv *env,
+			PlaneGraphics* graphics)
+			: JNIIGraphics(env, graphics)
 	{
 		initialize(env);
 	}
 
 	void JNIPlaneGraphics::java_initialize(
-		JNIEnv* jni,
-		jobject java_this,
-		jobject java_ellipsoid_tangent_plane,
-		jboolean flag)
+			JNIEnv* jni,
+			jobject java_this,
+			jobject java_ellipsoid_tangent_plane,
+			jboolean flag)
 	{
 		JNIPlaneGraphics* object = gClasses.newInstance<JNIPlaneGraphics>(jni, java_this);
 		JNIEllipsoidTangentPlane* tangent_plane = gClasses.getNativeInstance<JNIEllipsoidTangentPlane>(jni, java_ellipsoid_tangent_plane);
@@ -37,31 +37,44 @@ namespace argeo
 		cacheConstructor(env);
 
 		addNativeMethod(
-			"dispose",
-			(void*)&JNIPlaneGraphics::dispose,
-			kTypeVoid,
-			NULL);
+				"dispose",
+				(void*)&JNIPlaneGraphics::dispose,
+				kTypeVoid,
+				NULL);
 
 		addNativeMethod(
-			"initialize",
-			(void*)&JNIPlaneGraphics::java_initialize,
-			kTypeVoid,
-			MAKE_CANONICAL_NAME(PACKAGE, EllipsoidTangentPlane),
-			kTypeBool,
-			NULL);
-		
-		addNativeMethod(
-			"setWidth",
-			(void*)&JNIPlaneGraphics::set_width,
-			kTypeVoid,
-			kTypeDouble,
-			NULL);
+				"initialize",
+				(void*)&JNIPlaneGraphics::java_initialize,
+				kTypeVoid,
+				MAKE_CANONICAL_NAME(PACKAGE, EllipsoidTangentPlane),
+				kTypeBool,
+				NULL);
 
 		addNativeMethod(
-			"getWidth",
-			(void*)&JNIPlaneGraphics::get_width,
-			kTypeDouble,
-			NULL);
+				"setWidth",
+				(void*)&JNIPlaneGraphics::set_width,
+				kTypeVoid,
+				kTypeDouble,
+				NULL);
+
+		addNativeMethod(
+				"getWidth",
+				(void*)&JNIPlaneGraphics::get_width,
+				kTypeDouble,
+				NULL);
+
+		addNativeMethod(
+				"setHeight",
+				(void*)&JNIPlaneGraphics::set_height,
+				kTypeVoid,
+				kTypeDouble,
+				NULL);
+
+		addNativeMethod(
+				"getHeight",
+				(void*)&JNIPlaneGraphics::get_height,
+				kTypeDouble,
+				NULL);
 
 		registerNativeMethods(env);
 	}
@@ -71,18 +84,35 @@ namespace argeo
 		JNIIGraphics::mapFields();
 	}
 
+	void JNIPlaneGraphics::set_height(
+			JNIEnv* jni,
+			jobject java_this,
+			jdouble height)
+	{
+		JNIPlaneGraphics* object = gClasses.getNativeInstance<JNIPlaneGraphics>(jni, java_this);
+		static_cast<PlaneGraphics*>(object->getNativeObject())->set_height(height);
+	}
+
+	jdouble JNIPlaneGraphics::get_height(
+			JNIEnv* jni,
+			jobject java_this)
+	{
+		JNIPlaneGraphics* object = gClasses.getNativeInstance<JNIPlaneGraphics>(jni, java_this);
+		return static_cast<PlaneGraphics*>(object->getNativeObject())->get_height();
+	}
+
 	void JNIPlaneGraphics::set_width(
-		JNIEnv* jni,
-		jobject java_this,
-		jdouble width)
+			JNIEnv* jni,
+			jobject java_this,
+			jdouble width)
 	{
 		JNIPlaneGraphics* object = gClasses.getNativeInstance<JNIPlaneGraphics>(jni, java_this);
 		static_cast<PlaneGraphics*>(object->getNativeObject())->set_width(width);
 	}
 
 	jdouble JNIPlaneGraphics::get_width(
-		JNIEnv* jni,
-		jobject java_this)
+			JNIEnv* jni,
+			jobject java_this)
 	{
 		JNIPlaneGraphics* object = gClasses.getNativeInstance<JNIPlaneGraphics>(jni, java_this);
 		return static_cast<PlaneGraphics*>(object->getNativeObject())->get_width();

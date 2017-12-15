@@ -3,6 +3,8 @@ package vyglab.argeo.app.controller.UserInterfaceState;
 import android.view.View;
 
 import vyglab.argeo.R;
+import vyglab.argeo.app.MainActivityState;
+import vyglab.argeo.app.MediatorTouch;
 import vyglab.argeo.app.view.FragmentPlane;
 
 /**
@@ -28,6 +30,9 @@ public class UIStatePlaneCreation extends UIState {
         // 3-- Update Fragment
         FragmentPlane fragment = (FragmentPlane) UIFacade.getInstance().getCurrentFragment("TAG_PLANE");
         fragment.setForCreation();
+
+        // 4-- Change Touch Mode
+        MediatorTouch.getInstance().changeTouchMode(MainActivityState.TouchMode.PLANE_CREATION);
     }
 
     @Override
@@ -52,12 +57,14 @@ public class UIStatePlaneCreation extends UIState {
                 //TARView ttarview = fragment.acceptCreation();
                 //TTARViewRepository.getInstance().addTTARView(ttarview);
                 //Storage.getInstance().insert(ttarview);
+                MediatorTouch.getInstance().changeTouchMode(MainActivityState.TouchMode.DEFAULT);
                 break;
 
             case Interactions.SECONDARY_FAB_2 :
                 // Creation was canceled
                 //fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
                 //fragment.cancelCreation();
+                MediatorTouch.getInstance().changeTouchMode(MainActivityState.TouchMode.DEFAULT);
                 break;
         }
     }

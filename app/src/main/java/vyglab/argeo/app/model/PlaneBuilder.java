@@ -68,7 +68,7 @@ public class PlaneBuilder {
         Plane plane = new Plane(m_id, m_name, m_description);
         plane.setPosition(m_position);
         plane.setDip(m_dip);
-        plane.setVOrientation(m_vorientation);
+        plane.setVirtualOrientation(m_vorientation);
         plane.setStrike(m_strike);
         plane.setSize(m_size);
         plane.setThickness(m_thickness);

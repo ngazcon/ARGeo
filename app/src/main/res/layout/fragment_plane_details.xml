@@ -269,8 +269,8 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/seekbar_fragment_plane_details_size"
                     android:layout_weight="1"
-                    android:max="49"
-                    android:progress="0" />
+                    android:max="99"
+                    android:progress="30" />
 
                 <TextView
                     android:layout_width="wrap_content"

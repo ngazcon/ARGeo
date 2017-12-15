@@ -24,10 +24,10 @@ public class ListenerNewTTARView implements View.OnClickListener {
     @Override
     public void onClick(View v){
         // Check if right menu is open
-        m_fab_listener.requestOpen();
+        /*m_fab_listener.requestOpen();
 
         UIContextManager.getInstance().next(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_1);
-        UIContextManager.getInstance().request(MainActivityState.ApplicationMode.TTARVIEW);
+        UIContextManager.getInstance().request(MainActivityState.ApplicationMode.TTARVIEW);*/
     }
 }
 

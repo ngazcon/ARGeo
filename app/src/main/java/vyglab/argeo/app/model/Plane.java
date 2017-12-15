@@ -13,13 +13,13 @@ public class Plane extends Object {
 
     private Geodetic3D m_position;
     private int m_dip; // -90..90 degrees
-    private int m_vorientation; // 0..360 degress
+    private int m_virtual_orientation; // 0..360 degress
     private int m_strike; // 0..360 degrees
 
-    private Entity m_strike_plane_graphic;
-    private Entity m_dipping_plane_graphic;
-    private PlaneGraphics m_strike_plane;
-    private PlaneGraphics m_dipping_plane;
+    private Entity m_virtual_orientation_plane_entity;
+    private Entity m_dipping_plane_entity;
+    private PlaneGraphics m_virtual_orientation_plane_graphic;
+    private PlaneGraphics m_dipping_plane_graphic;
     private int m_size;
     private int m_thickness;
 
@@ -56,11 +56,11 @@ public class Plane extends Object {
         return m_dip;
     }
 
-    public void setVOrientation(int vorientation) {
-        m_vorientation = vorientation;
+    public void setVirtualOrientation(int vorientation) {
+        m_virtual_orientation = vorientation;
     }
-    public int getVOrientation() {
-        return m_vorientation;
+    public int getVirtualOrientation() {
+        return m_virtual_orientation;
     }
 
     public void setStrike(int strike) {
@@ -70,17 +70,17 @@ public class Plane extends Object {
         return m_strike;
     }
 
-    public void setStrikePlaneGraphic( Entity entity ){ m_strike_plane_graphic = entity; }
-    public Entity getStrikePlaneGraphic(){ return m_strike_plane_graphic; }
+    public void setVirtualOrientationPlaneEntity(Entity entity ){ m_virtual_orientation_plane_entity = entity; }
+    public Entity getVirtualOrientationPlaneEntity(){ return m_virtual_orientation_plane_entity; }
 
-    public void setDippingPlaneGraphic( Entity entity ){ m_dipping_plane_graphic = entity; }
-    public Entity getDippingPlaneGraphic(){ return m_dipping_plane_graphic; }
+    public void setDippingPlaneEntity(Entity entity ){ m_dipping_plane_entity = entity; }
+    public Entity getDippingPlaneEntity(){ return m_dipping_plane_entity; }
 
-    public void setStrikePlane( PlaneGraphics plane ){ m_strike_plane = plane; }
-    public PlaneGraphics getStrikePlane(){ return m_strike_plane; }
+    public void setVirtualOrientationPlaneGraphic(PlaneGraphics plane ){ m_virtual_orientation_plane_graphic = plane; }
+    public PlaneGraphics getVirtualOrientationPlaneGraphic(){ return m_virtual_orientation_plane_graphic; }
 
-    public void setDippingPlane( PlaneGraphics plane ){ m_dipping_plane = plane; }
-    public PlaneGraphics getDippingPlane(){ return m_dipping_plane; }
+    public void setDippingPlaneGraphic(PlaneGraphics plane ){ m_dipping_plane_graphic = plane; }
+    public PlaneGraphics getDippingPlaneGraphic(){ return m_dipping_plane_graphic; }
 
     public void setSize(int size){
         m_size = size;

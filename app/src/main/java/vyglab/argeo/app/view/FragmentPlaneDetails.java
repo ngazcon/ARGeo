@@ -12,7 +12,6 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import vyglab.argeo.jni.ArgeoFragment;
-import vyglab.argeo.app.MainActivityState;
 import vyglab.argeo.R;
 import vyglab.argeo.app.model.Plane;
 import vyglab.argeo.app.utils.HandyPlane;
@@ -59,14 +58,14 @@ public class FragmentPlaneDetails extends Fragment {
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        SeekBar seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_strike);
+        SeekBar seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_virtual_orientation);
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                m_seekbar_strike = i ;
-                TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_strike);
+                m_seekbar_virtual_orientation = i ;
+                TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_virtual);
                 textview.setText(String.valueOf(i));
-                HandyPlane.getInstance().updatePlaneStrike(m_seekbar_strike);
+                HandyPlane.getInstance().updatePlaneVirtualOrientation(m_seekbar_virtual_orientation);
             }
 
             @Override
@@ -101,6 +100,26 @@ public class FragmentPlaneDetails extends Fragment {
             }
         });
 
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_strike);
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                m_seekbar_strike = i ;
+                TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_strike);
+                textview.setText(String.valueOf(i));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_size);
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -122,11 +141,32 @@ public class FragmentPlaneDetails extends Fragment {
             }
         });
 
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_thickness);
+        seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                m_seekbar_thickness= i + 1 ;
+                TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_thickness);
+                textview.setText(String.valueOf(m_seekbar_thickness));
+                HandyPlane.getInstance().updatePlaneThickness(m_seekbar_thickness);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         SwitchCompat switch_button = (SwitchCompat) getView().findViewById(R.id.switchcompat_fragment_plane_virtual_orientation_plane);
         switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                HandyPlane.getInstance().updateShowStrikePlane(b);
+                HandyPlane.getInstance().updateShowVirtualOrientationPlane(b);
             }
         });
 
@@ -150,7 +190,7 @@ public class FragmentPlaneDetails extends Fragment {
         m_seekbar_virtual_orientation = 0;
         m_seekbar_dip = 0;
         m_seekbar_strike = 0;
-        m_seekbar_size = 1;
+        m_seekbar_size = 30;
         m_seekbar_thickness = 1;
         m_show_orientation_plane = true;
 
@@ -182,7 +222,7 @@ public class FragmentPlaneDetails extends Fragment {
         seekbar.setEnabled(enable_value);
 
         seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_size);
-        seekbar.setProgress(0);
+        seekbar.setProgress(m_seekbar_size - 1);
         seekbar.setEnabled(enable_value);
 
         seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_thickness);

@@ -18,34 +18,35 @@ import java.util.List;
 
 public class HandyPlane {
     private static HandyPlane m_instance = null;
-    private Plane m_plane;
+    private Plane m_plane = null;
     private ArgeoFragment m_ArgeoFragment;
     private List<PlaneChanged> m_plane_listeners = new ArrayList<PlaneChanged>();
 
     private Geocentric3D m_geocentric;
-    private int m_strike;
+
+    private int m_virtual_orientation;
     private int m_dip;
+    private int m_strike;
+
     private final int m_dip_start = 0;
-    private boolean m_show_strike_plane;
+    private boolean m_show_virtual_orientation_plane = true;
     private double m_size;
+    private double m_thickness;
 
     public interface PlaneChanged {
         void onPlanePositionChanged();
 
-        void onPlaneStrikeChanged();
+        void onPlaneVirtualOrientationChanged();
 
         void onPlaneDipChanged();
 
         void onPlaneSizeChanged();
+
+        void onPlaneThicknessChanged();
     }
 
     protected HandyPlane() {
-        m_plane = null;
-        m_geocentric = null;
-        m_strike = 0;
-        m_dip = m_dip_start;
-        m_show_strike_plane = true;
-        m_size = 1.0;
+        clear(true);
     }
 
     public static HandyPlane getInstance() {
@@ -60,49 +61,79 @@ public class HandyPlane {
         m_ArgeoFragment = fragment;
     }
 
-    // Estos dos los dejo de muestra por si las moscas, sino volarlos
-    /*public void updateLocation(Geodetic3D location){
-        if (m_poi == null){
-            m_poi = new POI("dummy", "");
-            m_poi.setGraphic(new Entity(m_poi.getId(), new BillboardGraphics(PoiBillboardBuilder.getIconPath(m_billboard_icon), PoiBillboardBuilder.getIconAtlasId(m_billboard_icon), m_billboard_size, m_billboard_size)));
-            m_ArgeoFragment.getViewer().getEntities().add(m_poi.getGraphic());
-        }
+    protected void updatePlaneGraphics() {
+        // Reset the local plane graphics
+        clearGraphics();
 
-        m_poi.getGraphic().setPosition(location);
-        notifyPositionPoiChanged();
+        // Set Planes graphic and their properties (tangent plane needed for the plane positioning)
+        m_plane.setVirtualOrientationPlaneGraphic(new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(m_geocentric)), true)); // true == red
+        m_plane.getVirtualOrientationPlaneGraphic().setWidth(m_size);
+        m_plane.getVirtualOrientationPlaneGraphic().setHeight(m_thickness);
+
+        m_plane.setDippingPlaneGraphic(new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(m_geocentric)), false));
+        m_plane.getDippingPlaneGraphic().setWidth(m_size);
+        m_plane.getDippingPlaneGraphic().setHeight(m_thickness);
+
+        // Create Entities
+        m_plane.setVirtualOrientationPlaneEntity(new Entity(m_plane.getId(), m_plane.getVirtualOrientationPlaneGraphic()));
+        m_plane.setDippingPlaneEntity(new Entity(m_plane.getId().concat("dip"), m_plane.getDippingPlaneGraphic()));
+
+        // Set plane orientations and add planes to the render engine
+        setOrientations(m_plane);
+        if (m_show_virtual_orientation_plane) {
+            m_ArgeoFragment.getViewer().getEntities().add(m_plane.getVirtualOrientationPlaneEntity());
+        }
+        m_ArgeoFragment.getViewer().getEntities().add(m_plane.getDippingPlaneEntity());
     }
 
-    public void updateLocation(Geocentric3D location){
-        if (m_poi == null){
-            m_poi = new POI("dummy", "");
-            m_poi.setGraphic(new Entity(m_poi.getId(), new BillboardGraphics(PoiBillboardBuilder.getIconPath(m_billboard_icon), PoiBillboardBuilder.getIconAtlasId(m_billboard_icon), m_billboard_size, m_billboard_size)));
-            m_ArgeoFragment.getViewer().getEntities().add(m_poi.getGraphic());
-        }
-
-        m_poi.getGraphic().setPosition(location);
-        notifyPositionPoiChanged();
-    }*/
-
-    public void updatePlaneLocation(Geocentric3D location) {
+    /*public void updatePlaneLocation(Geocentric3D location) {
+        // Reset the local plane
         clear(false);
+
+        // Save location
         m_geocentric = location;
-        m_plane = new Plane("dummy", "", "");
-        EllipsoidTangentPlane tangent = new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location));
-        //m_plane.setStrikePlaneGraphic(new Entity(m_plane.getId(), new PlaneGraphics(tangent, true)));
-        //m_plane.setDippingPlaneGraphic(new Entity(m_plane.getId().concat("dip"), new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location)), false)));
-        //m_plane.getDippingPlaneGraphic().setOrientation(Quaternion.fromAxisAngle(tangent.getXAxis(), m_dip / 180.0 * 3.14));
-        m_plane.setStrikePlane(new PlaneGraphics(tangent, true));
-        m_plane.setDippingPlane(new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location)), false));
-        m_plane.getStrikePlane().setWidth(m_size);
-        m_plane.getDippingPlane().setWidth(m_size);
-        m_plane.setStrikePlaneGraphic(new Entity(m_plane.getId(), m_plane.getStrikePlane()));
-        m_plane.setDippingPlaneGraphic(new Entity(m_plane.getId().concat("dip"), m_plane.getDippingPlane()));
-        //m_plane.getDippingPlaneGraphic().setOrientation(Quaternion.fromAxisAngle(tangent.getXAxis(), m_dip / 180.0 * 3.14));
+
+        // Create a local plane
+        m_plane = new Plane("local-plane", "", "");
+        //m_plane.setVirtualOrientationPlaneEntity(new Entity(m_plane.getId(), new PlaneGraphics(tangent, true)));
+        //m_plane.setDippingPlaneEntity(new Entity(m_plane.getId().concat("dip"), new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location)), false)));
+        //m_plane.getDippingPlaneEntity().setOrientation(Quaternion.fromAxisAngle(tangent.getXAxis(), m_dip / 180.0 * 3.14));
+
+        // Set Planes graphic and their properties (tangent plane needed for the plane positioning)
+        m_plane.setVirtualOrientationPlaneGraphic(new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location)), true)); // true == red
+        m_plane.getVirtualOrientationPlaneGraphic().setWidth(m_size);
+        m_plane.getVirtualOrientationPlaneGraphic().setHeight(m_thickness);
+
+        m_plane.setDippingPlaneGraphic(new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location)), false));
+        m_plane.getDippingPlaneGraphic().setWidth(m_size);
+        m_plane.getDippingPlaneGraphic().setHeight(m_thickness);
+
+        // Create Entities
+        m_plane.setVirtualOrientationPlaneEntity(new Entity(m_plane.getId(), m_plane.getVirtualOrientationPlaneGraphic()));
+        m_plane.setDippingPlaneEntity(new Entity(m_plane.getId().concat("dip"), m_plane.getDippingPlaneGraphic()));
+        //m_plane.getDippingPlaneEntity().setOrientation(Quaternion.fromAxisAngle(tangent.getXAxis(), m_dip / 180.0 * 3.14));
         setOrientations(m_plane);
-        if (m_show_strike_plane) {
-            m_ArgeoFragment.getViewer().getEntities().add(m_plane.getStrikePlaneGraphic());
+        if (m_show_virtual_orientation_plane) {
+            m_ArgeoFragment.getViewer().getEntities().add(m_plane.getVirtualOrientationPlaneEntity());
         }
-        m_ArgeoFragment.getViewer().getEntities().add(m_plane.getDippingPlaneGraphic());
+        m_ArgeoFragment.getViewer().getEntities().add(m_plane.getDippingPlaneEntity());
+
+        // Finally notify that local plane position has changed
+        notifyPlanePositionChanged();
+    }*/
+    public void updatePlaneLocation(Geocentric3D location) {
+        // Save the new location
+        m_geocentric = location;
+
+        // Check if a plane object already exists
+        if (m_plane == null) {
+            m_plane = new Plane("local-plane", "", "");
+        }
+
+        // Update plane graphics
+        updatePlaneGraphics();
+
+        // Finally notify that local plane position has changed
         notifyPlanePositionChanged();
     }
 
@@ -139,11 +170,11 @@ public class HandyPlane {
 
         q_d_final = new Quaternion(w, x, y, z);
 
-        plane.getStrikePlaneGraphic().setOrientation(q_s);
-        plane.getDippingPlaneGraphic().setOrientation(q_d_final);
+        plane.getVirtualOrientationPlaneEntity().setOrientation(q_s);
+        plane.getDippingPlaneEntity().setOrientation(q_d_final);
     }
 
-    public void updatePlaneStrike(int strike) {
+    public void updatePlaneVirtualOrientation(int strike) {
         if (m_plane != null) {
             m_strike = strike;
             double value_strike = m_strike;
@@ -178,8 +209,8 @@ public class HandyPlane {
 
             q_d_final = new Quaternion(w, x, y, z);
 
-            m_plane.getStrikePlaneGraphic().setOrientation(q_s);
-            m_plane.getDippingPlaneGraphic().setOrientation(q_d_final);
+            m_plane.getVirtualOrientationPlaneEntity().setOrientation(q_s);
+            m_plane.getDippingPlaneEntity().setOrientation(q_d_final);
 
             notifyPlaneStrikenChanged();
         }
@@ -219,61 +250,76 @@ public class HandyPlane {
             w /= n;
 
             q_d_final = new Quaternion(w, x, y, z);
-            m_plane.getDippingPlaneGraphic().setOrientation(q_d_final);
+            m_plane.getDippingPlaneEntity().setOrientation(q_d_final);
 
             notifyPlaneDipChanged();
         }
     }
 
     public void updatePlaneSize(int size) {
-        if (m_plane != null) {
-            Geocentric3D location = m_geocentric;
-            clear(false);
-            m_size = size;
-            m_geocentric = location;
-            m_plane = new Plane("dummy", "", "");
-            EllipsoidTangentPlane tangent = new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(m_geocentric));
-            m_plane.setStrikePlane(new PlaneGraphics(tangent, true));
-            m_plane.setDippingPlane(new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(m_geocentric)), false));
-            m_plane.getStrikePlane().setWidth(m_size);
-            m_plane.getDippingPlane().setWidth(m_size);
-            m_plane.setStrikePlaneGraphic(new Entity(m_plane.getId(), m_plane.getStrikePlane()));
-            m_plane.setDippingPlaneGraphic(new Entity(m_plane.getId().concat("dip"), m_plane.getDippingPlane()));
-            //m_plane.getDippingPlaneGraphic().setOrientation(Quaternion.fromAxisAngle(tangent.getXAxis(), m_dip / 180.0 * 3.14));
-            setOrientations(m_plane);
-            if (m_show_strike_plane) {
-                m_ArgeoFragment.getViewer().getEntities().add(m_plane.getStrikePlaneGraphic());
-            }
-            m_ArgeoFragment.getViewer().getEntities().add(m_plane.getDippingPlaneGraphic());
+        m_size = size;
 
+        if (m_plane != null) {
+            updatePlaneGraphics();
             notifyPlaneSizeChanged();
         }
     }
 
-    public void updateShowStrikePlane(boolean value) {
-        if (m_show_strike_plane) {
-            m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getStrikePlaneGraphic());
+    public void updatePlaneThickness(int thickness) {
+        m_thickness = thickness;
+
+        if (m_plane != null) {
+            updatePlaneGraphics();
+            notifyPlaneThicknessChanged();
         }
-        m_show_strike_plane = value;
-        updatePlaneLocation(m_geocentric);
+    }
+
+    public void updateShowVirtualOrientationPlane(boolean value) {
+        // If it was showing the Virtual Orientation Plane, remove it from the render engine
+        if (m_show_virtual_orientation_plane) {
+            m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getVirtualOrientationPlaneEntity());
+        }
+
+        // Update the value and the plane graphics
+        m_show_virtual_orientation_plane = value;
+        updatePlaneGraphics();
     }
 
     public void clear(boolean angles) {
         if (m_plane != null) {
-            if (m_show_strike_plane) {
-                m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getStrikePlaneGraphic());
+            if (m_show_virtual_orientation_plane) {
+                m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getVirtualOrientationPlaneEntity());
             }
-            m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getDippingPlaneGraphic());
-            m_plane.setStrikePlaneGraphic(null);
+            m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getDippingPlaneEntity());
+            m_plane.setVirtualOrientationPlaneEntity(null);
+            m_plane.setDippingPlaneEntity(null);
+            m_plane.setVirtualOrientationPlaneGraphic(null);
             m_plane.setDippingPlaneGraphic(null);
-            m_plane.setStrikePlane(null);
-            m_plane.setDippingPlane(null);
             m_plane = null;
             m_geocentric = null;
-            if (angles) {
-                m_strike = 0;
-                m_dip = m_dip_start;
-                m_size = 1.0;
+        }
+        if (angles) {
+            m_virtual_orientation = 0;
+            m_dip = m_dip_start;
+            m_strike = 0;
+            m_size = 30.0;
+            m_thickness = 1.0;
+        }
+    }
+
+    public void clearGraphics() {
+        // Check if there is a plane
+        if (m_plane != null) {
+            // Check if the plane has plane graphics
+            if ((m_plane.getVirtualOrientationPlaneGraphic() != null) && (m_plane.getDippingPlaneGraphic() != null)) {
+                if (m_show_virtual_orientation_plane) {
+                    m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getVirtualOrientationPlaneEntity());
+                }
+                m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getDippingPlaneEntity());
+                m_plane.setVirtualOrientationPlaneEntity(null);
+                m_plane.setDippingPlaneEntity(null);
+                m_plane.setVirtualOrientationPlaneGraphic(null);
+                m_plane.setDippingPlaneGraphic(null);
             }
         }
     }
@@ -299,7 +345,7 @@ public class HandyPlane {
 
     private void notifyPlaneStrikenChanged() {
         for (PlaneChanged listener : m_plane_listeners) {
-            listener.onPlaneStrikeChanged();
+            listener.onPlaneVirtualOrientationChanged();
         }
     }
 
@@ -315,29 +361,34 @@ public class HandyPlane {
         }
     }
 
+    private void notifyPlaneThicknessChanged() {
+        for (PlaneChanged listener : m_plane_listeners) {
+            listener.onPlaneSizeChanged();
+        }
+    }
 
     //TODO volarlo y hacerlo bien
     public Plane clonePlane() {
         Geocentric3D location = m_geocentric;
         clear(false);
         m_geocentric = location;
-        Plane plane = new Plane("dummy", "", "");
+        Plane plane = new Plane("local-plane", "", "");
         EllipsoidTangentPlane tangent = new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location));
-        //m_plane.setStrikePlaneGraphic(new Entity(m_plane.getId(), new PlaneGraphics(tangent, true)));
-        //m_plane.setDippingPlaneGraphic(new Entity(m_plane.getId().concat("dip"), new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location)), false)));
-        //m_plane.getDippingPlaneGraphic().setOrientation(Quaternion.fromAxisAngle(tangent.getXAxis(), m_dip / 180.0 * 3.14));
-        plane.setStrikePlane(new PlaneGraphics(tangent, true));
-        plane.setDippingPlane(new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location)), false));
-        plane.getStrikePlane().setWidth(m_size);
-        plane.getDippingPlane().setWidth(m_size);
-        plane.setStrikePlaneGraphic(new Entity(plane.getId(), plane.getStrikePlane()));
-        plane.setDippingPlaneGraphic(new Entity(plane.getId().concat("dip"), plane.getDippingPlane()));
-        //m_plane.getDippingPlaneGraphic().setOrientation(Quaternion.fromAxisAngle(tangent.getXAxis(), m_dip / 180.0 * 3.14));
+        //m_plane.setVirtualOrientationPlaneEntity(new Entity(m_plane.getId(), new PlaneGraphics(tangent, true)));
+        //m_plane.setDippingPlaneEntity(new Entity(m_plane.getId().concat("dip"), new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location)), false)));
+        //m_plane.getDippingPlaneEntity().setOrientation(Quaternion.fromAxisAngle(tangent.getXAxis(), m_dip / 180.0 * 3.14));
+        plane.setVirtualOrientationPlaneGraphic(new PlaneGraphics(tangent, true));
+        plane.setDippingPlaneGraphic(new PlaneGraphics(new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(location)), false));
+        plane.getVirtualOrientationPlaneGraphic().setWidth(m_size);
+        plane.getDippingPlaneGraphic().setWidth(m_size);
+        plane.setVirtualOrientationPlaneEntity(new Entity(plane.getId(), plane.getVirtualOrientationPlaneGraphic()));
+        plane.setDippingPlaneEntity(new Entity(plane.getId().concat("dip"), plane.getDippingPlaneGraphic()));
+        //m_plane.getDippingPlaneEntity().setOrientation(Quaternion.fromAxisAngle(tangent.getXAxis(), m_dip / 180.0 * 3.14));
         setOrientations(plane);
-        if (m_show_strike_plane) {
-            m_ArgeoFragment.getViewer().getEntities().add(plane.getStrikePlaneGraphic());
+        if (m_show_virtual_orientation_plane) {
+            m_ArgeoFragment.getViewer().getEntities().add(plane.getVirtualOrientationPlaneEntity());
         }
-        m_ArgeoFragment.getViewer().getEntities().add(plane.getDippingPlaneGraphic());
+        m_ArgeoFragment.getViewer().getEntities().add(plane.getDippingPlaneEntity());
         notifyPlanePositionChanged();
 
         return plane;

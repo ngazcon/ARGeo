@@ -138,15 +138,15 @@ public class HandyPlane {
     }
 
     private void setOrientations(Plane plane) {
-        double value_strike = m_strike;
+        double value_virtual_orientation = m_virtual_orientation;
         double value_dip = m_dip;
 
         EllipsoidTangentPlane tangent = new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(m_geocentric));
-        Quaternion q_s = Quaternion.fromAxisAngle(tangent.getNormal(), value_strike / 180 * 3.14);
+        Quaternion q_s = Quaternion.fromAxisAngle(tangent.getNormal(), value_virtual_orientation / -180 * 3.14);
         Quaternion q_d = Quaternion.fromAxisAngle(tangent.getXAxis(), value_dip / 180.0 * 3.14);
         Quaternion q_d_final;
 
-        // a ver que pasa....
+        // Quaternion Math
         double x1 = q_s.getX();
         double y1 = q_s.getY();
         double z1 = q_s.getZ();
@@ -174,83 +174,22 @@ public class HandyPlane {
         plane.getDippingPlaneEntity().setOrientation(q_d_final);
     }
 
-    public void updatePlaneVirtualOrientation(int strike) {
+    public void updatePlaneVirtualOrientation(int virtual_orientation) {
         if (m_plane != null) {
-            m_strike = strike;
-            double value_strike = m_strike;
-            double value_dip = m_dip;
+            m_virtual_orientation = virtual_orientation;
 
-            EllipsoidTangentPlane tangent = new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(m_geocentric));
-            Quaternion q_s = Quaternion.fromAxisAngle(tangent.getNormal(), value_strike / 180 * 3.14);
-            Quaternion q_d = Quaternion.fromAxisAngle(tangent.getXAxis(), value_dip / 180.0 * 3.14);
-            Quaternion q_d_final;
+            setOrientations(m_plane);
 
-            // a ver que pasa....
-            double x1 = q_s.getX();
-            double y1 = q_s.getY();
-            double z1 = q_s.getZ();
-            double w1 = q_s.getW();
-
-            double x2 = q_d.getX();
-            double y2 = q_d.getY();
-            double z2 = q_d.getZ();
-            double w2 = q_d.getW();
-
-            double x = x1 * w2 + y1 * z2 - z1 * y2 + w1 * x2;
-            double y = -x1 * z2 + y1 * w2 + z1 * x2 + w1 * y2;
-            double z = x1 * y2 - y1 * x2 + z1 * w2 + w1 * z2;
-            double w = -x1 * x2 - y1 * y2 - z1 * z2 + w1 * w2;
-
-            double n = Math.sqrt(x * x + y * y + z * z + w * w);
-            x /= n;
-            y /= n;
-            z /= n;
-            w /= n;
-
-            q_d_final = new Quaternion(w, x, y, z);
-
-            m_plane.getVirtualOrientationPlaneEntity().setOrientation(q_s);
-            m_plane.getDippingPlaneEntity().setOrientation(q_d_final);
-
-            notifyPlaneStrikenChanged();
+            notifyPlaneVirtualOrientationChanged();
         }
     }
 
     public void updatePlaneDip(int dip) {
         if (m_plane != null) {
             m_dip = dip + m_dip_start;
-            double value_strike = m_strike;
-            double value_dip = m_dip;
 
-            EllipsoidTangentPlane tangent = new EllipsoidTangentPlane(EllipsoidTransformations.geodetic3DFromGeocentric3D(m_geocentric));
-            Quaternion q_s = Quaternion.fromAxisAngle(tangent.getNormal(), value_strike / 180 * 3.14);
-            Quaternion q_d = Quaternion.fromAxisAngle(tangent.getXAxis(), value_dip / 180.0 * 3.14);
-            Quaternion q_d_final;
-
-            // a ver que pasa....
-            double x1 = q_s.getX();
-            double y1 = q_s.getY();
-            double z1 = q_s.getZ();
-            double w1 = q_s.getW();
-
-            double x2 = q_d.getX();
-            double y2 = q_d.getY();
-            double z2 = q_d.getZ();
-            double w2 = q_d.getW();
-
-            double x = x1 * w2 + y1 * z2 - z1 * y2 + w1 * x2;
-            double y = -x1 * z2 + y1 * w2 + z1 * x2 + w1 * y2;
-            double z = x1 * y2 - y1 * x2 + z1 * w2 + w1 * z2;
-            double w = -x1 * x2 - y1 * y2 - z1 * z2 + w1 * w2;
-
-            double n = Math.sqrt(x * x + y * y + z * z + w * w);
-            x /= n;
-            y /= n;
-            z /= n;
-            w /= n;
-
-            q_d_final = new Quaternion(w, x, y, z);
-            m_plane.getDippingPlaneEntity().setOrientation(q_d_final);
+            // It will unnecessarily update the virtual orientation orientation, nayway it will overwrites the same value
+            setOrientations(m_plane);
 
             notifyPlaneDipChanged();
         }
@@ -343,7 +282,7 @@ public class HandyPlane {
         }
     }
 
-    private void notifyPlaneStrikenChanged() {
+    private void notifyPlaneVirtualOrientationChanged() {
         for (PlaneChanged listener : m_plane_listeners) {
             listener.onPlaneVirtualOrientationChanged();
         }

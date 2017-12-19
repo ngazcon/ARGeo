@@ -5,6 +5,8 @@ import android.view.View;
 import vyglab.argeo.R;
 import vyglab.argeo.app.MainActivityState;
 import vyglab.argeo.app.MediatorTouch;
+import vyglab.argeo.app.model.Plane;
+import vyglab.argeo.app.model.PlaneRepository;
 import vyglab.argeo.app.view.FragmentPlane;
 
 /**
@@ -48,22 +50,24 @@ public class UIStatePlaneCreation extends UIState {
 
     @Override
     public void exitAction(int interaction) {
-        //FragmentTTARView fragment;
+        FragmentPlane fragment;
 
         switch(interaction) {
             case Interactions.SECONDARY_FAB_1 :
                 // Creation was accepted
-                //fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
-                //TARView ttarview = fragment.acceptCreation();
-                //TTARViewRepository.getInstance().addTTARView(ttarview);
-                //Storage.getInstance().insert(ttarview);
+                fragment = (FragmentPlane) UIFacade.getInstance().getCurrentFragment("TAG_PLANE");
+                Plane plane = fragment.acceptCreation();
+                PlaneRepository.getInstance().addPlane(plane);
+                //Storage.getInstance().insert(plane);
+                // clear handyplane
                 MediatorTouch.getInstance().changeTouchMode(MainActivityState.TouchMode.DEFAULT);
                 break;
 
             case Interactions.SECONDARY_FAB_2 :
                 // Creation was canceled
-                //fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
-                //fragment.cancelCreation();
+                fragment = (FragmentPlane) UIFacade.getInstance().getCurrentFragment("TAG_PLANE");
+                fragment.cancelCreation();
+                // clear handyplane
                 MediatorTouch.getInstance().changeTouchMode(MainActivityState.TouchMode.DEFAULT);
                 break;
         }

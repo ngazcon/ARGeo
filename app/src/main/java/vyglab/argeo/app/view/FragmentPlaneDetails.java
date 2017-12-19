@@ -62,7 +62,7 @@ public class FragmentPlaneDetails extends Fragment {
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                m_seekbar_virtual_orientation = i ;
+                m_seekbar_virtual_orientation = i;
                 TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_virtual);
                 textview.setText(String.valueOf(i));
                 HandyPlane.getInstance().updatePlaneVirtualOrientation(m_seekbar_virtual_orientation);
@@ -83,9 +83,9 @@ public class FragmentPlaneDetails extends Fragment {
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                m_seekbar_dip = i ;
+                m_seekbar_dip = dipSeekBarToValue(i);
                 TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_dip);
-                textview.setText(String.valueOf(i));
+                textview.setText(String.valueOf(m_seekbar_dip));
                 HandyPlane.getInstance().updatePlaneDip(m_seekbar_dip);
             }
 
@@ -104,9 +104,9 @@ public class FragmentPlaneDetails extends Fragment {
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                m_seekbar_strike = i ;
+                m_seekbar_strike = i * 5;
                 TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_strike);
-                textview.setText(String.valueOf(i));
+                textview.setText(String.valueOf(m_seekbar_strike));
             }
 
             @Override
@@ -145,7 +145,7 @@ public class FragmentPlaneDetails extends Fragment {
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                m_seekbar_thickness= i + 1 ;
+                m_seekbar_thickness = i + 1 ;
                 TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_thickness);
                 textview.setText(String.valueOf(m_seekbar_thickness));
                 HandyPlane.getInstance().updatePlaneThickness(m_seekbar_thickness);
@@ -181,6 +181,14 @@ public class FragmentPlaneDetails extends Fragment {
         return m_current_plane_item;
     }
 
+    protected int dipValueToSeekBar(int dip_value) {
+        return 90 + dip_value;
+    }
+
+    protected int dipSeekBarToValue(int dip_seekbar) {
+        return dip_seekbar - 90;
+    }
+
     public void cleanView(boolean enable_value){
         m_name = "";
         m_description = "";
@@ -214,7 +222,7 @@ public class FragmentPlaneDetails extends Fragment {
         seekbar.setEnabled(enable_value);
 
         seekbar = (SeekBar) getView().findViewById(R.id.seekBar_fragment_plane_details_dip);
-        seekbar.setProgress(0);
+        seekbar.setProgress(dipValueToSeekBar(0));
         seekbar.setEnabled(enable_value);
 
         seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_strike);

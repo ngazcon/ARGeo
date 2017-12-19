@@ -183,7 +183,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/seekBar_fragment_plane_details_dip"
                     android:layout_weight="1"
-                    android:max="181"
+                    android:max="180"
                     android:progress="90" />
 
                 <TextView
@@ -215,7 +215,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/seekbar_fragment_plane_details_strike"
                     android:layout_weight="1"
-                    android:max="360"
+                    android:max="72"
                     android:progress="0" />
 
                 <TextView

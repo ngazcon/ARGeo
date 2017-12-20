@@ -28,7 +28,7 @@ public class ListenerCancelNewPlane implements View.OnClickListener {
 
         // Setup the fragment for poi edition
         //tab_fragment_poi.cleanView();
-        HandyPlane.getInstance().clear(false);
+        HandyPlane.getInstance().clear();
 
         // Set the touch mode
         m_main_activity_state.setTouchMode(MainActivityState.TouchMode.DEFAULT);

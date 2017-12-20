@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class DBHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "Database.db";
 
     // Poi table creation statement
@@ -46,6 +46,27 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_IGRAPHIC_ENTRIES =
             "DROP TABLE IF EXISTS " + DatabaseContract.IGraphicTable.TABLE_NAME;
 
+    // Plane table creation statement
+    private static final String SQL_CREATE_PLANE_ENTRIES =
+            "CREATE TABLE " + DatabaseContract.PlaneTable.TABLE_NAME + " (" +
+                    DatabaseContract.PlaneTable._ID + " INTEGER PRIMARY KEY," +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_PLANE_ID + TEXT_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_NAME + TEXT_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_DESCRIPTION + TEXT_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_LONG + DOUBLE_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_LAT + DOUBLE_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_HEIGHT + DOUBLE_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_VIRTUAL_ORIENTATION + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_DIP + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_STRIKE + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_SIZE + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_THICKNESS + INTEGER_TYPE + COMMA_SEP +
+                    DatabaseContract.PlaneTable.COLUMN_NAME_SHOW_VIRTUAL_ORIENTATION + INTEGER_TYPE + " )";
+
+    // Plane table deletion statement
+    private static final String SQL_DELETE_PLANE_ENTRIES =
+            "DROP TABLE IF EXISTS " + DatabaseContract.PlaneTable.TABLE_NAME;
+
     // TTARView table creation statement
     private static final String SQL_CREATE_TTARVIEW_ENTRIES =
             "CREATE TABLE " + DatabaseContract.TTARViewTable.TABLE_NAME + " (" +
@@ -73,6 +94,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_IGRAPHIC_ENTRIES);
         db.execSQL(SQL_CREATE_POI_ENTRIES);
+        db.execSQL(SQL_CREATE_PLANE_ENTRIES);
         db.execSQL(SQL_CREATE_TTARVIEW_ENTRIES);
     }
 
@@ -81,6 +103,7 @@ public class DBHelper extends SQLiteOpenHelper {
         // to simply to discard the data and start over
         db.execSQL(SQL_DELETE_POI_ENTRIES);
         db.execSQL(SQL_DELETE_IGRAPHIC_ENTRIES);
+        db.execSQL(SQL_DELETE_PLANE_ENTRIES);
         db.execSQL(SQL_DELETE_TTARVIEW_ENTRIES);
         onCreate(db);
     }

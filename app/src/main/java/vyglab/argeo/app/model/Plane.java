@@ -22,6 +22,7 @@ public class Plane extends Object {
     private PlaneGraphics m_dipping_plane_graphic;
     private int m_size;
     private int m_thickness;
+    private boolean m_show_virtual_orientation_plane;
 
     private boolean m_visible;
     private boolean m_clamped;
@@ -95,6 +96,11 @@ public class Plane extends Object {
     public int getThickness() {
         return m_thickness;
     }
+
+    public void setShowwVirtualOrientationPlane(boolean value){
+        m_show_virtual_orientation_plane = value;
+    }
+    public boolean getShowVirtualOrientationPlane(){ return m_show_virtual_orientation_plane; }
 
     public void setVisible(boolean visible){
         m_visible = visible;

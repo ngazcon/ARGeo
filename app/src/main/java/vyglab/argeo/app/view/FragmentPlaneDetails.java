@@ -11,16 +11,21 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import vyglab.argeo.app.model.Geodetic3D;
+import vyglab.argeo.app.model.PlaneBuilder;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.R;
 import vyglab.argeo.app.model.Plane;
 import vyglab.argeo.app.utils.HandyPlane;
+import vyglab.argeo.jni.EllipsoidTransformations;
+import vyglab.argeo.jni.Geocentric3D;
 
 /**
  * Created by root on 16/02/17.
  */
 
-public class FragmentPlaneDetails extends Fragment {
+public class FragmentPlaneDetails extends Fragment
+        implements HandyPlane.PlaneChanged {
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private ArgeoFragment m_argeo_fragment;
@@ -166,7 +171,8 @@ public class FragmentPlaneDetails extends Fragment {
         switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                HandyPlane.getInstance().updateShowVirtualOrientationPlane(b);
+                m_show_orientation_plane = b;
+                HandyPlane.getInstance().updateShowVirtualOrientationPlane(m_show_orientation_plane);
             }
         });
 
@@ -177,7 +183,7 @@ public class FragmentPlaneDetails extends Fragment {
         m_argeo_fragment = fragment;
     }
 
-    public Plane getCurrentTTARView() {
+    public Plane getCurrentPlane() {
         return m_current_plane_item;
     }
 
@@ -203,19 +209,24 @@ public class FragmentPlaneDetails extends Fragment {
         m_show_orientation_plane = true;
 
         EditText edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_name);
+        edittext.setText("");
         edittext.setEnabled(enable_value);
 
         edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_description);
+        edittext.setText("");
         edittext.setEnabled(enable_value);
 
         TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_lat);
         textview.setText("---");
+        textview.setEnabled(enable_value);
 
         textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_long);
         textview.setText("---");
+        textview.setEnabled(enable_value);
 
         textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_height);
         textview.setText("---");
+        textview.setEnabled(enable_value);
 
         SeekBar seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_virtual_orientation);
         seekbar.setProgress(0);
@@ -236,6 +247,21 @@ public class FragmentPlaneDetails extends Fragment {
         seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_thickness);
         seekbar.setProgress(0);
         seekbar.setEnabled(enable_value);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_virtual);
+        textview.setEnabled(enable_value);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_dip);
+        textview.setEnabled(enable_value);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_strike);
+        textview.setEnabled(enable_value);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_size);
+        textview.setEnabled(enable_value);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_thickness);
+        textview.setEnabled(enable_value);
 
         SwitchCompat switch_virtual_orientation_plane = (SwitchCompat) getView().findViewById(R.id.switchcompat_fragment_plane_virtual_orientation_plane);
         switch_virtual_orientation_plane.setChecked(true);
@@ -276,29 +302,71 @@ public class FragmentPlaneDetails extends Fragment {
     }
 
     public Plane getPlaneFromView() {
-        Plane plane = new Plane();
-        plane.setId("");
-        /*
-        plane.setPosition(new Geodetic3D(
-                m_camera.getPositionGeodetic().getLatitude(),
-                m_camera.getPositionGeodetic().getLongitude(),
-                m_camera.getPositionGeodetic().getAltitude()));
+        PlaneBuilder builder = new PlaneBuilder(m_argeo_fragment);
 
-        EditText edittext = (EditText) getView().findViewById(R.id.editText_ttarview_name);
-        ttarview.setName(edittext.getText().toString());
+        // Obtain values from the view
+        EditText edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_name);
+        m_name = edittext.getText().toString();
 
-        edittext = (EditText) getView().findViewById(R.id.editText_ttarview_description);
-        ttarview.setDescription(edittext.getText().toString());
+        edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_description);
+        m_description = edittext.getText().toString();
 
-        ttarview.setCamera(m_camera);
-        ttarview.setInitialCameraFrame(m_reality_snapshot);
-        ttarview.setInitialaView(m_reality_snapshot);
-        ttarview.setUpdatedView(m_updated_snapshot);
-        */
+        // Build the plane
+        Plane plane = builder.setId("id" + m_name)
+                .setName(m_name)
+                .setDescription(m_description)
+                .setPosition(HandyPlane.getInstance().getCurrentGeocentric3D())
+                .setVirtualOrientation(m_seekbar_virtual_orientation)
+                .setDip(m_seekbar_dip)
+                .setStrike(m_seekbar_strike)
+                .setSize(m_seekbar_size)
+                .setThickness(m_seekbar_thickness)
+                .setShowVirtualOrientationPlane(m_show_orientation_plane)
+                .build();
+
         return plane;
     }
 
     public void setForCreation(){
         cleanView(true);
     }
+
+    //region PlaneChanged listeners
+    @Override
+    public void onPlanePositionChanged() {
+        Geocentric3D geocentric = HandyPlane.getInstance().getCurrentGeocentric3D();
+        final vyglab.argeo.jni.Geodetic3D geodetic = EllipsoidTransformations.geodetic3DFromGeocentric3D(geocentric);
+
+        // Need to use runnable, otherwise app explodes: ilegal access from thread
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_lat);
+                textview.setText(Geodetic3D.coordinateToPrintableText(geodetic.getLatitude()));
+
+                textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_long);
+                textview.setText(Geodetic3D.coordinateToPrintableText(geodetic.getLongitude()));
+
+                textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_height);
+                textview.setText(Geodetic3D.heightToPrintableText(geodetic.getAltitude()));
+            }
+        });
+    }
+
+    public void onPlaneVirtualOrientationChanged() {
+        // Nothing to do
+    }
+
+    public void onPlaneDipChanged() {
+        // Nothing to do
+    }
+
+    public void onPlaneSizeChanged() {
+        // Nothing to do
+    }
+
+    public void onPlaneThicknessChanged() {
+        // Nothing to do
+    }
+    //endregion
 }

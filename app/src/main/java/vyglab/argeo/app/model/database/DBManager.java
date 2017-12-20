@@ -5,12 +5,17 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import vyglab.argeo.app.model.Plane;
+import vyglab.argeo.app.model.PlaneBuilder;
 import vyglab.argeo.app.model.TTARView;
 import vyglab.argeo.app.model.TTARViewBuilder;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.jni.BillboardGraphics;
 import vyglab.argeo.app.model.POI;
 import vyglab.argeo.app.model.PoiBillboardBuilder;
+import vyglab.argeo.jni.EllipsoidTransformations;
+import vyglab.argeo.jni.Geocentric3D;
+import vyglab.argeo.jni.Geodetic3D;
 
 import java.util.ArrayList;
 
@@ -60,6 +65,74 @@ public class DBManager {
         db.close();
 
         return ( newRowId != -1 );
+    }
+
+    public boolean insertPlane(Plane plane){
+        // Gets the data repository in write mode
+        SQLiteDatabase db = m_dbhelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues plane_values = new ContentValues();
+
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_PLANE_ID, plane.getId());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_NAME, plane.getName());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_DESCRIPTION, plane.getDescription());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_LONG, plane.getPosition().getLong());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_LAT, plane.getPosition().getLat());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_HEIGHT, plane.getPosition().getHeight());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_VIRTUAL_ORIENTATION, plane.getVirtualOrientation());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_DIP, plane.getDip());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_STRIKE, plane.getStrike());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_SIZE, plane.getSize());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_THICKNESS, plane.getThickness());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_SHOW_VIRTUAL_ORIENTATION, plane.getShowVirtualOrientationPlane());
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(DatabaseContract.PlaneTable.TABLE_NAME, null, plane_values);
+
+        db.close();
+
+        return ( newRowId != -1 );
+    }
+
+    public boolean deletePlane(Plane plane){
+        // Gets the data repository in write mode
+        SQLiteDatabase db = m_dbhelper.getWritableDatabase();
+
+        long newRowId = db.delete(DatabaseContract.PlaneTable.TABLE_NAME,
+                DatabaseContract.PlaneTable.COLUMN_NAME_PLANE_ID.concat("= ?"),
+                new String[]{ plane.getId()});
+        db.close();
+
+        return ( newRowId != 0 );
+    }
+
+    public boolean updatePlane(Plane plane) {
+        // Gets the data repository in write mode
+        SQLiteDatabase db = m_dbhelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues plane_values = new ContentValues();
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_PLANE_ID, plane.getId());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_NAME, plane.getName());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_DESCRIPTION, plane.getDescription());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_LONG, plane.getPosition().getLong());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_LAT, plane.getPosition().getLat());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_HEIGHT, plane.getPosition().getHeight());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_VIRTUAL_ORIENTATION, plane.getVirtualOrientation());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_DIP, plane.getDip());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_STRIKE, plane.getStrike());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_SIZE, plane.getSize());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_THICKNESS, plane.getThickness());
+        plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_SHOW_VIRTUAL_ORIENTATION, plane.getShowVirtualOrientationPlane());
+
+        long newRowId = db.update(DatabaseContract.TTARViewTable.TABLE_NAME,
+                plane_values,
+                DatabaseContract.TTARViewTable.COLUMN_NAME_ID.concat("= ?"),
+                new String[]{ plane.getId()});
+        db.close();
+
+        return ( newRowId != 0 );
     }
 
     public boolean insertTTARView(TTARView ttarview){
@@ -213,6 +286,49 @@ public class DBManager {
             POI p = builder.getPoi();
             array_list.add(builder.getPoi());
 
+            cursor.moveToNext();
+        }
+
+        return array_list;
+    }
+
+    public ArrayList<Plane> obtainPlaneList() {
+        SQLiteDatabase db = m_dbhelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("select * from plane", null);
+        ArrayList<Plane> array_list = new ArrayList<Plane>();
+
+        cursor.moveToFirst();
+
+        while(cursor.isAfterLast() == false){
+            PlaneBuilder builder = new PlaneBuilder(m_argeofragment);
+
+            // Obtain geocentric from geodetic values
+            Double latitude = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_LAT));
+            Double longitude = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_LAT));
+            Double height = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_LAT));
+            Geodetic3D geodetic = new Geodetic3D(latitude, longitude, height);
+            Geocentric3D geocentric = EllipsoidTransformations.geocentric3DFromGeodetic3D(geodetic);
+
+            // Obtain boolean value corresponding to whether to show virtual orientation plane
+            boolean show_virtual_orientation = (cursor.getInt(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_SHOW_VIRTUAL_ORIENTATION)) == 1);
+
+            // Build plane
+            Plane plane = builder.setId(cursor.getString(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_PLANE_ID)))
+                    .setName(cursor.getString(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_NAME)))
+                    .setDescription(cursor.getString(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_DESCRIPTION)))
+                    .setPosition(geocentric)
+                    .setVirtualOrientation(cursor.getInt(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_VIRTUAL_ORIENTATION)))
+                    .setDip(cursor.getInt(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_DIP)))
+                    .setStrike(cursor.getInt(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_STRIKE)))
+                    .setSize(cursor.getInt(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_SIZE)))
+                    .setThickness(cursor.getInt(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_THICKNESS)))
+                    .setShowVirtualOrientationPlane(show_virtual_orientation)
+                    .build();
+
+            // Add plane to the list
+            array_list.add(plane);
+
+            // Finally move to the next cursor value
             cursor.moveToNext();
         }
 

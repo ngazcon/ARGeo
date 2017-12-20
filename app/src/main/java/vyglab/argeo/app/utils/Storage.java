@@ -1,5 +1,6 @@
 package vyglab.argeo.app.utils;
 
+import vyglab.argeo.app.model.Plane;
 import vyglab.argeo.app.model.TTARView;
 import vyglab.argeo.app.model.database.DBManager;
 
@@ -26,6 +27,20 @@ public class Storage {
     public void init(DBManager db_manager) {
         m_database = db_manager;
     }
+
+    //region Plane
+    public void insert(Plane plane) {
+        m_database.insertPlane(plane);
+    }
+
+    public void delete(Plane plane) {
+        m_database.deletePlane(plane);
+    }
+
+    public void update(Plane plane) {
+        m_database.updatePlane(plane);
+    }
+    //endregion
 
     //region TTARView
     public void insert(TTARView ttarview) {

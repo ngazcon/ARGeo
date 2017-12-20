@@ -30,9 +30,9 @@ public class ListenerAcceptNewPlane implements View.OnClickListener {
     @Override
     public void onClick(View v){
         // Create the poi
-        Plane plane = HandyPlane.getInstance().clonePlane();
-        PlaneRepository.getInstance().addPlane(plane);
-        HandyPlane.getInstance().clear(false);
+        //Plane plane = HandyPlane.getInstance().clonePlane();
+        //PlaneRepository.getInstance().addPlane(plane);
+        HandyPlane.getInstance().clear();
 
         //tab_fragment_poi.cleanView();
         m_main_activity_state.setTouchMode(MainActivityState.TouchMode.DEFAULT);

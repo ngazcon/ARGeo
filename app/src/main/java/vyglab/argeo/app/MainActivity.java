@@ -56,6 +56,8 @@ import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewEdition;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewSelected;
 import vyglab.argeo.app.model.POI;
 import vyglab.argeo.app.model.POIRepository;
+import vyglab.argeo.app.model.Plane;
+import vyglab.argeo.app.model.PlaneRepository;
 import vyglab.argeo.app.model.SketchFilter;
 import vyglab.argeo.app.model.TTARViewRepository;
 import vyglab.argeo.app.utils.PreferencesManager;
@@ -566,6 +568,11 @@ public class MainActivity extends AppCompatActivity
             for (POI poi : poi_list) {
                 POIRepository.getInstance().addPOI(poi);
                 mArgeoFragment.getViewer().getEntities().add(poi.getGraphic());
+            }
+
+            ArrayList<Plane> plane_list = m_DBmanager.obtainPlaneList();
+            for (Plane plane : plane_list) {
+                PlaneRepository.getInstance().addPlane(plane);
             }
 
             ArrayList<TTARView> ttarview_list = m_DBmanager.obtainTTARViewList();

@@ -7,6 +7,8 @@ import vyglab.argeo.app.MainActivityState;
 import vyglab.argeo.app.MediatorTouch;
 import vyglab.argeo.app.model.Plane;
 import vyglab.argeo.app.model.PlaneRepository;
+import vyglab.argeo.app.utils.HandyPlane;
+import vyglab.argeo.app.utils.Storage;
 import vyglab.argeo.app.view.FragmentPlane;
 
 /**
@@ -58,8 +60,8 @@ public class UIStatePlaneCreation extends UIState {
                 fragment = (FragmentPlane) UIFacade.getInstance().getCurrentFragment("TAG_PLANE");
                 Plane plane = fragment.acceptCreation();
                 PlaneRepository.getInstance().addPlane(plane);
-                //Storage.getInstance().insert(plane);
-                // clear handyplane
+                Storage.getInstance().insert(plane);
+                HandyPlane.getInstance().clear();
                 MediatorTouch.getInstance().changeTouchMode(MainActivityState.TouchMode.DEFAULT);
                 break;
 
@@ -67,7 +69,7 @@ public class UIStatePlaneCreation extends UIState {
                 // Creation was canceled
                 fragment = (FragmentPlane) UIFacade.getInstance().getCurrentFragment("TAG_PLANE");
                 fragment.cancelCreation();
-                // clear handyplane
+                HandyPlane.getInstance().clear();
                 MediatorTouch.getInstance().changeTouchMode(MainActivityState.TouchMode.DEFAULT);
                 break;
         }

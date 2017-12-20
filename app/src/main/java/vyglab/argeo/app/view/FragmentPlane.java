@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import vyglab.argeo.app.utils.HandyPlane;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.app.MainActivityState;
 import vyglab.argeo.R;
@@ -131,6 +132,7 @@ public class FragmentPlane extends Fragment implements FragmentPlaneList.Fragmen
 
         m_viewpager_plane.setCurrentItem(1);
         m_fragment_plane_details.setForCreation();
+        HandyPlane.getInstance().addListener(m_fragment_plane_details);
     }
 
     public void cancelCreation() {
@@ -138,6 +140,7 @@ public class FragmentPlane extends Fragment implements FragmentPlaneList.Fragmen
 
         m_viewpager_plane.setCurrentItem(0);
         m_fragment_plane_details.cleanView(false);
+        HandyPlane.getInstance().removeListener(m_fragment_plane_details);
     }
 
     public Plane acceptCreation() {
@@ -146,6 +149,7 @@ public class FragmentPlane extends Fragment implements FragmentPlaneList.Fragmen
         m_viewpager_plane.setCurrentItem(0);
         Plane plane = m_fragment_plane_details.getPlaneFromView();
         m_fragment_plane_details.cleanView(false);
+        HandyPlane.getInstance().removeListener(m_fragment_plane_details);
 
         return plane;
     }

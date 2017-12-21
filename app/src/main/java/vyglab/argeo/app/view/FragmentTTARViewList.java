@@ -54,31 +54,13 @@ public class FragmentTTARViewList extends ListFragment implements TTARViewReposi
 
         m_selected = -1;
         m_item_selection_enabled = true;
-        // Obtain the ListView
-        //ListView list = (ListView) root.findViewById(R.id.);
 
-        // Initialize the adapter
-        /*
-        List<TTARView> objects = new ArrayList<TTARView>();
-        TTARView t = new TTARView("id-1", "jonsi", "descripcion jonsi");
-        t.setPosition(new Geodetic3D(10.0, 11.0, 12.0));
-        objects.add(t);
-        t = new TTARView("id-2", "pancer", "descripcion pancer");
-        t.setPosition(new Geodetic3D(10.0, 11.0, 12.0));
-        objects.add(t);
-        t = new TTARView("id-3", "jacer", "descripcion jacer");
-        t.setPosition(new Geodetic3D(10.0, 11.0, 12.0));
-        objects.add(t);
-        m_ttarview_adapter= new TTARViewListAdapter(getActivity(), objects, this);
-        */
         m_ttarview_adapter = new TTARViewListAdapter(getActivity(), TTARViewRepository.getInstance().getTTARViews(), this);
         TTARViewRepository.getInstance().addListener(this);
 
         // Set adapter
-        //list.setAdapter(adapter);
         this.setListAdapter(m_ttarview_adapter);
 
-        //POIRepository.getInstance().addListener(this);
 
         return root;
     }
@@ -175,23 +157,9 @@ public class FragmentTTARViewList extends ListFragment implements TTARViewReposi
     }
 
     public void resetSelected(){
-        /*if (m_selected != -1){
-            final int firstListItemPosition = getListView().getFirstVisiblePosition();
-            final int lastListItemPosition = firstListItemPosition + getListView().getChildCount() - 1;
-            View view;
-
-            if (m_selected < firstListItemPosition || m_selected > lastListItemPosition ) {
-                view = getListView().getAdapter().getView(m_selected, null, getListView());
-            } else {
-                view = getListView().getChildAt(m_selected - firstListItemPosition);
-            }
-            view.setBackgroundColor(0x00000000);
-            m_selected = -1;
-        }*/
         if (m_selected != -1){
             m_selected = -1;
             getListView().invalidateViews();
-            //TODO clean details tab fragment
         }
     }
 

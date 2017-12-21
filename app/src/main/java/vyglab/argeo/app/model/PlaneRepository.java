@@ -16,6 +16,7 @@ public class PlaneRepository {
 
     public interface PlaneRepositoryChanged {
         void onPlaneAdded(Plane plane);
+        void onPlaneRemoved(Plane plane);
     }
 
     protected PlaneRepository() {
@@ -50,6 +51,13 @@ public class PlaneRepository {
         }
     }
 
+    public void removePlane(Plane plane) {
+        String key = plane.getId();
+
+        m_repo.remove(key);
+        notifyPlaneRemoved(plane);
+    }
+
     public String listRepoDescription() {
         String output = "List of Planes\n";
         Collection<Plane> collection = m_repo.values();
@@ -74,6 +82,12 @@ public class PlaneRepository {
     void notifyPlaneAdded(Plane plane) {
         for (PlaneRepositoryChanged listener : m_repo_listeners) {
             listener.onPlaneAdded(plane);
+        }
+    }
+
+    void notifyPlaneRemoved(Plane plane) {
+        for (PlaneRepositoryChanged listener : m_repo_listeners) {
+            listener.onPlaneRemoved(plane);
         }
     }
 }

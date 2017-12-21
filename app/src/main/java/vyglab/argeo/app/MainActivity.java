@@ -50,6 +50,7 @@ import vyglab.argeo.app.controller.UserInterfaceState.UIFacade;
 import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStatePlaneBase;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStatePlaneCreation;
+import vyglab.argeo.app.controller.UserInterfaceState.UIStatePlaneSelected;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewBase;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewCreation;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewEdition;
@@ -172,6 +173,8 @@ public class MainActivity extends AppCompatActivity
     private float mLastTouchY;
     private int mActivePointerId;
     private InitializeEngine m_engine_initializer;
+    private double m_panning_sensivity = 10.0;
+    private double m_rotation_sensitivity = 0.25;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -762,19 +765,28 @@ public class MainActivity extends AppCompatActivity
         // 2-- Create each state
         UIState state_plane_base = new UIStatePlaneBase();
         UIState state_plane_creation = new UIStatePlaneCreation();
-        //UIState state_plane_selected = new UIStateTTARViewSelected();
+        UIState state_plane_selected = new UIStatePlaneSelected();
         //UIState state_plane_edition = new UIStateTTARViewEdition();
 
         // 3-- Populate each created state
         state_plane_base.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_plane_creation);
         state_plane_base.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_1));
-        //state_plane_base.addTransition(UIState.Interactions.EXTRA_INTERACTION_1, state_ttarview_selected);
-        //state_plane_base.addInteraction(UIState.Interactions.EXTRA_INTERACTION_1, null);//new ListenerForUITransition(UIState.Interactions.EXTRA_INTERACTION_1));
+        state_plane_base.addTransition(UIState.Interactions.EXTRA_INTERACTION_1, state_plane_selected);
+        state_plane_base.addInteraction(UIState.Interactions.EXTRA_INTERACTION_1, null);
 
         state_plane_creation.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_plane_base);
         state_plane_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_1));
         state_plane_creation.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_plane_base);
         state_plane_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_2));
+
+        //state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_selected);
+        //state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_1));
+        //state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_ttarview_edition); // Edition state
+        //state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_2)); // Edition listener
+        state_plane_selected.addTransition(UIState.Interactions.EXTRA_INTERACTION_2, state_plane_base);
+        state_plane_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_2, null);
+        state_plane_selected.addTransition(UIState.Interactions.EXTRA_INTERACTION_3, state_plane_base);
+        state_plane_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_3, null);
 
         // 4-- Finally set the initial state to the context
         context.setState(state_plane_base);
@@ -851,7 +863,7 @@ public class MainActivity extends AppCompatActivity
                 final float x = event.getX(pointerIndex);
                 final float y = event.getY(pointerIndex);
 
-                final double step = 1.0; // Esto deberia ser en metros
+                final double step = m_panning_sensivity;
 
                 final double delta   = 10;
                 final double delta_y = mLastTouchY - y;
@@ -931,7 +943,7 @@ public class MainActivity extends AppCompatActivity
                 final float y = event.getY(pointerIndex);
 
                 final double delta = 25;
-                final double angle = 0.25;
+                final double angle = m_rotation_sensitivity;
 
                 if ( Math.abs(y - mLastTouchY ) > delta ) {
                     if ( y > mLastTouchY ){
@@ -1009,8 +1021,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
-
+//region TERRAIN listeners and methods
     @Override
     public void onHideTerrainToggled(boolean value){
         // TODO: Watch!!
@@ -1086,8 +1097,18 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onPositioningSensivityChanged(double value){
+        m_panning_sensivity = value;
+    }
+
+    @Override
+    public void onOrientationSensivityChanged(double value){
+        m_rotation_sensitivity = value;
+    }
+
+    @Override
     public void onKalmanToggled(boolean value){
-        //mArgeoFragment.getViewer().getDevicePoseCameraController().setKalmanFilterEnabled(value);
+
     }
 
     @Override
@@ -1162,10 +1183,12 @@ public class MainActivity extends AppCompatActivity
     public void onDefaultButtonClicked(){
         FragmentTerrain fragment_terrain = (FragmentTerrain) getSupportFragmentManager().findFragmentById(R.id.right_menu_fragment_terrain);
 
-        fragment_terrain.resetToDefault(false, false, true, 0.7f, 1.0, 1.5f, false,
-                getResources().getInteger(R.integer.pref_hud_opacity_default), // 60
-                getResources().getInteger(R.integer.pref_hud_width_default));  // 200
+        fragment_terrain.resetToDefault(false, false, false, 0.7f, 1.0, 1.5f, 10.0, 0.25, false,
+                getResources().getInteger(R.integer.pref_hud_opacity_default),
+                getResources().getInteger(R.integer.pref_hud_width_default));
     }
+
+    //endregion and
 
     public void openPictureInPicture(TTARView current_ttarview) {
         m_current_ttarview = current_ttarview;
@@ -1303,54 +1326,7 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    //region DEBUG
-    protected void showDebugInfo() {
-        TextView text = (TextView) findViewById(R.id.textview_debug_info_1);
-        text.setVisibility(View.VISIBLE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_2);
-        text.setVisibility(View.VISIBLE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_3);
-        text.setVisibility(View.VISIBLE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_4);
-        text.setVisibility(View.VISIBLE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_5);
-        text.setVisibility(View.VISIBLE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_6);
-        text.setVisibility(View.VISIBLE);
-
-        m_show_debug_info = true;
-        m_meminfo_handler.postDelayed(m_meminfo_runnable, 500);
-    }
-
-    protected void hideDebugInfo() {
-        m_show_debug_info = false;
-
-        TextView text = (TextView) findViewById(R.id.textview_debug_info_1);
-        text.setVisibility(View.GONE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_2);
-        text.setVisibility(View.GONE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_3);
-        text.setVisibility(View.GONE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_4);
-        text.setVisibility(View.GONE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_5);
-        text.setVisibility(View.GONE);
-
-        text = (TextView) findViewById(R.id.textview_debug_info_6);
-        text.setVisibility(View.GONE);
-    }
-    //endregion
-
-    //region TTARView related class members
+    //region TTARView listeners and methods
     public float getScreenDensity() {
         return m_screen_density;
     }
@@ -1439,6 +1415,53 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onDialogNegativeClick(DialogChangeTTARVIEWResolution dialog){
         //Nothing to do yet
+    }
+    //endregion
+
+    //region DEBUG
+    protected void showDebugInfo() {
+        TextView text = (TextView) findViewById(R.id.textview_debug_info_1);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_2);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_3);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_4);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_5);
+        text.setVisibility(View.VISIBLE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_6);
+        text.setVisibility(View.VISIBLE);
+
+        m_show_debug_info = true;
+        m_meminfo_handler.postDelayed(m_meminfo_runnable, 500);
+    }
+
+    protected void hideDebugInfo() {
+        m_show_debug_info = false;
+
+        TextView text = (TextView) findViewById(R.id.textview_debug_info_1);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_2);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_3);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_4);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_5);
+        text.setVisibility(View.GONE);
+
+        text = (TextView) findViewById(R.id.textview_debug_info_6);
+        text.setVisibility(View.GONE);
     }
     //endregion
 

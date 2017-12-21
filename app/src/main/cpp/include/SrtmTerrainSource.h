@@ -21,7 +21,7 @@ namespace argeo
 		double get_maximum_height() const;
 		double get_minimum_height() const;
 
-		RasterSourceTileData load_tile_data(RasterTileIdentifier identifier) const;
+		RasterSourceTileData load_tile_data(RasterTileIdentifier identifier);
 
 		int get_tile_longitude_posts() const;
 		int get_tile_latitude_posts() const;
@@ -48,7 +48,7 @@ namespace argeo
 			const unsigned int& columns_offset,
 			float* data,
 			std::atomic<float>& maximum,
-			std::atomic<float>& minimum) const;
+			std::atomic<float>& minimum);
 
 		// The raster levels.
 		RasterLevelCollection m_levels_collection;
@@ -57,6 +57,9 @@ namespace argeo
 		GeodeticExtent m_extent;
 
 		// The amount of loaded tiles.
-		int m_tiles_loaded;		
+		int m_tiles_loaded;
+
+		float m_min_height;
+		float m_max_height;
 	};
 }

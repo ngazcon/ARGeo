@@ -72,6 +72,110 @@ namespace argeo
 			kTypeDouble,
 			NULL);
 
+
+		addNativeMethod(
+				"setSensorLowPassFilterAlpha",
+				(void*)&JNIDevicePoseCameraController::set_sensor_low_pass_filter_alpha,
+                kTypeVoid,
+				kTypeDouble,
+				NULL);
+
+		addNativeMethod(
+				"getSensorLowPassFilterAlpha",
+				(void*)&JNIDevicePoseCameraController::get_sensor_low_pass_filter_alpha,
+                kTypeDouble,
+				NULL);
+
+        addNativeMethod(
+                "setGPSStandingFrec",
+                (void*)&JNIDevicePoseCameraController::set_gps_standing_frec,
+                kTypeVoid,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "getGPSStandingFrec",
+                (void*)&JNIDevicePoseCameraController::get_gps_standing_frec,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "setGPSMovingFrec",
+                (void*)&JNIDevicePoseCameraController::set_gps_moving_frec,
+                kTypeVoid,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "getGPSMovingFrec",
+                (void*)&JNIDevicePoseCameraController::get_gps_moving_frec,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "setNetworkStandingFrec",
+                (void*)&JNIDevicePoseCameraController::set_network_standing_frec,
+                kTypeVoid,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "getNetworkStandingFrec",
+                (void*)&JNIDevicePoseCameraController::get_network_standing_frec,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "setNetworkMovingFrec",
+                (void*)&JNIDevicePoseCameraController::set_network_moving_frec,
+                kTypeVoid,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "getNetworkMovingFrec",
+                (void*)&JNIDevicePoseCameraController::get_network_moving_frec,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "setInitialSamples",
+                (void*)&JNIDevicePoseCameraController::set_initial_samples,
+                kTypeVoid,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "getInitialSamples",
+                (void*)&JNIDevicePoseCameraController::get_initial_samples,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "setAccuracyDelta",
+                (void*)&JNIDevicePoseCameraController::set_accuracy_delta,
+                kTypeVoid,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "getAccuracyDelta",
+                (void*)&JNIDevicePoseCameraController::get_accuracy_delta,
+                kTypeInt,
+                NULL);
+
+        addNativeMethod(
+                "forceLocationUpdates",
+                (void*)&JNIDevicePoseCameraController::force_location_updates,
+                kTypeVoid,
+                NULL);
+
+        addNativeMethod(
+                "getGPSState",
+                (void*)&JNIDevicePoseCameraController::get_gps_state,
+                kTypeInt,
+                NULL);
+
 		registerNativeMethods(env);
 	}
 
@@ -161,4 +265,139 @@ namespace argeo
 		JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
 		return object->getNativeObject()->get_roll();
 	}
+
+    jdouble JNIDevicePoseCameraController::get_sensor_low_pass_filter_alpha(
+            JNIEnv *jni,
+            jobject java_this)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        return object->getNativeObject()->get_sensor_low_pass_filter_alpha();
+    }
+
+    void JNIDevicePoseCameraController::set_sensor_low_pass_filter_alpha(
+            JNIEnv *jni,
+            jobject java_this,
+            jdouble alpha)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        object->getNativeObject()->set_sensor_low_pass_filter_alpha(alpha);
+    }
+
+    void JNIDevicePoseCameraController::set_accuracy_delta(
+            JNIEnv *jni,
+            jobject java_this,
+            jint accuracy_delta)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        object->getNativeObject()->set_accuracy_delta(accuracy_delta);
+    }
+
+    jint JNIDevicePoseCameraController::get_accuracy_delta(
+            JNIEnv *jni,
+            jobject java_this)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        return object->getNativeObject()->get_accuracy_delta();
+    }
+
+    void JNIDevicePoseCameraController::set_initial_samples(
+            JNIEnv *jni,
+            jobject java_this,
+            jint initial_samples)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        object->getNativeObject()->set_initial_samples(initial_samples);
+    }
+
+    jint JNIDevicePoseCameraController::get_initial_samples(
+            JNIEnv *jni,
+            jobject java_this)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        return object->getNativeObject()->get_initial_samples();
+    }
+
+    void JNIDevicePoseCameraController::set_gps_moving_frec(
+            JNIEnv *jni,
+            jobject java_this,
+            jint gps_moving_frec)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        object->getNativeObject()->set_gps_moving_frec(gps_moving_frec);
+    }
+
+    jint JNIDevicePoseCameraController::get_gps_moving_frec(
+            JNIEnv *jni,
+            jobject java_this)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        return object->getNativeObject()->get_gps_moving_frec();
+    }
+
+    void JNIDevicePoseCameraController::set_gps_standing_frec(
+            JNIEnv *jni,
+            jobject java_this,
+            jint gps_standing_frec)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        object->getNativeObject()->set_gps_standing_frec(gps_standing_frec);
+    }
+
+    jint JNIDevicePoseCameraController::get_gps_standing_frec(
+            JNIEnv *jni,
+            jobject java_this)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        return object->getNativeObject()->get_gps_standing_frec();
+    }
+
+    void JNIDevicePoseCameraController::set_network_moving_frec(
+            JNIEnv *jni,
+            jobject java_this,
+            jint network_moving_frec)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        object->getNativeObject()->set_network_moving_frec(network_moving_frec);
+    }
+
+    jint JNIDevicePoseCameraController::get_network_moving_frec(
+            JNIEnv *jni,
+            jobject java_this)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        return object->getNativeObject()->get_network_moving_frec();
+    }
+
+    void JNIDevicePoseCameraController::set_network_standing_frec(
+            JNIEnv *jni,
+            jobject java_this,
+            jint network_standing_frec)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        object->getNativeObject()->set_network_standing_frec(network_standing_frec);
+    }
+
+    jint JNIDevicePoseCameraController::get_network_standing_frec(
+            JNIEnv *jni,
+            jobject java_this)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        return object->getNativeObject()->get_network_standing_frec();
+    }
+
+    void JNIDevicePoseCameraController::force_location_updates(
+            JNIEnv *jni,
+            jobject java_this)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        object->getNativeObject()->force_location_updates();
+    }
+
+    jint JNIDevicePoseCameraController::get_gps_state(
+            JNIEnv *jni,
+            jobject java_this)
+    {
+        JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+        return static_cast<jint>(object->getNativeObject()->get_gps_state());
+    }
 }

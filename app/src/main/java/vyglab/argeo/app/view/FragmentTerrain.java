@@ -35,6 +35,8 @@ public class FragmentTerrain extends Fragment {
         public void onOpacityChanged(float value);
         public void onExaggerationChanged(double value);
         public double onCameraHeightChanged(double value);
+        public void onPositioningSensivityChanged(double value);
+        public void onOrientationSensivityChanged(double value);
         public void onKalmanToggled(boolean value);
         public void onHudOpacityChanged(int value);
         public void onHudWidthChanged(int value);
@@ -74,7 +76,7 @@ public class FragmentTerrain extends Fragment {
         });
 
         switch_button = (SwitchCompat) rootView.findViewById(R.id.switch_illumination);
-        switch_button.setChecked(true);
+        switch_button.setChecked(false);
         switch_button.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -145,6 +147,49 @@ public class FragmentTerrain extends Fragment {
             }
         });
 
+        seekBar = (AppCompatSeekBar) rootView.findViewById(R.id.seekBar_camera_positioning_sensitivity);
+        seekBar.setOnSeekBarChangeListener(new AppCompatSeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                double value = (i + 1) * 10;
+                m_callback.onPositioningSensivityChanged(value);
+                TextView text = (TextView) getActivity().findViewById(R.id.textView_camera_positioning_sensitivity);
+                text.setText(String.valueOf((int)value));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        seekBar = (AppCompatSeekBar) rootView.findViewById(R.id.seekBar_camera_orientation_sensitivity);
+        seekBar.setOnSeekBarChangeListener(new AppCompatSeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                double value = (i + 1) * 0.25;
+                m_callback.onOrientationSensivityChanged(value);
+                TextView text = (TextView) getActivity().findViewById(R.id.textView_camera_orientation_sensitivity);
+                String number = String.format("%.2f", value);
+                text.setText(number);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         seekBar = (AppCompatSeekBar) rootView.findViewById(R.id.seekBar_hud_opacity);
         seekBar.setOnSeekBarChangeListener(new AppCompatSeekBar.OnSeekBarChangeListener() {
             @Override
@@ -201,6 +246,7 @@ public class FragmentTerrain extends Fragment {
                 m_callback.onKalmanToggled(b);
             }
         });
+        switch_button.setVisibility(View.GONE);
 
         Button button = (Button) rootView.findViewById(R.id.button_terrain_default);
         button.setOnClickListener(new View.OnClickListener() {
@@ -303,7 +349,7 @@ public class FragmentTerrain extends Fragment {
         });
     }
 
-    public void resetToDefault(boolean hide, boolean wireframe, boolean illumination, float opacity, double exaggeration, float cameraH, boolean kalman, int hud_opacity, int hud_width){
+    public void resetToDefault(boolean hide, boolean wireframe, boolean illumination, float opacity, double exaggeration, float cameraH, double cameraPos, double cameraOrient, boolean kalman, int hud_opacity, int hud_width){
         SwitchCompat switch_button= (SwitchCompat) getActivity().findViewById(R.id.switch_hide_terrain);
         if (switch_button.isChecked() != hide){
             switch_button.setChecked(hide);
@@ -346,17 +392,35 @@ public class FragmentTerrain extends Fragment {
             }
         });
 
+        final AppCompatSeekBar seekBar4 = (AppCompatSeekBar) getActivity().findViewById(R.id.seekBar_camera_positioning_sensitivity);
+        final int camera_positioning = (int) (cameraPos / 10.0) - 1;
+        seekBar2.post(new Runnable() {
+            @Override
+            public void run() {
+                seekBar4.setProgress(camera_positioning);
+            }
+        });
+
+        final AppCompatSeekBar seekBar5 = (AppCompatSeekBar) getActivity().findViewById(R.id.seekBar_camera_orientation_sensitivity);
+        final int camera_orientation = (int) (cameraOrient / 0.25) - 1;
+        seekBar2.post(new Runnable() {
+            @Override
+            public void run() {
+                seekBar5.setProgress(camera_orientation);
+            }
+        });
+
         switch_button = (SwitchCompat) getActivity().findViewById(R.id.switch_kalman);
         if (switch_button.isChecked() != kalman) {
             switch_button.setChecked(kalman);
         }
 
-        final AppCompatSeekBar seekBar4 = (AppCompatSeekBar) getActivity().findViewById(R.id.seekBar_hud_opacity);
+        final AppCompatSeekBar seekBar6 = (AppCompatSeekBar) getActivity().findViewById(R.id.seekBar_hud_opacity);
         final int hud_opacity_value = hud_opacity / 10;
         seekBar2.post(new Runnable() {
             @Override
             public void run() {
-                seekBar4.setProgress(hud_opacity_value);
+                seekBar6.setProgress(hud_opacity_value);
             }
         });
 

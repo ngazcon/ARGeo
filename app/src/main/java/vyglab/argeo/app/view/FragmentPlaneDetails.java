@@ -6,11 +6,15 @@ import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import vyglab.argeo.app.MainActivityState;
+import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
+import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.app.model.Geodetic3D;
 import vyglab.argeo.app.model.PlaneBuilder;
 import vyglab.argeo.jni.ArgeoFragment;
@@ -109,7 +113,7 @@ public class FragmentPlaneDetails extends Fragment
         seekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
-                m_seekbar_strike = i * 5;
+                m_seekbar_strike = strikeSeekBarToValue(i);
                 TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_strike);
                 textview.setText(String.valueOf(m_seekbar_strike));
             }
@@ -176,6 +180,15 @@ public class FragmentPlaneDetails extends Fragment
             }
         });
 
+        Button button = (Button) getView().findViewById(R.id.button_fragment_plane_details_delete);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UIContextManager.getInstance().next(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.EXTRA_INTERACTION_3);
+                UIContextManager.getInstance().request(MainActivityState.ApplicationMode.PLANE);
+            }
+        });
+
         cleanView(false);
     }
 
@@ -195,7 +208,17 @@ public class FragmentPlaneDetails extends Fragment
         return dip_seekbar - 90;
     }
 
+    protected int strikeValueToSeekBar(int strike_value) {
+        return strike_value / 5;
+    }
+
+    protected int strikeSeekBarToValue(int strike_seekbar) {
+        return strike_seekbar * 5;
+    }
+
     public void cleanView(boolean enable_value){
+        m_current_plane_item = null;
+
         m_name = "";
         m_description = "";
         m_latitude = 0.0;
@@ -266,39 +289,79 @@ public class FragmentPlaneDetails extends Fragment
         SwitchCompat switch_virtual_orientation_plane = (SwitchCompat) getView().findViewById(R.id.switchcompat_fragment_plane_virtual_orientation_plane);
         switch_virtual_orientation_plane.setChecked(true);
         switch_virtual_orientation_plane.setEnabled(enable_value);
+
+        Button button = (Button) getView().findViewById(R.id.button_fragment_plane_details_delete);
+        button.setEnabled(enable_value);
     }
 
-    public void loadPlane(Plane item) {
-        /*
-        TextView textview = (TextView) getView().findViewById(R.id.textView_ttarview_lat);
-        textview.setText(Geodetic3D.coordinateToPrintableText(item.getPosition().getLat()));
+    public void loadPlane(Plane plane) {
+        m_current_plane_item = plane;
 
-        textview = (TextView) getView().findViewById(R.id.textView_ttarview_long);
-        textview.setText(Geodetic3D.coordinateToPrintableText(item.getPosition().getLong()));
+        m_name = plane.getName();
+        m_description = plane.getDescription();
+        m_latitude = plane.getPosition().getLat();
+        m_longitude = plane.getPosition().getLong();
+        m_height = plane.getPosition().getHeight();
+        m_seekbar_virtual_orientation = plane.getVirtualOrientation();
+        m_seekbar_dip = plane.getDip();
+        m_seekbar_strike = plane.getStrike();
+        m_seekbar_size = plane.getSize();
+        m_seekbar_thickness = plane.getThickness();
+        m_show_orientation_plane = plane.getShowVirtualOrientationPlane();
 
-        textview = (TextView) getView().findViewById(R.id.textView_ttarview_height);
-        textview.setText(Geodetic3D.heightToPrintableText(item.getPosition().getHeight()));
+        EditText edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_name);
+        edittext.setText(m_name);
 
-        EditText edittext = (EditText) getView().findViewById(R.id.editText_ttarview_name);
-        edittext.setText(item.getName());
+        edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_description);
+        edittext.setText(m_description);
 
-        edittext = (EditText) getView().findViewById(R.id.editText_ttarview_description);
-        edittext.setText(item.getDescription());
+        TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_lat);
+        textview.setText(Geodetic3D.coordinateToPrintableText(m_latitude));
+        textview.setEnabled(true);
 
-        ImageButton imagebutton = (ImageButton) getView().findViewById(R.id.imagebutton_open_initial_ttarview);
-        imagebutton.setEnabled(true);
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_long);
+        textview.setText(Geodetic3D.coordinateToPrintableText(m_longitude));
+        textview.setEnabled(true);
 
-        ImageView imageview = (ImageView) this.getView().findViewById(R.id.imageview_ttarview_details_initial_image);
-        imageview.setImageBitmap(item.getInitialView());
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_height);
+        textview.setText(Geodetic3D.heightToPrintableText(m_height));
+        textview.setEnabled(true);
 
-        imageview = (ImageView) this.getView().findViewById(R.id.imageview_ttarview_details_updated_image);
-        imageview.setImageBitmap(item.getUpdatedView());
+        SeekBar seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_virtual_orientation);
+        seekbar.setProgress(m_seekbar_virtual_orientation);
 
-        Button button = (Button) getView().findViewById(R.id.button_ttarview_delete);
+        seekbar = (SeekBar) getView().findViewById(R.id.seekBar_fragment_plane_details_dip);
+        seekbar.setProgress(dipValueToSeekBar(m_seekbar_dip));
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_strike);
+        seekbar.setProgress(strikeValueToSeekBar(m_seekbar_strike));
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_size);
+        seekbar.setProgress(m_seekbar_size - 1);
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_thickness);
+        seekbar.setProgress(m_seekbar_thickness - 1);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_virtual);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_dip);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_strike);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_size);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_thickness);
+        textview.setEnabled(true);
+
+        SwitchCompat switch_virtual_orientation_plane = (SwitchCompat) getView().findViewById(R.id.switchcompat_fragment_plane_virtual_orientation_plane);
+        switch_virtual_orientation_plane.setChecked(m_show_orientation_plane);
+
+        Button button = (Button) getView().findViewById(R.id.button_fragment_plane_details_delete);
         button.setEnabled(true);
-
-        m_current_ttarview_item  = item;
-        */
     }
 
     public Plane getPlaneFromView() {

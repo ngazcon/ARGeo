@@ -207,8 +207,6 @@ public class FragmentTTARView extends Fragment
         if (m_list_interaction_enabled) {
             m_fragment_ttarview_details.loadTTARView(item);
             m_viewpager_ttarview.setCurrentItem(1);
-            //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
-            //m_main_activity_state.getSecondaryFabContext().getState().handle();
             UIContextManager.getInstance().next(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.EXTRA_INTERACTION_1);
             UIContextManager.getInstance().request(MainActivityState.ApplicationMode.TTARVIEW);
         }
@@ -218,8 +216,6 @@ public class FragmentTTARView extends Fragment
     public void onTTARViewListItemUnselected() {
         if (m_list_interaction_enabled) {
             m_fragment_ttarview_details.cleanView();
-            //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
-            //m_main_activity_state.getSecondaryFabContext().getState().handle();
             UIContextManager.getInstance().next(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.EXTRA_INTERACTION_2);
             UIContextManager.getInstance().request(MainActivityState.ApplicationMode.TTARVIEW);
         }

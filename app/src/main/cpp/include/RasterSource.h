@@ -42,7 +42,7 @@ namespace argeo
 
 		virtual GeodeticExtent get_extent() const = 0;
 
-		virtual RasterSourceTileData load_tile_data(RasterTileIdentifier identifier) const = 0;
+		virtual RasterSourceTileData load_tile_data(RasterTileIdentifier identifier) = 0;
 
 		RasterTile* get_tile(RasterTileIdentifier identifier);
 

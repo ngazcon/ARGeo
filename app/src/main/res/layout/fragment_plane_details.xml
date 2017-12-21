@@ -341,6 +341,29 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="1dp"
+                android:layout_marginLeft="4dp"
+                android:background="@color/colorDividersLB" />
+
+            <RelativeLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="16dp"
+                android:paddingBottom="4dp"
+                android:paddingLeft="8dp">
+
+                <Button style="?android:attr/borderlessButtonStyle"
+                    android:id="@+id/button_fragment_plane_details_delete"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="DELETE"
+                    android:textColor="@color/colorAccent"
+                    android:layout_alignParentRight="true"/>
+            </RelativeLayout>
+
         </LinearLayout>
 
     </ScrollView>

@@ -16,10 +16,11 @@ namespace argeo
 	// Token for unsensed data.
 	const float VOID = -32768;
 
+    //const int NUMBER_OF_LEVELS = 1;
 	const int NUMBER_OF_LEVELS = 4;
 
-	const int MIN_HEIGHT = -44;
-	const int MAX_HEIGHT = 1240;
+    const int MIN_HEIGHT = -44;
+
 
 	// This sizes defines the resolution of the tile.
 	const int SOURCE_TILE_WIDTH  = 1201;
@@ -28,10 +29,14 @@ namespace argeo
 	// This deltas defines the degrees covered by one tile of this source.
 	const int SOURCE_LEVEL_ZERO_DELTA_LONGITUDE_DEGREES = 8;
 	const int SOURCE_LEVEL_ZERO_DELTA_LATITUDE_DEGREES  = 8;
+    //const int SOURCE_LEVEL_ZERO_DELTA_LONGITUDE_DEGREES = 1;
+    //const int SOURCE_LEVEL_ZERO_DELTA_LATITUDE_DEGREES  = 1;
 
 	SrtmTerrainSource::SrtmTerrainSource(ITerrain* terrain)
 		: RasterSource::RasterSource(terrain)
         , m_extent(-180.0, -90.0, 180.0, 90.0)
+        , m_max_height(-std::numeric_limits<float>::max())
+        , m_min_height(std::numeric_limits<float>::max())
 	{
 		m_levels_collection.resize(NUMBER_OF_LEVELS);
 
@@ -76,7 +81,7 @@ namespace argeo
 	}
 
 	RasterSourceTileData SrtmTerrainSource::load_tile_data(
-		RasterTileIdentifier identifier) const
+		RasterTileIdentifier identifier)
 	{
 		unsigned int divisor = pow(2.0, identifier.level);
 		unsigned int files_to_read = pow(2.0, NUMBER_OF_LEVELS - identifier.level - 1);
@@ -251,10 +256,11 @@ namespace argeo
 					// Get the height stored for the position.
 					// Parse from signed char to unsigned.
 					// The data is stored in big endian so we need to parse it!
-					int height = (buf.get()[index * 2 + 0]) << 8 | (buf.get()[index * 2 + 1]);
-
+					//int height = (buf.get()[index * 2 + 0]) << 8 | (buf.get()[index * 2 + 1]);
 					// The readed int is signed so we need to mask it and convert.
-					height = (height & ~(1 << 15)) - (height & (1 << 15));
+					//height = (height & ~(1 << 15)) - (height & (1 << 15));
+
+					int height = row;
 
 					unsigned int data_row = SOURCE_TILE_HEIGHT - row - 1;
 					unsigned int data_col = col;
@@ -282,7 +288,7 @@ namespace argeo
 		const unsigned int& columns_offset,
 		float* data,
 		std::atomic<float>& maximum,
-		std::atomic<float>& minimum) const
+		std::atomic<float>& minimum)
 	{
 		unsigned int step = pow(2.0, NUMBER_OF_LEVELS - level - 1);
 		unsigned int buf_length = SOURCE_TILE_HEIGHT * SOURCE_TILE_WIDTH * 2;
@@ -327,8 +333,22 @@ namespace argeo
 					height = (height & ~(1 << 15)) - (height & (1 << 15));
                     if (height == VOID)
                     {
-                        height = MIN_HEIGHT	;
+                        height = MIN_HEIGHT;
                     }
+
+                    /*
+                    double delta_row = (double)rows_per_file / 2.0 - row;
+                    double delta_col = (double)cols_per_file / 2.0 - col;
+
+                    if(5 >= ::fabs(delta_row) &&
+                       5 >= ::fabs(delta_col))
+                    {
+                        height = ::fabs(delta_row) * 1000;
+                    }
+                    else {
+                        height = 100;
+                    }
+*/
 
 					unsigned int data_row = SOURCE_TILE_HEIGHT - row_offset - row - 1;
 					unsigned int data_col = col_offset + col;
@@ -344,6 +364,11 @@ namespace argeo
 				}
 			}
 		}
+
+        const float max = maximum;
+        const float min = minimum;
+        m_max_height  = std::max(m_max_height, max);
+        m_min_height  = std::min(m_min_height, min);
 
 		// Close the file descriptor.
 		::fclose(asset_file);
@@ -371,12 +396,12 @@ namespace argeo
 
 	double SrtmTerrainSource::get_maximum_height() const
 	{
-		return MAX_HEIGHT;
+		return m_max_height;
 	}
 
 	double SrtmTerrainSource::get_minimum_height() const
 	{
-		return MIN_HEIGHT;
+		return m_min_height;
 	}
 }
 

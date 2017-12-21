@@ -48,7 +48,7 @@ public class UIStateTTARViewSelected extends UIState {
 
         switch(interaction) {
             case Interactions.SECONDARY_FAB_1 :
-                // Creation was accepted
+                // Show picture in picture
                 fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
                 fragment.prepareForPictureInPictureARView();
                 break;

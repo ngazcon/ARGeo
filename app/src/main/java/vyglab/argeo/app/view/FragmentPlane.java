@@ -10,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
+import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.app.utils.HandyPlane;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.app.MainActivityState;
@@ -21,7 +23,8 @@ import vyglab.argeo.app.model.Plane;
  * Created by ngazcon on 09/03/2017.
  */
 
-public class FragmentPlane extends Fragment implements FragmentPlaneList.FragmentPlaneListItemStateChangedListener {
+public class FragmentPlane extends Fragment
+        implements FragmentPlaneList.FragmentPlaneListItemStateChangedListener {
 
     private ArgeoFragment m_argeo_fragment;
     private TabSectionsPagerAdapter m_tabs_adapter_plane;
@@ -154,22 +157,32 @@ public class FragmentPlane extends Fragment implements FragmentPlaneList.Fragmen
         return plane;
     }
 
+    public Plane deleteCurrentPlane() {
+        Plane plane = m_fragment_plane_details.getCurrentPlane();
+        //TTARViewRepository.getInstance().removeTTARView(ttarview);
+        //m_viewpager_ttarview.setCurrentItem(0);
+        //m_fragment_ttarview_list.resetSelected();
+        //m_fragment_ttarview_details.cleanView();
+
+        return plane;
+    }
+
     @Override
     public void onPlaneListItemSelected(Plane item) {
         if (m_fragment_plane_list.isListInteractionEnabled()) {
-            //m_fragment_plane_details.loadTTARView(item);
+            m_fragment_plane_details.loadPlane(item);
             m_viewpager_plane.setCurrentItem(1);
-            //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
-            //m_main_activity_state.getSecondaryFabContext().getState().handle();
+            UIContextManager.getInstance().next(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.EXTRA_INTERACTION_1);
+            UIContextManager.getInstance().request(MainActivityState.ApplicationMode.PLANE);
         }
     }
 
     @Override
     public void onPlaneListItemUnselected() {
         if (m_fragment_plane_list.isListInteractionEnabled()) {
-            //m_fragment_ttarview_details.cleanView();
-            //m_main_activity_state.getSecondaryFabContext().goNextState(SecondaryFabState.Transitions.EXTRA_INTERACTION_1);
-            //m_main_activity_state.getSecondaryFabContext().getState().handle();
+            m_fragment_plane_details.cleanView(false);
+            UIContextManager.getInstance().next(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.EXTRA_INTERACTION_2);
+            UIContextManager.getInstance().request(MainActivityState.ApplicationMode.PLANE);
         }
     }
 }

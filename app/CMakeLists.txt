@@ -163,7 +163,7 @@ add_library( # Sets the name of the library.
              src/main/cpp/ViewportTransformationMatrixUniformFactory.cpp
              src/main/cpp/ViewportUniform.cpp
              src/main/cpp/ViewportUniformFactory.cpp
-
+             src/main/cpp/GPSListener.cpp
 
              src/main/cpp/BufferGL.cpp
              src/main/cpp/ColorAttachmentsGL.cpp

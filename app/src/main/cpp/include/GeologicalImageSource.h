@@ -19,7 +19,7 @@ namespace argeo
 		double get_maximum_height() const;
 		double get_minimum_height() const;
 
-		RasterSourceTileData load_tile_data(RasterTileIdentifier identifier) const;
+		RasterSourceTileData load_tile_data(RasterTileIdentifier identifier);
 
 		int get_tile_longitude_posts() const;
 		int get_tile_latitude_posts() const;

@@ -173,10 +173,10 @@
                         android:id="@+id/textView_exaggeration"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:textAppearance="?android:attr/textAppearanceSmall"
-                        android:paddingStart="4dp"
                         android:paddingEnd="10dp"
-                        android:text="1.0" />
+                        android:paddingStart="4dp"
+                        android:text="1.0"
+                        android:textAppearance="?android:attr/textAppearanceSmall" />
 
                 </LinearLayout>
 
@@ -394,6 +394,83 @@
 
             </LinearLayout>
 
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingStart="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Positioning Sensitivity" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp">
+
+                    <android.support.v7.widget.AppCompatSeekBar
+                        android:id="@+id/seekBar_camera_positioning_sensitivity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:max="99"/>
+
+                    <TextView
+                        android:id="@+id/textView_camera_positioning_sensitivity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="10dp"
+                        android:text="  10" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:paddingStart="8dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text="Orientation Sensitivity" />
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp">
+
+                    <android.support.v7.widget.AppCompatSeekBar
+                        android:id="@+id/seekBar_camera_orientation_sensitivity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:max="39"/>
+
+                    <TextView
+                        android:id="@+id/textView_camera_orientation_sensitivity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceSmall"
+                        android:paddingStart="4dp"
+                        android:paddingEnd="10dp"
+                        android:text="0.25" />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <LinearLayout
                 android:orientation="horizontal"

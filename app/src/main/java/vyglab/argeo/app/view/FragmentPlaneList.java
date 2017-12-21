@@ -53,19 +53,6 @@ public class FragmentPlaneList extends ListFragment implements PlaneRepository.P
         m_selected = -1;
         m_item_selection_enabled = true;
 
-        /*
-        List<Plane> objects = new ArrayList<Plane>();
-        Plane p = new Plane("id-1", "jonsi", "descripcion jonsi");
-        p.setPosition(new Geodetic3D(10.0, 11.0, 12.0));
-        objects.add(p);
-        p = new Plane("id-2", "pancer", "descripcion pancer");
-        p.setPosition(new Geodetic3D(10.0, 11.0, 12.0));
-        objects.add(p);
-        p = new Plane("id-3", "jacer", "descripcion jacer");
-        p.setPosition(new Geodetic3D(10.0, 11.0, 12.0));
-        objects.add(p);
-        m_plane_adapter = new PlaneListAdapter(getActivity(), objects, this);
-        */
         m_plane_adapter = new PlaneListAdapter(getActivity(), PlaneRepository.getInstance().getPlanes(), this);
         PlaneRepository.getInstance().addListener(this);
 
@@ -124,10 +111,12 @@ public class FragmentPlaneList extends ListFragment implements PlaneRepository.P
     public void onListItemClick(ListView l, View view, int position, long id) {
         //super.onListItemClick(l, view, position, id);
 
-        if ((m_selected != -1) && (m_selected == position)){
-            m_selected = -1;
-            getListView().invalidateViews();
-            notifyPlaneListItemUnselected();
+        if (m_item_selection_enabled) {
+            if ((m_selected != -1) && (m_selected == position)) {
+                m_selected = -1;
+                getListView().invalidateViews();
+                notifyPlaneListItemUnselected();
+            }
         }
     }
 
@@ -166,6 +155,11 @@ public class FragmentPlaneList extends ListFragment implements PlaneRepository.P
     @Override
     public void onPlaneAdded(Plane plane) {
         m_plane_adapter.add(plane);
+    }
+
+    @Override
+    public void onPlaneRemoved(Plane plane) {
+        m_plane_adapter.remove(plane);
     }
 
     // Methods for update location listeners

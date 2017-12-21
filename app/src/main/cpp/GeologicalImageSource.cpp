@@ -58,7 +58,7 @@ namespace argeo
 		}
 	}
 
-	RasterSourceTileData GeologicalImageSource::load_tile_data(RasterTileIdentifier identifier) const
+	RasterSourceTileData GeologicalImageSource::load_tile_data(RasterTileIdentifier identifier)
 	{
 		double divisor = pow(2.0, identifier.level);
 

@@ -304,8 +304,8 @@ public class DBManager {
 
             // Obtain geocentric from geodetic values
             Double latitude = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_LAT));
-            Double longitude = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_LAT));
-            Double height = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_LAT));
+            Double longitude = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_LONG));
+            Double height = cursor.getDouble(cursor.getColumnIndex(DatabaseContract.PlaneTable.COLUMN_NAME_HEIGHT));
             Geodetic3D geodetic = new Geodetic3D(latitude, longitude, height);
             Geocentric3D geocentric = EllipsoidTransformations.geocentric3DFromGeodetic3D(geodetic);
 
@@ -372,6 +372,7 @@ public class DBManager {
         SQLiteDatabase db = m_dbhelper.getWritableDatabase();
         db.execSQL("delete from poi");
         db.execSQL("delete from igraphic");
+        db.execSQL("delete from plane");
         db.execSQL("delete from ttarview");
     }
 }

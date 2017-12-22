@@ -5,6 +5,7 @@ import vyglab.argeo.jni.EllipsoidTangentPlane;
 import vyglab.argeo.jni.EllipsoidTransformations;
 import vyglab.argeo.jni.Entity;
 import vyglab.argeo.jni.Geocentric3D;
+import vyglab.argeo.jni.Geodetic3D;
 import vyglab.argeo.jni.PlaneGraphics;
 import vyglab.argeo.jni.Quaternion;
 import vyglab.argeo.app.model.Plane;
@@ -179,14 +180,16 @@ public class HandyPlane {
     }
 
     public void updateShowVirtualOrientationPlane(boolean value) {
-        // If it was showing the Virtual Orientation Plane, remove it from the render engine
-        if (m_show_virtual_orientation_plane) {
-            m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getVirtualOrientationPlaneEntity());
-        }
+        if (m_plane != null) {
+            // If it was showing the Virtual Orientation Plane, remove it from the render engine
+            if (m_show_virtual_orientation_plane) {
+                m_ArgeoFragment.getViewer().getEntities().remove(m_plane.getVirtualOrientationPlaneEntity());
+            }
 
-        // Update the value and the plane graphics
-        m_show_virtual_orientation_plane = value;
-        updatePlaneGraphics();
+            // Update the value and the plane graphics
+            m_show_virtual_orientation_plane = value;
+            updatePlaneGraphics();
+        }
     }
 
     public void clear() {
@@ -219,9 +222,20 @@ public class HandyPlane {
         }
     }
 
-    //public Plane getPlane() {
-    //    return m_plane;
-    //}
+    // Just for edition mode
+    public void assignPlane(Plane plane) {
+        m_virtual_orientation = plane.getVirtualOrientation();
+        m_dip = plane.getDip();
+        m_strike = plane.getStrike();
+
+        m_show_virtual_orientation_plane = plane.getShowVirtualOrientationPlane();
+        m_size = plane.getSize();
+        m_thickness = plane.getThickness();
+
+        Geodetic3D geodetic = new Geodetic3D(plane.getPosition().getLat(), plane.getPosition().getLong(), plane.getPosition().getHeight());
+        Geocentric3D geocentric = EllipsoidTransformations.geocentric3DFromGeodetic3D(geodetic);
+        updatePlaneLocation(geocentric);
+    }
 
     //region HandyPlane Listeners
     public void addListener(PlaneChanged listener) {

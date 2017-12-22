@@ -126,9 +126,9 @@ public class DBManager {
         plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_THICKNESS, plane.getThickness());
         plane_values.put(DatabaseContract.PlaneTable.COLUMN_NAME_SHOW_VIRTUAL_ORIENTATION, plane.getShowVirtualOrientationPlane());
 
-        long newRowId = db.update(DatabaseContract.TTARViewTable.TABLE_NAME,
+        long newRowId = db.update(DatabaseContract.PlaneTable.TABLE_NAME,
                 plane_values,
-                DatabaseContract.TTARViewTable.COLUMN_NAME_ID.concat("= ?"),
+                DatabaseContract.PlaneTable.COLUMN_NAME_PLANE_ID.concat("= ?"),
                 new String[]{ plane.getId()});
         db.close();
 

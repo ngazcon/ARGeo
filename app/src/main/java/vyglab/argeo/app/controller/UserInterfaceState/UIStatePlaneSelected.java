@@ -3,6 +3,9 @@ package vyglab.argeo.app.controller.UserInterfaceState;
 import android.view.View;
 
 import vyglab.argeo.R;
+import vyglab.argeo.app.MediatorArgeoFragment;
+import vyglab.argeo.app.model.Plane;
+import vyglab.argeo.app.utils.Storage;
 import vyglab.argeo.app.view.FragmentPlane;
 
 /**
@@ -44,19 +47,13 @@ public class UIStatePlaneSelected extends UIState {
         FragmentPlane fragment;
 
         switch(interaction) {
-            case Interactions.SECONDARY_FAB_1 :
-                // Creation was accepted
-                //fragment = (FragmentTTARView) UIFacade.getInstance().getCurrentFragment("TAG_TTARVIEW");
-                //fragment.prepareForPictureInPictureARView();
-                break;
-
             case Interactions.EXTRA_INTERACTION_3 :
-                // Delete TTARView
+                // Delete Plane
                 fragment = (FragmentPlane) UIFacade.getInstance().getCurrentFragment("TAG_PLANE");
-                //TTARView ttarview = fragment.deleteCurrentTTARView();
-                //MediatorTTARView.getInstance().closeTTARViewOnDeletion(ttarview);
-                //Storage.getInstance().delete(ttarview);
-                //todo DELETE TTARVIEW
+                Plane plane = fragment.deleteCurrentPlane();
+                Storage.getInstance().delete(plane);
+                MediatorArgeoFragment.getInstance().cleanGraphics(plane);
+                plane = null;
                 break;
         }
     }

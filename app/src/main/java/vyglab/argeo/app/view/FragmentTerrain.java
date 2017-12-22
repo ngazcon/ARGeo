@@ -293,7 +293,7 @@ public class FragmentTerrain extends Fragment {
         text.setText(Geodetic3D.coordinateToPrintableText(camera.getPositionGeodetic().getLongitude()));
 
         text = (TextView) getActivity().findViewById(R.id.textView_camera_height);
-        text.setText(String.valueOf(camera.getPositionGeodetic().getAltitude()).concat("m"));
+        text.setText(Geodetic3D.heightToPrintableText(camera.getPositionGeodetic().getAltitude()));
     }
 
     public void showCameraOrientationParameters(Camera camera){

@@ -50,6 +50,7 @@ import vyglab.argeo.app.controller.UserInterfaceState.UIFacade;
 import vyglab.argeo.app.controller.UserInterfaceState.UIState;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStatePlaneBase;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStatePlaneCreation;
+import vyglab.argeo.app.controller.UserInterfaceState.UIStatePlaneEdition;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStatePlaneSelected;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewBase;
 import vyglab.argeo.app.controller.UserInterfaceState.UIStateTTARViewCreation;
@@ -214,6 +215,8 @@ public class MainActivity extends AppCompatActivity
         m_DBmanager = new DBManager(getApplicationContext(), mArgeoFragment);
         Toast.makeText(getApplicationContext(), m_DBmanager.listPois().toString(), Toast.LENGTH_SHORT).show();
         Storage.getInstance().init(m_DBmanager);
+
+        MediatorArgeoFragment.getInstance().init(mArgeoFragment);
 
         ActivityCompat.requestPermissions(
                 this,
@@ -766,7 +769,7 @@ public class MainActivity extends AppCompatActivity
         UIState state_plane_base = new UIStatePlaneBase();
         UIState state_plane_creation = new UIStatePlaneCreation();
         UIState state_plane_selected = new UIStatePlaneSelected();
-        //UIState state_plane_edition = new UIStateTTARViewEdition();
+        UIState state_plane_edition = new UIStatePlaneEdition();
 
         // 3-- Populate each created state
         state_plane_base.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_plane_creation);
@@ -781,12 +784,19 @@ public class MainActivity extends AppCompatActivity
 
         //state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_ttarview_selected);
         //state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_1));
-        //state_ttarview_selected.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_ttarview_edition); // Edition state
-        //state_ttarview_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.TTARVIEW, UIState.Interactions.SECONDARY_FAB_2)); // Edition listener
+        state_plane_selected.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_plane_edition); // Edition state
+        state_plane_selected.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_2)); // Edition listener
         state_plane_selected.addTransition(UIState.Interactions.EXTRA_INTERACTION_2, state_plane_base);
         state_plane_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_2, null);
         state_plane_selected.addTransition(UIState.Interactions.EXTRA_INTERACTION_3, state_plane_base);
         state_plane_selected.addInteraction(UIState.Interactions.EXTRA_INTERACTION_3, null);
+
+        state_plane_edition.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_plane_selected);
+        state_plane_edition.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_1));
+        state_plane_edition.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_plane_selected);
+        state_plane_edition.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_2));
+        state_plane_edition.addTransition(UIState.Interactions.EXTRA_INTERACTION_2, state_plane_base);
+        state_plane_edition.addTransition(UIState.Interactions.EXTRA_INTERACTION_3, state_plane_base);
 
         // 4-- Finally set the initial state to the context
         context.setState(state_plane_base);

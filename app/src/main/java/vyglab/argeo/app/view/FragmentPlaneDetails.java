@@ -392,6 +392,62 @@ public class FragmentPlaneDetails extends Fragment
 
     public void setForCreation(){
         cleanView(true);
+
+        Button button = (Button) getView().findViewById(R.id.button_fragment_plane_details_delete);
+        button.setEnabled(false);
+    }
+
+    public void setForEdition() {
+        EditText edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_name);
+        edittext.setEnabled(true);
+
+        edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_description);
+        edittext.setEnabled(true);
+
+        TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_lat);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_long);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_height);
+        textview.setEnabled(true);
+
+        SeekBar seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_virtual_orientation);
+        seekbar.setEnabled(true);
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekBar_fragment_plane_details_dip);
+        seekbar.setEnabled(true);
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_strike);
+        seekbar.setEnabled(true);
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_size);
+        seekbar.setEnabled(true);
+
+        seekbar = (SeekBar) getView().findViewById(R.id.seekbar_fragment_plane_details_thickness);
+        seekbar.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_virtual);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_dip);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_strike);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_size);
+        textview.setEnabled(true);
+
+        textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_thickness);
+        textview.setEnabled(true);
+
+        SwitchCompat switch_virtual_orientation_plane = (SwitchCompat) getView().findViewById(R.id.switchcompat_fragment_plane_virtual_orientation_plane);
+        switch_virtual_orientation_plane.setEnabled(true);
+
+        Button button = (Button) getView().findViewById(R.id.button_fragment_plane_details_delete);
+        button.setEnabled(true);
     }
 
     //region PlaneChanged listeners

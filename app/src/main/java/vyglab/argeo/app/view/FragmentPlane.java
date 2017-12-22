@@ -10,8 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import vyglab.argeo.app.MediatorArgeoFragment;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
 import vyglab.argeo.app.controller.UserInterfaceState.UIState;
+import vyglab.argeo.app.model.PlaneRepository;
 import vyglab.argeo.app.utils.HandyPlane;
 import vyglab.argeo.jni.ArgeoFragment;
 import vyglab.argeo.app.MainActivityState;
@@ -157,12 +159,42 @@ public class FragmentPlane extends Fragment
         return plane;
     }
 
+    public void setForEdition() {
+        m_fragment_plane_details.setForEdition();
+        MediatorArgeoFragment.getInstance().cleanGraphics(m_fragment_plane_details.getCurrentPlane());
+        HandyPlane.getInstance().assignPlane(m_fragment_plane_details.getCurrentPlane());
+        HandyPlane.getInstance().addListener(m_fragment_plane_details);
+    }
+
+    public void cancelEdition() {
+        //m_fragment_plane_details.getCurrentPlane()
+        m_fragment_plane_details.loadPlane(m_fragment_plane_details.getCurrentPlane());
+        HandyPlane.getInstance().removeListener(m_fragment_plane_details);
+        HandyPlane.getInstance().clear();
+        MediatorArgeoFragment.getInstance().updateGraphics(m_fragment_plane_details.getCurrentPlane());
+    }
+
+    public Plane acceptEdition() {
+        Plane temp_plane = m_fragment_plane_details.getPlaneFromView();
+        Plane plane = m_fragment_plane_details.getCurrentPlane();
+        temp_plane.copyTo(plane, true);
+        temp_plane = null;
+
+        //m_fragment_plane_details.cleanView(false);
+        m_fragment_plane_details.loadPlane(plane);
+        m_fragment_plane_list.updateSelected();
+        HandyPlane.getInstance().clear();
+        HandyPlane.getInstance().removeListener(m_fragment_plane_details);
+
+        return m_fragment_plane_details.getCurrentPlane();
+    }
+
     public Plane deleteCurrentPlane() {
         Plane plane = m_fragment_plane_details.getCurrentPlane();
-        //TTARViewRepository.getInstance().removeTTARView(ttarview);
-        //m_viewpager_ttarview.setCurrentItem(0);
-        //m_fragment_ttarview_list.resetSelected();
-        //m_fragment_ttarview_details.cleanView();
+        PlaneRepository.getInstance().removePlane(plane);
+        m_viewpager_plane.setCurrentItem(0);
+        m_fragment_plane_list.resetSelected();
+        m_fragment_plane_details.cleanView(false);
 
         return plane;
     }

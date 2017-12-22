@@ -56,7 +56,7 @@ public class Geodetic3D {
     }
 
     public static String heightToPrintableText(double height){
-        String text = String.valueOf(Math.round(height)).concat("m");
+        String text = String.format("%.2f", height).concat("m");
 
         return text;
     }

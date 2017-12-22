@@ -151,6 +151,16 @@ public class FragmentPlaneList extends ListFragment implements PlaneRepository.P
         return m_item_selection_enabled;
     }
 
+    public void resetSelected(){
+        if (m_selected != -1){
+            m_selected = -1;
+            getListView().invalidateViews();
+        }
+    }
+
+    public void updateSelected() {
+        getListView().invalidateViews();
+    }
 
     @Override
     public void onPlaneAdded(Plane plane) {

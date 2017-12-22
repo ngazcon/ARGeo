@@ -25,17 +25,15 @@ import java.util.List;
  */
 
 public class HandyPOI {
-    private static HandyPOI m_instance = null;
-    private POI m_poi;
-    private ArgeoFragment m_ArgeoFragment;
-    private PoiBillboardBuilder.BillboardIcon m_billboard_icon = PoiBillboardBuilder.BillboardIcon.DEFAULT;
-    private int m_billboard_size = 50;
-    private List<PositionPoiChanged> m_poi_listeners = new ArrayList<PositionPoiChanged>();
-    private int int_trippel_nagel;
+            private static HandyPOI m_instance = null;
+            private POI m_poi;
+            private ArgeoFragment m_ArgeoFragment;
+            private PoiBillboardBuilder.BillboardIcon m_billboard_icon = PoiBillboardBuilder.BillboardIcon.DEFAULT;
+            private int m_billboard_size = 50;
+            private List<PositionPoiChanged> m_poi_listeners = new ArrayList<PositionPoiChanged>();
 
     protected HandyPOI(){
-        m_poi = null;
-        int_trippel_nagel = 0;
+                m_poi = null;
     }
 
     public static HandyPOI getInstance() {

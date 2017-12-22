@@ -117,4 +117,30 @@ public class Plane extends Object {
     public void toogleClamped(){
         m_clamped = !m_clamped;
     }
+
+    public void copyTo(Plane plane, boolean keep_id) {
+        if (!keep_id){
+            plane.setId(this.getId());
+        }
+
+        plane.setName(m_name);
+        plane.setDescription(m_description);
+
+        plane.setPosition(this.m_position);
+        plane.setDip(this.m_dip);
+        plane.setVirtualOrientation(this.m_virtual_orientation);
+        plane.setStrike(this.m_strike);
+
+        plane.setVirtualOrientationPlaneEntity(m_virtual_orientation_plane_entity);
+        plane.setDippingPlaneEntity(m_dipping_plane_entity);
+        plane.setVirtualOrientationPlaneGraphic(m_virtual_orientation_plane_graphic);
+        plane.setDippingPlaneGraphic(m_dipping_plane_graphic);
+
+        plane.setSize(m_size);
+        plane.setThickness(m_thickness);
+        plane.setShowwVirtualOrientationPlane(m_show_virtual_orientation_plane);
+
+        plane.setVisible(m_visible);
+        plane.setClamped(m_clamped);
+    }
 }

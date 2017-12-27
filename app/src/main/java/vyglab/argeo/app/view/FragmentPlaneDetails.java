@@ -46,6 +46,7 @@ public class FragmentPlaneDetails extends Fragment
     private int m_seekbar_thickness;
     private boolean m_show_orientation_plane;
     private Plane m_current_plane_item;
+    private boolean m_screen_tapped;
 
     public static FragmentPlaneDetails newInstance(int sectionNumber){
         FragmentPlaneDetails fragment = new FragmentPlaneDetails();
@@ -230,6 +231,7 @@ public class FragmentPlaneDetails extends Fragment
         m_seekbar_size = 30;
         m_seekbar_thickness = 1;
         m_show_orientation_plane = true;
+        m_screen_tapped = false;
 
         EditText edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_name);
         edittext.setText("");
@@ -311,9 +313,11 @@ public class FragmentPlaneDetails extends Fragment
 
         EditText edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_name);
         edittext.setText(m_name);
+        edittext.setEnabled(false);
 
         edittext = (EditText) getView().findViewById(R.id.edittext_fragment_plane_details_description);
         edittext.setText(m_description);
+        edittext.setEnabled(false);
 
         TextView textview = (TextView) getView().findViewById(R.id.textview_fragment_plane_details_lat);
         textview.setText(Geodetic3D.coordinateToPrintableText(m_latitude));
@@ -450,6 +454,10 @@ public class FragmentPlaneDetails extends Fragment
         button.setEnabled(true);
     }
 
+    public boolean screenTapped() {
+        return m_screen_tapped;
+    }
+
     //region PlaneChanged listeners
     @Override
     public void onPlanePositionChanged() {
@@ -470,6 +478,11 @@ public class FragmentPlaneDetails extends Fragment
                 textview.setText(Geodetic3D.heightToPrintableText(geodetic.getAltitude()));
             }
         });
+
+        // To avoid saving a point without tapping the screen
+        if (!m_screen_tapped) {
+            m_screen_tapped = true;
+        }
     }
 
     public void onPlaneVirtualOrientationChanged() {

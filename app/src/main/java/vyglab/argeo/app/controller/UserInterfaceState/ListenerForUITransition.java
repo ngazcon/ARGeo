@@ -9,8 +9,8 @@ import vyglab.argeo.app.MainActivityState;
  */
 
 public class ListenerForUITransition implements View.OnClickListener {
-    private int m_context;
-    private int m_interaction;
+    protected int m_context;
+    protected int m_interaction;
 
     public ListenerForUITransition(int context, int interaction){
         m_context = context;

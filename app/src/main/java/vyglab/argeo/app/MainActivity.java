@@ -44,6 +44,7 @@ import vyglab.argeo.app.controller.UserInterfaceState.ListenerForUITransition;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerTTARViewSketch;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerTTARViewTouchSketch;
 import vyglab.argeo.app.controller.ListenersTTARView.ListenerTTARViewTouchNormal;
+import vyglab.argeo.app.controller.UserInterfaceState.ListenerForUITransitionAcceptPlane;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContext;
 import vyglab.argeo.app.controller.UserInterfaceState.UIContextManager;
 import vyglab.argeo.app.controller.UserInterfaceState.UIFacade;
@@ -62,6 +63,7 @@ import vyglab.argeo.app.model.Plane;
 import vyglab.argeo.app.model.PlaneRepository;
 import vyglab.argeo.app.model.SketchFilter;
 import vyglab.argeo.app.model.TTARViewRepository;
+import vyglab.argeo.app.utils.MessagesManager;
 import vyglab.argeo.app.utils.PreferencesManager;
 import vyglab.argeo.app.utils.Storage;
 import vyglab.argeo.app.view.DialogChangeTTARVIEWResolution;
@@ -261,6 +263,8 @@ public class MainActivity extends AppCompatActivity
         MediatorTTARView.getInstance().init(this);
 
         MediatorTouch.getInstance().init(m_activity_state);
+
+        MessagesManager.getInstance().init(this);
 
         // Set viewpager adapter
         m_ViewPager = (ViewPager) findViewById(R.id.pager);
@@ -641,15 +645,15 @@ public class MainActivity extends AppCompatActivity
         ListenerAcceptNewPoi listener_accept_newpoi = new ListenerAcceptNewPoi(this, m_activity_state, mArgeoFragment, m_DBmanager);
         ListenerCancelNewPoi listener_cancel_newpoi = new ListenerCancelNewPoi(this, m_activity_state);
 
-        ListenerNewPlane listener_newplane = new ListenerNewPlane(this, m_activity_state, m_fragment_plane, m_fab_listener);
-        ListenerAcceptNewPlane listener_accept_newplane = new ListenerAcceptNewPlane(this, m_activity_state, mArgeoFragment, m_DBmanager);
-        ListenerCancelNewPlane listener_cancel_newplane = new ListenerCancelNewPlane(this, m_activity_state);
+        //ListenerNewPlane listener_newplane = new ListenerNewPlane(this, m_activity_state, m_fragment_plane, m_fab_listener);
+        //ListenerAcceptNewPlane listener_accept_newplane = new ListenerAcceptNewPlane(this, m_activity_state, mArgeoFragment, m_DBmanager);
+        //ListenerCancelNewPlane listener_cancel_newplane = new ListenerCancelNewPlane(this, m_activity_state);
 
-        ListenerNewTTARView listener_newttarview = new ListenerNewTTARView(m_fab_listener);
+        //ListenerNewTTARView listener_newttarview = new ListenerNewTTARView(m_fab_listener);
         //ListenerAcceptNewTTARView listener_accept_newttarview = new ListenerAcceptNewTTARView();
         //ListenerCancelNewTTARView listener_cancel_newttarview = new ListenerCancelNewTTARView();
-        ListenerOpenPictureInPictureTTARView listener_open_main_ttarview = new ListenerOpenPictureInPictureTTARView(this, m_activity_state, m_fragment_ttarview, m_fab_listener);
-        ListenerTTARViewSketch listener_ttarview_sketch = new ListenerTTARViewSketch(this, m_activity_state, m_fragment_ttarview, m_fab_listener);
+        //ListenerOpenPictureInPictureTTARView listener_open_main_ttarview = new ListenerOpenPictureInPictureTTARView(this, m_activity_state, m_fragment_ttarview, m_fab_listener);
+        //ListenerTTARViewSketch listener_ttarview_sketch = new ListenerTTARViewSketch(this, m_activity_state, m_fragment_ttarview, m_fab_listener);
 
         // Create States
         StateTerrain state_terrain = new StateTerrain(fab_1, fab_2, listener_translate_camera, listener_rotate_camera);
@@ -778,7 +782,7 @@ public class MainActivity extends AppCompatActivity
         state_plane_base.addInteraction(UIState.Interactions.EXTRA_INTERACTION_1, null);
 
         state_plane_creation.addTransition(UIState.Interactions.SECONDARY_FAB_1, state_plane_base);
-        state_plane_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_1));
+        state_plane_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_1, new ListenerForUITransitionAcceptPlane(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_1));
         state_plane_creation.addTransition(UIState.Interactions.SECONDARY_FAB_2, state_plane_base);
         state_plane_creation.addInteraction(UIState.Interactions.SECONDARY_FAB_2, new ListenerForUITransition(MainActivityState.ApplicationMode.PLANE, UIState.Interactions.SECONDARY_FAB_2));
 

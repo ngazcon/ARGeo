@@ -167,7 +167,6 @@ public class FragmentPlane extends Fragment
     }
 
     public void cancelEdition() {
-        //m_fragment_plane_details.getCurrentPlane()
         m_fragment_plane_details.loadPlane(m_fragment_plane_details.getCurrentPlane());
         HandyPlane.getInstance().removeListener(m_fragment_plane_details);
         HandyPlane.getInstance().clear();
@@ -197,6 +196,10 @@ public class FragmentPlane extends Fragment
         m_fragment_plane_details.cleanView(false);
 
         return plane;
+    }
+
+    public boolean screenTapped() {
+        return m_fragment_plane_details.screenTapped();
     }
 
     @Override

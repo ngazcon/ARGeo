@@ -33,6 +33,9 @@ public class UIStatePlaneEdition extends UIState {
         // 3-- Update Fragment
         FragmentPlane fragment = (FragmentPlane) UIFacade.getInstance().getCurrentFragment("TAG_PLANE");
         fragment.setForEdition();
+
+        // 4-- Change Touch Mode
+        MediatorTouch.getInstance().changeTouchMode(MainActivityState.TouchMode.PLANE_CREATION);
     }
 
     @Override
@@ -66,6 +69,7 @@ public class UIStatePlaneEdition extends UIState {
                 // Edition was canceled
                 fragment = (FragmentPlane) UIFacade.getInstance().getCurrentFragment("TAG_PLANE");
                 fragment.cancelEdition();
+                MediatorTouch.getInstance().changeTouchMode(MainActivityState.TouchMode.DEFAULT);
                 break;
 
             case Interactions.EXTRA_INTERACTION_3 :

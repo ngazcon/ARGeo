@@ -62,6 +62,11 @@ namespace argeo
 
         void force_location_updates();
 
+
+        double get_accuracy() const;
+        double get_speed() const;
+        std::string get_provider() const;
+
     private:
         void notify_listeners(const LocationChangedEventArgs& location);
 

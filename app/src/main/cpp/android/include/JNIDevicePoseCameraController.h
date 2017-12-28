@@ -64,6 +64,17 @@ namespace argeo
 			JNIEnv   *jni,
 			jobject  java_this);
 
+		static jdouble get_accuracy(
+				JNIEnv   *jni,
+				jobject  java_this);
+
+		static jdouble get_speed(
+				JNIEnv   *jni,
+				jobject  java_this);
+
+		static jstring get_provider(
+				JNIEnv   *jni,
+				jobject  java_this);
 
         static jint get_gps_state(
                 JNIEnv   *jni,

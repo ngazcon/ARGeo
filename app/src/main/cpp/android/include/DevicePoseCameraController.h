@@ -34,6 +34,10 @@ namespace argeo
 
 		Geodetic3D get_position() const;
 
+		double get_accuracy() const;
+		double get_speed() const;
+		std::string get_provider() const;
+
         // SENSOR FILTER
         void   set_sensor_low_pass_filter_alpha(const double& value);
         double get_sensor_low_pass_filter_alpha() const;

@@ -28,15 +28,19 @@ public class MessagesManager {
         m_activity = activity;
     }
 
-    public void showMessageByTag() {
-
-    }
-
     public void showShortMessage(String message) {
         Toast.makeText(m_activity.getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
 
+    public void showShortMessage(int resource_id) {
+        Toast.makeText(m_activity.getApplicationContext(), resource_id, Toast.LENGTH_SHORT).show();
+    }
+
     public void showLongMessage(String message) {
         Toast.makeText(m_activity.getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    public void showLongMessage(int resource_id) {
+        Toast.makeText(m_activity.getApplicationContext(), resource_id, Toast.LENGTH_LONG).show();
     }
 }

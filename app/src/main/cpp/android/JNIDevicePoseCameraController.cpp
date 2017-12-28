@@ -49,6 +49,25 @@ namespace argeo
             NULL);
 
 		addNativeMethod(
+				"getAccuracy",
+				(void*)&JNIDevicePoseCameraController::get_accuracy,
+				kTypeDouble,
+				NULL);
+
+		addNativeMethod(
+				"getSpeed",
+				(void*)&JNIDevicePoseCameraController::get_speed,
+				kTypeDouble,
+				NULL);
+
+
+		addNativeMethod(
+				"getProvider",
+				(void*)&JNIDevicePoseCameraController::get_provider,
+				kTypeString,
+				NULL);
+
+		addNativeMethod(
 			"getPosition",
 			(void*)&JNIDevicePoseCameraController::get_position,
 			MAKE_CANONICAL_NAME(PACKAGE, Geodetic3D),
@@ -400,4 +419,28 @@ namespace argeo
         JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
         return static_cast<jint>(object->getNativeObject()->get_gps_state());
     }
+
+	jdouble JNIDevicePoseCameraController::get_accuracy(
+			JNIEnv   *jni,
+			jobject  java_this)
+	{
+		JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+		return static_cast<jdouble>(object->getNativeObject()->get_accuracy());
+	}
+
+	jdouble JNIDevicePoseCameraController::get_speed(
+			JNIEnv   *jni,
+			jobject  java_this)
+	{
+		JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+		return static_cast<jdouble>(object->getNativeObject()->get_speed());
+	}
+
+	jstring JNIDevicePoseCameraController::get_provider(
+			JNIEnv   *jni,
+			jobject  java_this)
+	{
+		JNIDevicePoseCameraController* object = gClasses.getNativeInstance<JNIDevicePoseCameraController>(jni, java_this);
+		return JavaString(object->getNativeObject()->get_provider()).toJavaString(jni).leak();
+	}
 }

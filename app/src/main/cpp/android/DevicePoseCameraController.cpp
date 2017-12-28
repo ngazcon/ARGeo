@@ -238,6 +238,21 @@ namespace argeo
 		}
 	}
 
+    double DevicePoseCameraController::get_accuracy() const
+    {
+        return m_gps_listener->get_accuracy();
+    }
+
+    double DevicePoseCameraController::get_speed() const
+    {
+        return m_gps_listener->get_speed();
+    }
+
+    std::string DevicePoseCameraController::get_provider() const
+    {
+        return m_gps_listener->get_provider();
+    }
+
 	double DevicePoseCameraController::get_yaw() const
 	{
 		return m_yaw;
@@ -274,12 +289,19 @@ namespace argeo
         {
 //            m_location_filter.set_current_best_location(args);
 
-
             set_position(Geodetic2D(
                     args.location.get_longitude(),
                     args.location.get_latitude()));
 
             /*
+            set_position(Geodetic2D(
+                    ArgeoMath::to_radians(-61.50),
+                    ArgeoMath::to_radians(-38.50)));
+
+
+
+
+
                     set_position(Geodetic2D(
                     ArgeoMath::to_radians(-61.984323),
                     ArgeoMath::to_radians(-38.074678)));
@@ -395,17 +417,18 @@ namespace argeo
                 Ellipsoid ellipsoid = m_terrain->get_ellipsoid();
                 Geodetic3D geodetic_position = ellipsoid.to_geodetic3D(position);
                 geodetic_position = Geodetic3D(
-                        geodetic_position.get_longitude(),
-                        geodetic_position.get_latitude(),
+                        geodetic.get_longitude(),
+                        geodetic.get_latitude(),
                         geodetic_position.get_height() + geodetic.get_height());
-                camera->set_position(ellipsoid.to_geocentric3D(geodetic_position).to_vec3d());
-                /*
+
+                //camera->set_position(ellipsoid.to_geocentric3D(geodetic_position).to_vec3d());
+
+
                 camera->set_view(
-                        position,
+                        ellipsoid.to_geocentric3D(geodetic_position).to_vec3d(),
                         m_yaw,
                         m_pitch,
                         m_roll);
-                */
             };
 
             if (m_remove_update_height_callback != nullptr)

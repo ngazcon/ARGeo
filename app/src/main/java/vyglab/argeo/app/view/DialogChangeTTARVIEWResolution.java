@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.view.WindowManager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -68,7 +69,12 @@ public class DialogChangeTTARVIEWResolution extends DialogFragment{
                     }
                 });
 
-        return builder.create();
+        AlertDialog dialog = builder.create();
+
+        // Hack to avoid showing the navigation buttons when the dialog is shown
+        dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+
+        return dialog;
     }
 
     @Override

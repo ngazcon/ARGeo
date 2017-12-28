@@ -3,6 +3,7 @@ package vyglab.argeo.app;
 import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -13,6 +14,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -215,7 +217,6 @@ public class MainActivity extends AppCompatActivity
         HandyPlane.getInstance().setup(mArgeoFragment);
 
         m_DBmanager = new DBManager(getApplicationContext(), mArgeoFragment);
-        Toast.makeText(getApplicationContext(), m_DBmanager.listPois().toString(), Toast.LENGTH_SHORT).show();
         Storage.getInstance().init(m_DBmanager);
 
         MediatorArgeoFragment.getInstance().init(mArgeoFragment);
@@ -345,10 +346,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        //TODO Cdo esten los callbacks del fragment ubicar alli estas lineas comentadas
-        //FragmentTerrain fragment_terrain = (FragmentTerrain) getSupportFragmentManager().findFragmentById(R.id.right_menu_fragment_terrain);
-        //fragment_terrain.setOpacity(mArgeoFragment.getViewer().getScene().getTerrainOpacity());
-        //fragment_terrain.setExaggeration(mArgeoFragment.getViewer().getScene().getTerrain().getHeightExaggeration());
 
         // Default "TERRAIN MODE"
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -590,10 +587,9 @@ public class MainActivity extends AppCompatActivity
                 TTARViewRepository.getInstance().addTTARView(ttarview);
             }
 
-            Toast.makeText(getApplicationContext(), "Database loaded!", Toast.LENGTH_SHORT).show();
+            MessagesManager.getInstance().showShortMessage("Database loaded!");
         } else if (id == R.id.nav_db_clear) {
-            m_DBmanager.clearDB();
-            Toast.makeText(getApplicationContext(), "Database cleared!", Toast.LENGTH_SHORT).show();
+            clearDBDialog().show();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -1339,6 +1335,30 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+    //region Alert Dialogs
+    protected AlertDialog clearDBDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Clear Data Base?")
+                .setMessage("All the information in the internal Data Base will be erased.")
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        m_DBmanager.clearDB();
+                        MessagesManager.getInstance().showShortMessage("Database cleared!");
+                    }
+                })
+                .setNegativeButton("Cancel", null);
+
+        AlertDialog dialog = builder.create();
+
+        // Hack to avoid showing the navigation buttons when the dialog is shown
+        dialog.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE);
+
+        return  dialog;
+    }
+    //endregion
 
     //region TTARView listeners and methods
     public float getScreenDensity() {

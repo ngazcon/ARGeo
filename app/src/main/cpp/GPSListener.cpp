@@ -280,6 +280,21 @@ namespace argeo
         return is_better;
     }
 
+    double GPSListener::get_accuracy() const
+    {
+        return m_best_location.accuracy;
+    }
+
+    double GPSListener::get_speed() const
+    {
+        return m_best_location.speed;
+    }
+
+    std::string GPSListener::get_provider() const
+    {
+        return m_best_location.provider;
+    }
+
     void GPSListener::set_network_standing_frec(const int& value)
     {
         m_network_standing_frec = value;

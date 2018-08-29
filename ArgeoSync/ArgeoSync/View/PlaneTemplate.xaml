@@ -1,0 +1,96 @@
+﻿<UserControl x:Class="ArgeoSync.View.PlaneTemplate"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ArgeoSync.View"
+             xmlns:model="clr-namespace:ArgeoSync.Model"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+             xmlns:System="clr-namespace:System;assembly=mscorlib"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+
+    <StackPanel>
+
+        <UniformGrid Margin="0,2"
+                     Rows="1"
+                     Columns="4">
+            <TextBox x:Name="StrikeBox"
+                 materialDesign:HintAssist.Hint="Strike"
+                 Style="{DynamicResource MaterialDesignFloatingHintTextBox}">
+                <TextBox.Text>
+                    <Binding Path="Strike" 
+                         UpdateSourceTrigger="PropertyChanged"
+                         ValidatesOnDataErrors="True"
+                         ValidatesOnExceptions="True"
+                         ValidatesOnNotifyDataErrors="True"/>
+                </TextBox.Text>
+            </TextBox>
+
+            <TextBox x:Name="DipTextBox"
+                 materialDesign:HintAssist.Hint="Dip"
+                 Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
+                 Margin="1,0,0,0">
+                <TextBox.Text>
+                    <Binding Path="Dip" 
+                         UpdateSourceTrigger="PropertyChanged"
+                         ValidatesOnDataErrors="True"
+                         ValidatesOnExceptions="True"
+                         ValidatesOnNotifyDataErrors="True"/>
+                </TextBox.Text>
+            </TextBox>
+            <ToggleButton Style="{StaticResource MaterialDesignSwitchLightToggleButton}"
+                          IsChecked="{Binding Path=ShowVirtualOrientation}"
+                          Margin="1,0,0,0"
+                          ToolTip="ShowVirtualOrientation"
+                          HorizontalAlignment="Center"/>
+            
+            <TextBox x:Name="VirtualOrientationTextBox"
+                    materialDesign:HintAssist.Hint="Virtual orientation"
+                    Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
+                    Margin="1,0,0,0"
+                     IsEnabled="{Binding Path=ShowVirtualOrientation}">
+                <TextBox.Text>
+                    <Binding Path="VirtualOrientation" 
+                                     UpdateSourceTrigger="PropertyChanged"
+                                     ValidatesOnDataErrors="True"
+                                     ValidatesOnExceptions="True"
+                                     ValidatesOnNotifyDataErrors="True"/>
+                </TextBox.Text>
+            </TextBox>
+            
+        </UniformGrid>
+
+        <UniformGrid Margin="0,2"
+                     Rows="1"
+                     Columns="2">
+            <TextBox x:Name="SizeTextBox"
+                             materialDesign:HintAssist.Hint="Size"
+                             Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
+                             Margin="0,0,1,0">
+                <TextBox.Text>
+                    <Binding Path="Size" 
+                                     UpdateSourceTrigger="PropertyChanged"
+                                     ValidatesOnDataErrors="True"
+                                     ValidatesOnExceptions="True"
+                                     ValidatesOnNotifyDataErrors="True"/>
+                </TextBox.Text>
+            </TextBox>
+            <TextBox x:Name="ThicknessTextBox"
+                             materialDesign:HintAssist.Hint="Thickness"
+                             Style="{DynamicResource MaterialDesignFloatingHintTextBox}"
+                             Margin="1,0,0,0">
+                <TextBox.Text>
+                    <Binding Path="Thickness" 
+                                     UpdateSourceTrigger="PropertyChanged"
+                                     ValidatesOnDataErrors="True"
+                                     ValidatesOnExceptions="True"
+                                     ValidatesOnNotifyDataErrors="True"/>
+                </TextBox.Text>
+            </TextBox>            
+        </UniformGrid>
+        
+    </StackPanel>
+        
+</UserControl>

@@ -1,0 +1,259 @@
+﻿<metro:MetroWindow 
+        x:Class="ArgeoSync.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ArgeoSync.View"
+        xmlns:metro="http://metro.mahapps.com/winfx/xaml/controls"        
+        xmlns:vm="clr-namespace:ArgeoSync.ViewModel"
+        xmlns:m="clr-namespace:Microsoft.Maps.MapControl.WPF;assembly=Microsoft.Maps.MapControl.WPF"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:materialDesignConverters="clr-namespace:MaterialDesignThemes.Wpf.Converters;assembly=MaterialDesignThemes.Wpf"
+        xmlns:converters="clr-namespace:ArgeoSync.Converter"
+        mc:Ignorable="d"
+        Title="ARGeo Sync"
+        Height="480"
+        Width="640"
+        GlowBrush="{DynamicResource AccentColorBrush}"
+        BorderThickness="1">
+
+    <metro:MetroWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Button.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.CheckBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ListBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.RadioButton.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ToggleButton.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <materialDesignConverters:BooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter" TrueValue="Collapsed" FalseValue="Visible" />
+            <converters:EnumToStringConverter x:Key="EnumToStringConverterKey"/>
+        </ResourceDictionary>
+    </metro:MetroWindow.Resources>
+    
+    <metro:MetroWindow.DataContext>
+        <vm:MainWindowViewModel/>
+    </metro:MetroWindow.DataContext>
+    
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="30*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="70*"/>
+        </Grid.ColumnDefinitions>
+        
+        <m:Map x:Name="myMap"
+               CredentialsProvider="AjfFO3v-77iqMXgXG861pPnvRuJnXbyIWwYPOQUvHwDsVPEybQb_N4LUTa3vkORk" 
+               Mode="AerialWithLabels"
+               Grid.Column="0" 
+               Grid.Row="0" 
+               Grid.RowSpan="2"
+               MouseDoubleClick="myMap_MouseDoubleClick"/>
+
+        <GridSplitter 
+              Grid.Column="1" 
+              Grid.RowSpan="2" 
+              HorizontalAlignment="Left" 
+              VerticalAlignment="Stretch"
+              ResizeDirection="Columns"
+              ResizeBehavior="PreviousAndNext"
+              Width="5"/>
+
+        <materialDesign:Card Grid.Column="2"
+                             Grid.RowSpan="2"
+                             Margin="5"
+                             VerticalAlignment="Stretch">
+            <DataGrid ItemsSource="{Binding Path=Entities}"
+                      SelectedItem="{Binding Path=SelectedItem}"
+                      SelectionUnit="FullRow"
+                      IsReadOnly="True"
+                      CanUserDeleteRows="False"
+                      CanUserAddRows="False"
+                      AutoGenerateColumns="False"
+                      MouseDoubleClick="Row_DoubleClick">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="Icon"
+                                            IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Ellipse>
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="{Binding Path=Image}"
+                                                    Stretch="Uniform"/>
+                                    </Ellipse.Fill>
+                                </Ellipse>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Binding="{Binding Path=_Id}"
+                                        Header="Id"/>
+                    <DataGridTextColumn Binding="{Binding Path=Description, FallbackValue=N/A, TargetNullValue=N/A}"
+                                        Header="Description"/>
+                    <DataGridTextColumn Binding="{Binding Path=Latitude, FallbackValue=N/A, TargetNullValue=N/A, StringFormat=F2}"
+                                        Header="Latitude"/>
+                    <DataGridTextColumn Binding="{Binding Path=Longitude, FallbackValue=N/A, TargetNullValue=N/A, StringFormat=F2}"
+                                        Header="Longitude"/>
+                    <DataGridTextColumn Binding="{Binding Path=Height, FallbackValue=N/A, TargetNullValue=N/A, StringFormat=F2}"
+                                        Header="Height"/>
+                    <DataGridTextColumn Binding="{Binding Path=Type}"
+                                        Header="Type"/>
+                    <DataGridTextColumn Binding="{Binding Path=Timestamp}"
+                                        Header="Timestamp"/>                    
+                </DataGrid.Columns>
+            </DataGrid>
+        </materialDesign:Card>
+
+        <StackPanel Orientation="Horizontal"
+                    Grid.Column="2"
+                    Grid.Row="1"
+                    Grid.RowSpan="2"
+                    Panel.ZIndex="2"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center">
+            
+            <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+                                    PlacementMode="TopAndAlignCentres"
+                                    ToolTipService.Placement="Right"
+                                    ToolTip="Add"
+                                    x:Name="AddButton">
+                <StackPanel>
+                    <Button ToolTip="Add point of interest"
+                            Command="{Binding Path=AddPointOfInterestCommand}"
+                            Margin="5,2">
+                        <materialDesign:PackIcon Kind="MapMarker" Height="24" Width="24" />
+                    </Button>
+                    <Button ToolTip="Add core sample"
+                            Command="{Binding Path=AddCoreSampleCommand}"
+                            Margin="5,2">
+                        <materialDesign:PackIcon Kind="CheckboxBlankCircle" Height="24" Width="24" />
+                    </Button>
+                    <Button ToolTip="Add plane"
+                            Command="{Binding Path=AddPlaneCommand}"
+                            Margin="5,2">
+                        <materialDesign:PackIcon Kind="SelectionOff" Height="24" Width="24" />
+                    </Button>
+                    <Button ToolTip="Add TTAR view"
+                            Command="{Binding Path=AddTTARViewCommand}"
+                            Margin="5,2">
+                        <materialDesign:PackIcon Kind="CameraEnhance" Height="24" Width="24" />
+                    </Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
+            
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                    ToolTip="Edit"
+                    Command="{Binding Path=EditPointOfInterestCommand}"
+                    CommandParameter="{Binding Path=SelectedItem}"
+                    Margin="5,0"
+                    x:Name="EditButton">
+                <materialDesign:PackIcon Kind="Pen" Height="24" Width="24" />
+            </Button>
+
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                    ToolTip="Pull"
+                    Command="{Binding Path=PullDataBaseCommand}"
+                    Margin="5,0"
+                    x:Name="PullButton">
+                <materialDesign:PackIcon Kind="Download" Height="24" Width="24" />
+            </Button>
+
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                    ToolTip="Push"
+                    Command="{Binding Path=PushDataBaseCommand}"
+                    Margin="5,0"
+                    x:Name="PushButton">
+                <materialDesign:PackIcon Kind="Upload" Height="24" Width="24" />
+            </Button>
+
+            <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+                                    PlacementMode="TopAndAlignCentres"
+                                    ToolTipService.Placement="Right"
+                                    ToolTip="Import"
+                                    Margin="5,0"
+                                    x:Name="ImportButton">
+                <materialDesign:PopupBox.ToggleContent>
+                    <materialDesign:PackIcon Kind="Import" Height="24" Width="24" />
+                </materialDesign:PopupBox.ToggleContent>
+                <StackPanel>
+                    <Button ToolTip="CVS"
+                            Command="{Binding Path=ImportCSVCommand}"
+                            Margin="5,2">
+                        CVS
+                    </Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
+            
+            <materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
+                                    PlacementMode="TopAndAlignCentres"
+                                    ToolTipService.Placement="Right"
+                                    ToolTip="Export"
+                                    Margin="5,0"
+                                    x:Name="ExportButton">
+                <materialDesign:PopupBox.ToggleContent>
+                    <materialDesign:PackIcon Kind="Export" Height="24" Width="24" />
+                </materialDesign:PopupBox.ToggleContent>
+                <StackPanel>
+                    <Button ToolTip="CVS"
+                            Command="{Binding Path=ExportCSVCommand}"
+                            Margin="5,2">
+                        CVS
+                    </Button>
+                    <Button ToolTip="Add core sample"
+                            Command="{Binding Path=AddCoreSampleCommand}"
+                            Margin="5,2">
+                        <materialDesign:PackIcon Kind="CheckboxBlankCircle" Height="24" Width="24" />
+                    </Button>
+                    <Button ToolTip="Add plane"
+                            Command="{Binding Path=AddPlaneCommand}"
+                            Margin="5,2">
+                        <materialDesign:PackIcon Kind="SelectionOff" Height="24" Width="24" />
+                    </Button>
+                    <Button ToolTip="Add TTAR view"
+                            Command="{Binding Path=AddTTARViewCommand}"
+                            Margin="5,2">
+                        <materialDesign:PackIcon Kind="CameraEnhance" Height="24" Width="24" />
+                    </Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
+            
+            <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                    ToolTip="Remove"
+                    Command="{Binding Path=RemoveEntityCommand}"
+                    Margin="5,0"
+                    x:Name="RemoveButton">
+                <materialDesign:PackIcon Kind="Cancel" Height="24" Width="24" />
+            </Button>
+
+            
+        </StackPanel>
+
+        <local:EntityView IsOpen="{Binding Path=DataContext.IsEntityWindowOpen, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Grid.RowSpan="2"
+                        Grid.ColumnSpan="3"
+                        IsModal="True"
+                        HorizontalContentAlignment="Stretch"
+                        VerticalContentAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        DataContext="{Binding Path=SelectedItem}"
+                        Closing="PointOfInterestView_Closing"/>
+        
+        <StatusBar Grid.Row="2"
+                   Grid.ColumnSpan="3">
+            <TextBlock Text="{Binding Path=Status, Converter={StaticResource EnumToStringConverterKey}}"/>
+        </StatusBar>
+    </Grid>
+    
+</metro:MetroWindow>

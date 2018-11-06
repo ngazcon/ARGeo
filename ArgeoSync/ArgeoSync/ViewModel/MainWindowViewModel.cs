@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity.Core;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -42,7 +43,7 @@ namespace ArgeoSync.ViewModel
                 @"C:\Users\juanmanuel\desktop\ArgeoDB.db");
         }
 
-        ObservableCollection<EntityViewModel> mEntities = 
+        ObservableCollection<EntityViewModel> mEntities =
             new ObservableCollection<EntityViewModel>();
         public ObservableCollection<EntityViewModel> Entities
         {
@@ -121,21 +122,40 @@ namespace ArgeoSync.ViewModel
             this.mPullDataBaseCommand = new DelegateCommand(OnPullDataBase, CanPullDataBase);
             this.mPushDataBaseCommand = new DelegateCommand(OnPushDataBase, CanPushDataBase);
 
-            this.mRemoveEntityCommand        = new DelegateCommand(OnRemoveEntity, CanRemoveEntity);
-            this.mAddPointOfInterestCommand  = new DelegateCommand(OnAddPointOfInterest,  CanAddPointOfInterest);
-            this.mAddCoreSampleCommand       = new DelegateCommand(OnAddCoreSample, CanAddCoreSample);
-            this.mAddPlaneCommand            = new DelegateCommand(OnAddPlane, CanAddPlane);
-            this.mAddTTARViewCommand         = new DelegateCommand(OnAddTTARView, CanAddTTARView);
-            this.mExportCSVCommand           = new DelegateCommand(OnExportCSV, CanExportCSV);
-            this.mImportCSVCommand           = new DelegateCommand(OnImportCSV, CanImportCSV);
+            this.mRemoveEntityCommand = new DelegateCommand(OnRemoveEntity, CanRemoveEntity);
+            this.mAddPointOfInterestCommand = new DelegateCommand(OnAddPointOfInterest, CanAddPointOfInterest);
+            this.mAddCoreSampleCommand = new DelegateCommand(OnAddCoreSample, CanAddCoreSample);
+            this.mAddPlaneCommand = new DelegateCommand(OnAddPlane, CanAddPlane);
+            this.mAddTTARViewCommand = new DelegateCommand(OnAddTTARView, CanAddTTARView);
+            this.mExportCSVCommand = new DelegateCommand(OnExportCSV, CanExportCSV);
+            this.mImportCSVCommand = new DelegateCommand(OnImportCSV, CanImportCSV);
 
             this.mSavePointOfInterestCommand = new DelegateCommand(OnSavePointOfInterest, CanSavePointOfInterest);
-            this.mEditPointOfInterestCommand = new DelegateCommand(OnEditPointOfInterest, CanEditPointOfInterest);            
+            this.mEditPointOfInterestCommand = new DelegateCommand(OnEditPointOfInterest, CanEditPointOfInterest);
+
+            if (!File.Exists(@"C:\Users\juanmanuel\desktop\ArgeoDB.db"))
+            {
+                this.GenerateDBFile();
+            }
+
+            this.LoadDataBase();
+        }
+
+        private void GenerateDBFile()
+        {
+            if (File.Exists(@"C:\Users\juanmanuel\desktop\ArgeoDB.db"))
+            {
+                File.Delete(@"C:\Users\juanmanuel\desktop\ArgeoDB.db");
+            }
+
+            string executableLocation = Path.GetDirectoryName(
+                Assembly.GetExecutingAssembly().Location);
+            File.Copy(executableLocation + @"\Resources\db\ArgeoDB.db", @"C:\Users\juanmanuel\desktop\ArgeoDB.db");
         }
 
         private void Entities_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            switch(e.Action)
+            switch (e.Action)
             {
                 case System.Collections.Specialized.NotifyCollectionChangedAction.Add:
                     this.SelectedItem = e.NewItems[e.NewItems.Count - 1] as EntityViewModel;
@@ -156,21 +176,21 @@ namespace ArgeoSync.ViewModel
                 @"C:\Users\juanmanuel\desktop\coresamples.csv");
 
             int count = values.First().Value.Count;
-            for(int i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 CoreSample model = new CoreSample
                 {
-                    _Id          = Int64.Parse(values["_Id"][i]),
-                    Id           = values["Id"][i],
-                    Description  = values["Description"][i],
-                    Longitude    = Double.Parse(values["Longitude"][i]),
-                    Latitude     = Double.Parse(values["Latitude"][i]),
-                    Height       = Double.Parse(values["Height"][i]),
+                    _Id = Int64.Parse(values["_Id"][i]),
+                    Id = values["Id"][i],
+                    Description = values["Description"][i],
+                    Longitude = Double.Parse(values["Longitude"][i]),
+                    Latitude = Double.Parse(values["Latitude"][i]),
+                    Height = Double.Parse(values["Height"][i]),
                     BottomRadius = Double.Parse(values["BottomRadius"][i]),
-                    TopRadius    = Double.Parse(values["TopRadius"][i]),
-                    Length       = Double.Parse(values["Length"][i]),
-                    Slices       = Double.Parse(values["Slices"][i]),
-                    Timestamp    = Int64.Parse(values["Timestamp"][i]),
+                    TopRadius = Double.Parse(values["TopRadius"][i]),
+                    Length = Double.Parse(values["Length"][i]),
+                    Slices = Double.Parse(values["Slices"][i]),
+                    Timestamp = Int64.Parse(values["Timestamp"][i]),
                 };
 
                 CoreSample coresample = localRepository.CoreSamples.Find(model._Id);
@@ -193,7 +213,7 @@ namespace ArgeoSync.ViewModel
                 TTARView model = new TTARView
                 {
                     _Id = Int64.Parse(values["_Id"][i]),
-                    Id  = values["Id"][i],
+                    Id = values["Id"][i],
                     Description = values["Description"][i],
                     Longitude = Double.Parse(values["Longitude"][i]),
                     Latitude = Double.Parse(values["Latitude"][i]),
@@ -202,7 +222,7 @@ namespace ArgeoSync.ViewModel
                     Roll = Double.Parse(values["Roll"][i]),
                     Yaw = Double.Parse(values["Yaw"][i]),
                     BitmapFrame = Convert.FromBase64String(values["BitmapFrame"][i]),
-                    BitmapView  = Convert.FromBase64String(values["BitmapView"][i]),
+                    BitmapView = Convert.FromBase64String(values["BitmapView"][i]),
                     Timestamp = Int64.Parse(values["Timestamp"][i]),
                 };
 
@@ -289,8 +309,8 @@ namespace ArgeoSync.ViewModel
                     ImageId = values["ImageId"][i],
                     Image = Convert.FromBase64String(values["Image"][i]),
                     Height = Int64.Parse(values["Height"][i]),
-                    Width  = Int64.Parse(values["Width"][i]),
-                    Type   = values["Type"][i],
+                    Width = Int64.Parse(values["Width"][i]),
+                    Type = values["Type"][i],
                     Timestamp = Int64.Parse(values["Timestamp"][i]),
                 };
                 Graphics graphics = localRepository.Graphics.Find(model._Id);
@@ -327,7 +347,7 @@ namespace ArgeoSync.ViewModel
             {
                 List<string> columnValues = new List<string>();
                 foreach (PropertyInfo info in infos)
-                {                
+                {
                     object value = info.GetValue(model);
                     value = value is byte[] ? Convert.ToBase64String(value as byte[]) : value;
                     columnValues.Add(value.ToString());
@@ -401,7 +421,7 @@ namespace ArgeoSync.ViewModel
             {
                 columns.Add(info.Name);
             }
-            
+
             foreach (TTARView model in localRepository.TTARViews)
             {
                 List<string> columnValues = new List<string>();
@@ -459,7 +479,7 @@ namespace ArgeoSync.ViewModel
                 this.Entities.Add(this.SelectedItem);
                 this.SaveDataBase();
             }
-            else if(this.Status == WorkingStatus.Edit)
+            else if (this.Status == WorkingStatus.Edit)
             {
                 this.SelectedItem.Timestamp = DateTime.Now;
                 this.SaveDataBase();
@@ -470,8 +490,8 @@ namespace ArgeoSync.ViewModel
 
         private bool CanSavePointOfInterest(object commandParameter)
         {
-            ValidationContext context       = new ValidationContext(this, null, null);
-            List<ValidationResult> result   = new List<ValidationResult>();
+            ValidationContext context = new ValidationContext(this, null, null);
+            List<ValidationResult> result = new List<ValidationResult>();
 
             if (!Validator.TryValidateObject(this, context, result, true))
             {
@@ -497,7 +517,7 @@ namespace ArgeoSync.ViewModel
 
         private void OnAddPlane(object commandParameter)
         {
-            this.Status       = WorkingStatus.New;
+            this.Status = WorkingStatus.New;
             this.SelectedItem = new PlaneViewModel();
         }
 
@@ -519,15 +539,15 @@ namespace ArgeoSync.ViewModel
 
         private void OnAddPointOfInterest(object commandParameter)
         {
-            this.Status       = WorkingStatus.New;
+            this.Status = WorkingStatus.New;
             this.SelectedItem = new PointOfInterestViewModel
             {
                 Graphics = new GraphicsViewModel
                 {
-                    Width  = 60,
+                    Width = 60,
                     Height = 60
                 }
-            };            
+            };
         }
 
         private bool CanAddPointOfInterest(object commandParameter)
@@ -598,11 +618,11 @@ namespace ArgeoSync.ViewModel
                     Graphics old = context.Graphics.Find(poi._Id);
                     if (old != null)
                     {
-                        old.Height    = poi.Graphics.Height;
-                        old.Width     = poi.Graphics.Width;
-                        old.Type      = poi.Graphics.Type;
-                        old.Image     = Helper.BitmapHelper.SaveImage(poi.Graphics.Image);
-                        old.ImageId   = poi.Graphics.ImageId;
+                        old.Height = poi.Graphics.Height;
+                        old.Width = poi.Graphics.Width;
+                        old.Type = poi.Graphics.Type;
+                        old.Image = Helper.BitmapHelper.SaveImage(poi.Graphics.Image);
+                        old.ImageId = poi.Graphics.ImageId;
                         old.Timestamp = Helper.DateTimeHelper.DateTimeToUnixTimeStamp(poi.Graphics.Timestamp);
                         context.SaveChanges();
                     }
@@ -631,7 +651,7 @@ namespace ArgeoSync.ViewModel
                     {
                         old.Id = poi.Id;
                         old.Description = poi.Description;
-                        old.Height   = poi.Height;
+                        old.Height = poi.Height;
                         old.Latitude = poi.Latitude;
                         old.Longitude = poi.Longitude;
                         old.IdGraphics = poi.Graphics._Id;
@@ -657,7 +677,7 @@ namespace ArgeoSync.ViewModel
                     }
                 }
 
-                foreach (PlaneViewModel plane in this.Entities.OfType<PlaneViewModel>().Where(s => s._Id == 0))
+                foreach (PlaneViewModel plane in this.Entities.OfType<PlaneViewModel>())
                 {
                     Plane old = context.Planes.Find(plane._Id);
                     if (old != null)
@@ -701,7 +721,7 @@ namespace ArgeoSync.ViewModel
                     }
                 }
 
-                foreach (TTARViewViewModel ttarview in this.Entities.OfType<TTARViewViewModel>().Where(s => s._Id == 0))
+                foreach (TTARViewViewModel ttarview in this.Entities.OfType<TTARViewViewModel>())
                 {
                     TTARView old = context.TTARViews.Find(ttarview._Id);
                     if (old != null)
@@ -742,9 +762,9 @@ namespace ArgeoSync.ViewModel
                         ttarview._Id = model._Id;
                     }
                 }
-                
 
-                foreach (CoreSampleViewModel coresample in this.Entities.OfType<CoreSampleViewModel>().Where(s => s._Id == 0))
+
+                foreach (CoreSampleViewModel coresample in this.Entities.OfType<CoreSampleViewModel>())
                 {
                     CoreSample old = context.CoreSamples.Find(coresample._Id);
                     if (old != null)
@@ -818,94 +838,101 @@ namespace ArgeoSync.ViewModel
         {
             this.Entities.Clear();
 
-            using (ArgeoContext context = GetNewLocalRepositoryInstance())
+            try
             {
-                foreach (Plane plane in context.Planes)
+                using (ArgeoContext context = GetNewLocalRepositoryInstance())
                 {
-                    this.Entities.Add(new PlaneViewModel
+                    foreach (Plane plane in context.Planes)
                     {
-                        Id = plane.Id,
-                        _Id = plane._Id,
-                        Description = plane.Description,
-                        Latitude = plane.Latitude.Value,
-                        Longitude = plane.Longitude.Value,
-                        Height = plane.Height.Value,
-                        Dip = plane.Dip.Value,
-                        Strike = plane.Strike.Value,
-                        Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(plane.Timestamp),
-                    });
-                }
-
-                foreach (PointOfInterest poi in context.PointsOfInterest)
-                {
-                    Graphics graphics = context.Graphics.Find(poi.IdGraphics);
-                    this.Entities.Add(new PointOfInterestViewModel
-                    {
-                        Id = poi.Id,
-                        _Id = poi._Id,
-                        Description = poi.Description,
-                        Latitude = poi.Latitude.Value,
-                        Longitude = poi.Longitude.Value,
-                        Height = poi.Height.Value,
-
-                        Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(poi.Timestamp),
-
-                        Graphics = new GraphicsViewModel()
+                        this.Entities.Add(new PlaneViewModel
                         {
-                            _Id = graphics._Id,
-                            ImageId = graphics.ImageId,
-                            Height = graphics.Height,
-                            Width = graphics.Width,
-                            Type = graphics.Type,
-                            Image  = Helper.BitmapHelper.LoadImage(graphics.Image),
-                            Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(graphics.Timestamp)
-                        }
-                    });
-                }
+                            Id = plane.Id,
+                            _Id = plane._Id,
+                            Description = plane.Description,
+                            Latitude = plane.Latitude.Value,
+                            Longitude = plane.Longitude.Value,
+                            Height = plane.Height.Value,
+                            Dip = plane.Dip.Value,
+                            Strike = plane.Strike.Value,
+                            Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(plane.Timestamp),
+                        });
+                    }
 
-                foreach (TTARView ttarview in context.TTARViews)
-                {
-                    this.Entities.Add(new TTARViewViewModel
+                    foreach (PointOfInterest poi in context.PointsOfInterest)
                     {
-                        Id = ttarview.Id,
-                        _Id = ttarview._Id,
-                        Description = ttarview.Description,
-                        Latitude = ttarview.Latitude.Value,
-                        Longitude = ttarview.Longitude.Value,
-                        Height = ttarview.Height.Value,
-                        Roll = ttarview.Roll.Value,
-                        Yaw = ttarview.Yaw.Value,
-                        Pitch = ttarview.Pitch.Value,
-                        Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(ttarview.Timestamp),
-                        BitmapFrame = Helper.BitmapHelper.LoadImage(ttarview.BitmapFrame),
-                        BitmapView = Helper.BitmapHelper.LoadImage(ttarview.BitmapView),
-                    });
-                }
+                        Graphics graphics = context.Graphics.Find(poi.IdGraphics);
+                        this.Entities.Add(new PointOfInterestViewModel
+                        {
+                            Id = poi.Id,
+                            _Id = poi._Id,
+                            Description = poi.Description,
+                            Latitude = poi.Latitude.Value,
+                            Longitude = poi.Longitude.Value,
+                            Height = poi.Height.Value,
 
-                foreach (CoreSample coresample in context.CoreSamples)
-                {
-                    this.Entities.Add(new CoreSampleViewModel
+                            Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(poi.Timestamp),
+
+                            Graphics = new GraphicsViewModel()
+                            {
+                                _Id = graphics._Id,
+                                ImageId = graphics.ImageId,
+                                Height = graphics.Height,
+                                Width = graphics.Width,
+                                Type = graphics.Type,
+                                Image = Helper.BitmapHelper.LoadImage(graphics.Image),
+                                Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(graphics.Timestamp)
+                            }
+                        });
+                    }
+
+                    foreach (TTARView ttarview in context.TTARViews)
                     {
-                        Id = coresample.Id,
-                        _Id = coresample._Id,
-                        Description = coresample.Description,
-                        Latitude = coresample.Latitude.Value,
-                        Longitude = coresample.Longitude.Value,
-                        Height = coresample.Height.Value,
-                        Slices = coresample.Slices.Value,
-                        BottomRadius = coresample.BottomRadius.Value,
-                        TopRadius = coresample.TopRadius.Value,
-                        Length = coresample.Length.Value,
-                        Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(coresample.Timestamp),
-                    });
+                        this.Entities.Add(new TTARViewViewModel
+                        {
+                            Id = ttarview.Id,
+                            _Id = ttarview._Id,
+                            Description = ttarview.Description,
+                            Latitude = ttarview.Latitude.Value,
+                            Longitude = ttarview.Longitude.Value,
+                            Height = ttarview.Height.Value,
+                            Roll = ttarview.Roll.Value,
+                            Yaw = ttarview.Yaw.Value,
+                            Pitch = ttarview.Pitch.Value,
+                            Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(ttarview.Timestamp),
+                            BitmapFrame = Helper.BitmapHelper.LoadImage(ttarview.BitmapFrame),
+                            BitmapView = Helper.BitmapHelper.LoadImage(ttarview.BitmapView),
+                        });
+                    }
+
+                    foreach (CoreSample coresample in context.CoreSamples)
+                    {
+                        this.Entities.Add(new CoreSampleViewModel
+                        {
+                            Id = coresample.Id,
+                            _Id = coresample._Id,
+                            Description = coresample.Description,
+                            Latitude = coresample.Latitude.Value,
+                            Longitude = coresample.Longitude.Value,
+                            Height = coresample.Height.Value,
+                            Slices = coresample.Slices.Value,
+                            BottomRadius = coresample.BottomRadius.Value,
+                            TopRadius = coresample.TopRadius.Value,
+                            Length = coresample.Length.Value,
+                            Timestamp = Helper.DateTimeHelper.UnixTimeStampToDateTime(coresample.Timestamp),
+                        });
+                    }
                 }
+            }
+            catch (EntityException ex)
+            {
+                this.GenerateDBFile();
             }
         }
 
         public void SyncDataBase()
         {
             ArgeoContext remote = GetNewRemoteRepositoryInstance();
-            ArgeoContext local  = GetNewLocalRepositoryInstance();
+            ArgeoContext local = GetNewLocalRepositoryInstance();
 
             foreach (Plane plane in remote.Planes)
             {
@@ -913,7 +940,7 @@ namespace ArgeoSync.ViewModel
                 {
                     local.Planes.Add(new Plane(plane));
                 }
-                else 
+                else
                 {
                     if (local.Planes.Find(plane._Id).Timestamp > plane.Timestamp)
                     {
@@ -1073,15 +1100,15 @@ namespace ArgeoSync.ViewModel
                 restartServerIfNewer: false);
 
             var device = AdbClient.Instance.GetDevices().First();
-            
+
             using (SyncService service = new SyncService(new AdbSocket(new IPEndPoint(IPAddress.Loopback, AdbClient.AdbServerPort)), device))
             using (Stream stream = File.OpenWrite(
-                 System.IO.Path.GetTempPath() + 
-                 @"\ArgeoDB.db"))
+                System.IO.Path.GetTempPath() +
+                @"\ArgeoDB.db"))
             {
                 service.Pull(
-                    "/storage/self/primary/ArgeoDB.db", 
-                    stream, 
+                    "/storage/self/primary/ArgeoDB.db",
+                    stream,
                     null,
                     CancellationToken.None);
             }
